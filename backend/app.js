@@ -41,7 +41,7 @@ import {
   setCart,
   updateCart,
 } from "./database.js";
-const app = express();
+const app = express.Router();
 app.use(cors());
 app.use(express.json());
 

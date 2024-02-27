@@ -1,3 +1,3 @@
-import app from "../backend/server";
+import app from "../backend/app";
 
 export default app;

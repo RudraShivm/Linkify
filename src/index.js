@@ -1,6 +1,6 @@
 import process from 'process';
 
-import app from './backend/server';
+import app from './backend/app';
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
