@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import Filter from './Filter';
-import './orders.css';
+import './Orders.css';
 
 const Ware_req = () => {
     const { mgr_id } = useParams();
