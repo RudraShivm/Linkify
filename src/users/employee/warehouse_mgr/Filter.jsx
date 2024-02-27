@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useState } from 'react';
-import './filter.css';
+import './Filter.css';
 const Filter = ({changeQueryData},{visibleStatefn}) => {
     const [warehouse_stock_id, setWarehouse_stock_id] = useState(0);
     const [request_date, setRequest_date] = useState('1700-01-01');
