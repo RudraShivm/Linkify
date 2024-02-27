@@ -421,16 +421,16 @@ app.post(
   }
 );
 
-app.use((err, req, res) => {
-  console.error(err.stack);
-  if (err.message === "Not Found") {
-    res.status(404).send("Not Found");
-  } else {
-    res.status(500).send("Something broke!");
-  }
-});
+// app.use((err, req, res) => {
+//   console.error(err.stack);
+//   if (err.message === "Not Found") {
+//     res.status(404).send("Not Found");
+//   } else {
+//     res.status(500).send("Something broke!");
+//   }
+// });
 
-app.use("/api/v1", api);
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server ready on port ${port}`));
-export default app;
+// app.use("/api/v1", api);
+// const port = process.env.PORT || 3000;
+// app.listen(port, () => console.log(`Server ready on port ${port}`));
+// export default app;
