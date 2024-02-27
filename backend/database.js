@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import process from "process";
 import pg from "pg";
 dotenv.config();
 
@@ -13,14 +14,16 @@ dotenv.config();
 //   .promise();
 const { Pool } = pg;
 
+// const pool = new Pool({
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Linkify",
+//   password: "123",
+//   port: 5432,
+// });
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "Linkify",
-  password: "123",
-  port: 5432,
-});
-
+  connectionString: process.env.POSTGRES_URL,
+})
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(
     `SELECT Orders.*,P.model,P.picture1 
