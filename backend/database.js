@@ -22,7 +22,7 @@ const { Pool } = pg;
 //   port: 5432,
 // });
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRESS_URL,
 })
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(

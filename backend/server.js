@@ -403,8 +403,15 @@ app.post("/users/employee/warehouse_mgr/:warehouse_mgr_id/:order_id/createInvoic
       res.status(500).send("An error occurred while creating invoices");
   }
 });
-app.use((err, req, res) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
-app.listen(3000, () => console.log("Server ready"));
+
+  app.use((err, req, res, ) => {
+    console.error(err.stack);
+    if (err.message === 'Not Found') {
+      res.status(404).send('Not Found');
+    } else {
+      res.status(500).send('Something broke!');
+    }
+  });
+  
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`Server ready on port ${port}`));
