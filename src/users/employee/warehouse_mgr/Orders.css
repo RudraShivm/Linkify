@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Manjari:wght@100;400;700&family=MuseoModerno:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --primary-font: "Roboto", sans-serif;
+  --pr-font-family: "Manjari", sans-serif;
+  --pr-font-weight: 500;
+  --pr-font-style: normal;
+  --primary-font-color: #ddd;
+  --heading-size: 2.5rem;
+  --head-font-family: "Averia Sans Libre", sans-serif;
+  --head-font-weight: 700;
+  --head-font-style: normal;
+}
+* {
+  font-family: var(--pr-font-family);
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+.table-container,
+.table-container.filter-notClicked {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* animation: transitionUP 0.5s ease-in-out; */
+}
+.table-container.visible-filter {
+  margin-top: 20px;
+  animation: transitionDOWN 0.5s ease-in-out;
+}
+.table-container.hidden-filter {
+  transform: translateY(-131px);
+  animation: transitionUP 0.5s ease-in-out;
+}
+.heading {
+  animation: transitionIN 0.5s ease-in-out;
+  color: var(--primary-font-color);
+  font: var(--head-font-family);
+  font-weight: var(--head-font-weight);
+  font-style: var(--head-font-style);
+  font-size: var(--heading-size);
+  margin-top: 60px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+#orders-table,
+#Ware_req_table {
+  animation: transitionIN 0.5s ease-in-out;
+  background-color: #fff;
+  width: 95%;
+  border-collapse: collapse;
+  /* border-radius: 20px 20px 0px 0px; */
+  border-spacing: 0;
+  border: 1px solid #ddd;
+}
+
+.info {
+  color: var(--primary-font-color);
+  padding: 30px 0px 0px 30px;
+  margin: 10px;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+.table-th {
+  border: 1px solid #9a9a9a;
+  padding: 8px;
+  text-align: center;
+  background-color: #b5b3b3;
+  font: var(--head-font-family);
+  font-weight: var(--head-font-weight);
+  font-style: var(--head-font-style);
+  font-size: 1.2rem;
+}
+.table-td {
+  border: 1px solid #9a9a9a;
+  padding: 8px;
+  font: var(--pr-font-family);
+  font-weight: var(--pr-font-weight);
+  font-style: var(--pr-font-style);
+  text-align: center;
+  background-color: #fff;
+  font-size: 1.1rem;
+}
+.table-td > a {
+  text-decoration: none;
+  color: var(--primary-font);
+}
+.filter-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--accent-color);
+  border: none;
+  /* color: white; */
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+  width: 50px; /* Adjust size as needed */
+  height: 50px; /* Adjust size as needed */
+  border-radius: 50%; /* Makes the button circular */
+  overflow: hidden; /* Ensures the image fits within the button */
+  cursor: pointer; /* Deletes the default cursor on the button */
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+.filter-btn:hover {
+  background-color: #70cbd7;
+  transform: scale(1) translateY(-10px);
+}
+
+.filter-btn img {
+  width: 100%;
+  height: 100%;
+  transform: scale(0.7) translateY(2px);
+  object-fit: cover;
+}
+
+.order-item-status.wmgr-order-item-status {
+  width: inherit;
+  /* display: revert;
+  align-items: center;
+  justify-content: center; */
+  border: 1px solid #ddd;
+}
+.tab-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  gap: 3px;
+}
+.tab-container > button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #ddddddaf;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+.tab-container > button:hover {
+  background-color: #c6eeed;
+  transition: background-color 0.3s ease-in-out;
+}
+#All {
+  background-color: #54cbc9;
+}
+#Pending {
+  background-color: #54cbc9;
+}
+#Processing {
+  background-color: #54cbc9;
+}
+
+@keyframes transitionIN {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+@keyframes transitionDOWN {
+  0% {
+    opacity: 1;
+    transform: translateY(-151px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes transitionUP {
+  0% {
+    opacity: 1;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-131px);
+  }
+}
+@keyframes transitionRIGHT {
+  0% {
+    opacity: 0;
+    transform: translateX(-400px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}

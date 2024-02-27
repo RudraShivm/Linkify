@@ -1,0 +1,66 @@
+#sub_ware_req_table {
+  width: 73%;
+  animation: transitionIN 0.5s ease-in-out;
+  border-collapse: separate; /* Change this from 'collapse' to 'separate' */
+  border-spacing: 0 10px; /* Add this line. The first value is horizontal spacing, the second is vertical */
+  /* border: 1px solid #ddd; */
+}
+
+.etable-td {
+  min-width: 10vw;
+  border: 0px solid #9a9a9a;
+  padding: 8px;
+  text-align: center;
+  background-color: #fafafac7;
+  animation: TransitionIN 0.5s ease-in-out;
+  font: var(--pr-font-family);
+  font-weight: var(--pr-font-weight);
+  font-style: var(--pr-font-style);
+  font-size: 1.1rem;
+}
+.etable-th {
+  color: var(--primary-font-color);
+  border: 0px solid #9a9a9a;
+  padding: 8px;
+  text-align: center;
+  background-color: var(--etable-th-bcolor);
+  animation: TransitionIN 0.5s ease-in-out;
+  font: var(--head-font-family);
+  font-weight: var(--head-font-weight);
+  font-style: var(--head-font-style);
+  font-size: 1.2rem;
+}
+.sub_ware_req_input {
+  height: 30px;
+  width: 100%;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2rem;
+  font: var(--primary-font);
+}
+.sub_ware_req_select {
+  height: 30px;
+  max-width: 25vw;
+  width: 100%;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2rem;
+  font: var(--primary-font);
+  cursor: pointer;
+}
+.sub_ware_req_option {
+  height: 30px;
+  width: 100%;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2rem;
+  font: var(--primary-font);
+}
+#sub_ware_req_btn {
+  width: 50%;
+  animation: TransitionIN 0.5s ease-in-out;
+  background-color: #205f17;
+}
+#sub_ware_req_btn:hover {
+  background-color: #457347;
+}

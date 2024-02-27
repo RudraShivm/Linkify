@@ -1,0 +1,878 @@
+
+CREATE DATABASE LINKIFY;
+USE LINKIFY;
+
+
+
+CREATE TABLE City(
+	name VARCHAR(100) DEFAULT '',
+	PRIMARY KEY(name)
+); 
+
+
+CREATE TABLE Customer (
+	id INT AUTO_INCREMENT,
+    profile_picture VARCHAR(500),
+    store_name VARCHAR(200) DEFAULT '',
+    city VARCHAR(100),
+    mobile_no VARCHAR(11),
+    passwords VARCHAR(100),
+    owner_name VARCHAR(100) DEFAULT '',
+    owner_nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    PRIMARY KEY(id),
+	FOREIGN KEY(city) REFERENCES City(name),
+    CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1210000001;
+
+
+
+
+CREATE TABLE Warehouse(
+	id INT,
+    city VARCHAR(100) DEFAULT '',
+    PRIMARY KEY(id),
+    FOREIGN KEY(city) REFERENCES City(name)
+);
+-- 1220000001
+
+
+
+CREATE TABLE Warehouse_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture VARCHAR(500),
+    nid VARCHAR(15) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    passwords VARCHAR(100),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    warehouse_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1230000001;
+
+
+
+
+CREATE TABLE Factory(
+	id INT AUTO_INCREMENT,
+    city VARCHAR(100),
+    PRIMARY KEY(id),
+    FOREIGN KEY(city) REFERENCES City(name)
+)AUTO_INCREMENT=1240000001;
+
+
+
+
+CREATE TABLE Production_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture VARCHAR(500),
+    nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    passwords VARCHAR(100),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    factory_id INT,
+    PRIMARY KEY(id),
+	FOREIGN KEY(factory_id) REFERENCES Factory(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1250000001;
+
+
+
+CREATE TABLE Delivery_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture VARCHAR(500),
+    nid VARCHAR(15) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    passwords VARCHAR(100),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    branch_city VARCHAR(100),
+    FOREIGN KEY(branch_city) REFERENCES City(name),
+    PRIMARY KEY(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1260000001;
+
+
+
+
+
+CREATE TABLE Product (
+    id INT ,
+    name VARCHAR(100),
+    model VARCHAR(100),
+    series VARCHAR(100),
+    description VARCHAR(1500),
+    display VARCHAR(100),
+    picture1 VARCHAR(500),
+    picture2 VARCHAR(500),
+    picture3 VARCHAR(500),
+    unit_price INT,
+    minimum_delivery_time INT,
+    PRIMARY KEY (id)
+) ;
+-- 1270000001
+
+
+
+CREATE TABLE Orders(
+	id INT AUTO_INCREMENT,
+    sub_id INT,
+    product_id INT,
+    customer_id INT,
+    warehouse_mgr_id INT,
+    qty INT DEFAULT 0,
+	order_place_date DATE NOT NULL,
+    exp_delivery_date DATE,
+    paid_amount INT,
+    due_amount INT,
+    status VARCHAR(20) DEFAULT 'processing',
+    PRIMARY KEY(id,sub_id),
+    FOREIGN KEY(customer_id) REFERENCES Customer(id),
+	FOREIGN KEY(warehouse_mgr_id) REFERENCES Warehouse_mgr(id),
+    FOREIGN KEY(product_id) REFERENCES Product(id)
+)AUTO_INCREMENT=1280000001;
+
+
+
+
+
+CREATE TABLE Feedback(
+	id INT AUTO_INCREMENT,
+    customer_id INT,
+    order_id INT,
+    stars INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(customer_id) REFERENCES Customer(id),
+    FOREIGN KEY(order_id) REFERENCES Orders(id),
+    CHECK (stars>=0 AND stars<=5)
+)AUTO_INCREMENT=1290000001;
+
+
+
+CREATE TABLE Warehouse_stock (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_id INT,
+    product_id INT,
+    available_qty INT,
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+    FOREIGN KEY(product_id) REFERENCES Product(id)
+) AUTO_INCREMENT=1310000001;
+
+
+
+
+CREATE TABLE Ware_request(
+	id INt AUTO_INCREMENT,
+	warehouse_id INT,
+    production_mgr_id INT,
+    ware_stock_id INT,
+    request_date DATE NOT NULL,
+    qty INT DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'Pending',
+    PRIMARY KEY(id),
+	FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+	FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id),
+    FOREIGN KEY(production_mgr_id) REFERENCES Production_mgr(id)
+)AUTO_INCREMENT=1320000001;
+
+
+
+
+CREATE TABLE Factory_stock(
+	id INT AUTO_INCREMENT primary key,
+	factory_id INT,
+	available_qty INT,
+    last_added_date DATE NOT NULL,
+    product_id INT,
+    FOREIGN KEY(factory_id) REFERENCES Factory(id),
+	FOREIGN KEY(product_id) REFERENCES Product(id)
+)AUTO_INCREMENT=1330000001;
+
+
+
+CREATE TABLE Ware_invoice(
+	id INT AUTO_INCREMENT,
+    ware_stock_id INT,
+    ware_req_id INT,
+    delivery_date DATE NOT NULL,
+    factory_stock_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id),
+    FOREIGN KEY(ware_req_id) REFERENCES Ware_request(id),
+    FOREIGN KEY(factory_stock_id) REFERENCES Factory_stock(id)
+)AUTO_INCREMENT=1340000001;
+
+
+
+
+CREATE TABLE Raw_material(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(100),
+    unit_price INT DEFAULT 0,
+    PRIMARY KEY(id),
+    company VARCHAR(100),
+    type VARCHAR (50)
+)AUTO_INCREMENT=1350000001;
+
+
+
+
+CREATE TABLE Factory_raw_stock(
+	id INT AUTO_INCREMENT unique,
+	product_id INT,
+    raw_mat_id INT,
+    FOREIGN KEY(product_id) REFERENCES Product(id),
+    FOREIGN KEY(raw_mat_id) REFERENCES Raw_material(id)
+)AUTO_INCREMENT=1360000001;	
+
+
+CREATE TABLE  Supplier(
+	id INT AUTO_INCREMENT,
+    store_name VARCHAR(100) DEFAULT '',
+	owner_name VARCHAR(100) DEFAULT '',
+    profile_picture VARCHAR(500),
+    owner_nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    raw_mat_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(raw_mat_id) REFERENCES Raw_material(id),
+    CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1370000001;
+
+
+
+
+CREATE TABLE Factory_request(
+	id INT AUTO_INCREMENT,
+    req_date DATE NOT NULL,
+    production_mgr_id INT,
+    factory_r_stock_id INT,
+    supplier_id INT,
+    status VARCHAR(20) DEFAULT 'Pending',
+    PRIMARY KEY(id),
+    FOREIGN KEY(factory_r_stock_id) REFERENCES Factory_raw_stock(id),
+    FOREIGN KEY(production_mgr_id) REFERENCES Production_mgr(id),
+    FOREIGN KEY(supplier_id) REFERENCES Supplier(id)
+)AUTO_INCREMENT=1380000001;
+
+
+
+
+CREATE TABLE Factory_invoice(
+	id INT AUTO_INCREMENT,
+    delivery_date DATE NOT NULL,
+    factory_req_id INT,
+    factory_r_stock_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(factory_req_id) REFERENCES Factory_request(id),
+    FOREIGN KEY(factory_r_stock_id) REFERENCES Factory_raw_stock(id)
+)AUTO_INCREMENT=1390000001;
+
+
+CREATE TABLE Delivery(
+	id INT AUTO_INCREMENT,
+	order_id INT ,
+    delivery_mgr_id INT	,
+    delivery_time DATE,
+    PRIMARY KEY(id),
+    FOREIGN KEY(delivery_mgr_id) REFERENCES Delivery_mgr(id),
+    FOREIGN KEY(order_id) REFERENCES Orders(id)
+)AUTO_INCREMENT=1420000001;
+
+
+CREATE TABLE Customer_invoice(
+  id INT AUTO_INCREMENT,
+  order_id INT,
+  order_sub_id INT,
+  qty INT,
+  ware_stock_id INT,
+  delivery_id INT,
+  product_id INT,
+  PRIMARY KEY(id),
+  -- FOREIGN KEY(order_id) REFERENCES Orders(id),
+  -- FOREIGN KEY(order_sub_id) REFERENCES Orders(sub_id),
+  FOREIGN KEY(order_id, order_sub_id) REFERENCES Orders(id, sub_id),
+  FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id),
+  FOREIGN KEY(product_id) REFERENCES Product(id),
+  FOREIGN KEY(delivery_id) REFERENCES Delivery(id)
+) AUTO_INCREMENT=1410000001;
+
+
+
+
+
+
+
+
+CREATE TABLE Supply_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture VARCHAR(500),
+    nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    passwords VARCHAR(100),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    factory_id INT,
+    PRIMARY KEY(id),
+	FOREIGN KEY(factory_id) REFERENCES Factory(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1430000001;
+
+
+
+
+-- Insert data into City table
+INSERT INTO City (name) VALUES
+	('Dhaka'),
+    ('Chittagong'),
+    ('Sylhet'),
+    ('Rajshahi'),
+    ('Khulna'),
+    ('Barisal'),
+    ('Comilla'),
+    ('Mymensingh'),
+    ('Jessore'),
+    ('Cox''s Bazar'),
+    ('Narayanganj'),
+    ('Dinajpur'),
+    ('Rangpur'),
+    ('Bogra'),
+    ('Kushtia');
+
+SELECT *
+FROM City;
+
+-- Insert data into Customer table
+INSERT INTO Customer (profile_picture, store_name, city, mobile_no,passwords, owner_name, owner_nid) VALUES
+    (NULL, 'ABC Mart', 'Dhaka', '01234567891','password16', 'Mohammad Rahman', '123-456-7890'),
+    (NULL, 'XYZ Store', 'Chittagong', '01789012345','password17', 'Fatima Akter', '123-222-3333'),
+    (NULL, 'PQR Shop', 'Sylhet', '01678901234','password18', 'Ahmed Hossain', '234-567-8901'),
+    (NULL, 'LMN Market', 'Dhaka', '01890123456','password19', 'Ayesha Islam', '123-444-5555'),
+    (NULL, 'EFG Mall', 'Rajshahi', '01901234567','password20', 'Mustafa Ahmed', '345-678-9012'),
+    (NULL, 'UVW Emporium', 'Khulna', '01567890123','password21', 'Nadia Khan', '333-333-2344'),
+    (NULL, 'GHI Supermart', 'Barisal', '01456789012','password22', 'Abdul Bari', '456-789-0123'),
+    (NULL, 'JKL Boutique', 'Dhaka', '01345678901','password23', 'Fariha Chowdhury', '456-789-0125'),
+    (NULL, 'MNO Shop', 'Chittagong', '01678901234','password24', 'Imran Khan', '567-890-1234'),
+    (NULL, 'STU Plaza', 'Sylhet', '01789012345','password25', 'Sadia Ahmed', '456-789-0156'),
+    (NULL, 'PQR Shop', 'Dhaka', '01890123456', 'password26','Kamal Hossain', '678-901-2345'),
+    (NULL, 'ABC Mart', 'Rajshahi', '01901234567','password27', 'Tahmina Rahman', '456-789-3553'),
+    (NULL, 'JKL Boutique', 'Khulna', '01567890123','password28', 'Rahim Khan', '789-012-3456'),
+    (NULL, 'EFG Mall', 'Barisal', '01456789012','password29', 'Sara Akter', '456-789-3553'),
+    (NULL, 'GHI Supermart', 'Dhaka', '01345678901','password30', 'Kabir Ahmed', '890-123-4567'),
+    (NULL, 'LMN Market', 'Chittagong', '01678901234','password31', 'Farida Islam', '121-444-7858'),
+    (NULL, 'UVW Emporium', 'Sylhet', '01789012345','password32', 'Rahman Khan', '901-234-5678'),
+    (NULL, 'MNO Shop', 'Dhaka', '01890123456','password33', 'Jahanara Khan', '456-789-3555'),
+    (NULL, 'STU Plaza', 'Rajshahi', '01901234567','password34', 'Jamal Hossain', '012-345-6789'),
+    (NULL, 'PQR Shop', 'Khulna', '01567890123','password35', 'Nasrin Rahman', '343-575-1616');
+
+
+
+SELECT *
+FROM Customer;
+
+
+
+-- Insert data into Warehouse table
+INSERT INTO Warehouse (id,City) VALUES
+    (1220000001,'Dhaka'),
+    (1220000002,'Chittagong'),
+    (1220000003,'Sylhet'),
+    (1220000004,'Rajshahi'),
+    (1220000005,'Khulna'),
+    (1220000006,'Barisal'),
+    (1220000007,'Comilla'),
+    (1220000008,'Mymensingh'),
+    (1220000009,'Jessore'),
+    (1220000010,'Cox''s Bazar'),
+    (1220000011,'Narayanganj'),
+    (1220000012,'Dinajpur'),
+    (1220000013,'Rangpur'),
+    (1220000014,'Bogra'),
+    (1220000015,'Kushtia');
+
+
+SELECT *
+FROM Warehouse;
+
+
+INSERT INTO Warehouse_mgr (name, designation, profile_picture, nid, mobile_no,passwords, joining_date, salary, warehouse_id) VALUES
+    ('Mohammad Ali', 'Manager', NULL, '123-456-7890', '01789012345','password36', '2023-01-01', 50000, 1220000001),
+    ('Fatima Begam', 'Supervisor', NULL, '456-789-3252', '01890123456','password37', '2023-02-15', 45000, 1220000002),
+    ('Ahmed Rahim', 'Manager', NULL, '234-567-8901', '01901234567','password38', '2023-03-01', 55000, 1220000003),
+    ('Ayesha Akter', 'Supervisor', NULL, '111-111-2222', '01567890123','password39', '2023-04-15', 48000, 1220000004),
+    ('Mustafa Ali', 'Manager', NULL, '345-678-9012', '01678901234','password40', '2023-05-01', 52000, 1220000005),
+    ('Nadia Akter', 'Supervisor', NULL, '456-789-9999', '01789012345','password41', '2023-06-15', 47000, 1220000006),
+    ('Abdul Khan', 'Manager', NULL, '456-789-0123', '01890123456','password42', '2023-07-01', 56000, 1220000007),
+    ('Farida Chowdhury', 'Supervisor', NULL, '151-267-5547', '01901234567', 'password43','2023-08-15', 49000, 1220000008),
+    ('Imr Khan', 'Manager', NULL, '567-890-1234', '01567890123','password44', '2023-09-01', 53000, 1220000009),
+    ('Sadi Ahmed', 'Supervisor', NULL, '151-267-3673', '01678901234','password45', '2023-10-15', 46000, 1220000010),
+    ('Kamai Hossain', 'Manager', NULL, '678-901-2345', '01789012345','password46', '2023-11-01', 57000, 1220000011),
+    ('Tahmida Rahman', 'Supervisor', NULL, '145-632-3763', '01890123456','password47', '2023-12-15', 50000, 1220000012),
+    ('Rahim Rahman', 'Manager', NULL, '762-276-2767', '01901234567','password48', '2024-01-01', 54000, 1220000013),
+    ('Sara Akter', 'Supervisor', NULL, '762-276-2760', '01567890123', 'password49','2024-02-15', 48000, 1220000014),
+    ('Kabir Rahman', 'Manager', NULL, '890-123-4567', '01678901234','password50', '2024-03-01', 55000, 1220000015),
+    ('Farida Rahman', 'Supervisor', NULL, '762-276-2761', '01789012345','password51', '2024-04-15', 47000, 1220000001),
+    ('Rahman Khan', 'Manager', NULL, '901-234-5678', '01890123456','password52', '2024-05-01', 56000, 1220000002),
+    ('Jahanara Akter', 'Supervisor', NULL, '762-276-2700', '01901234567','password53', '2024-06-15', 49000, 1220000003),
+    ('Jama Hossain', 'Manager', NULL, '012-345-6789', '01567890123', 'password54','2024-07-01', 53000, 1220000004),
+    ('Nasrin Akter', 'Supervisor', NULL, '762-276-2701', '01678901234', 'password55','2024-08-15', 46000, 1220000005);
+
+
+
+SELECT *
+FROM Warehouse_mgr;
+
+
+-- Insert data into Factory table
+INSERT INTO Factory ( city) VALUES
+	('Dhaka'),
+    ('Chittagong'),
+    ('Sylhet'),
+    ('Rajshahi'),
+    ('Khulna'),
+    ('Barisal'),
+    ('Comilla'),
+    ('Mymensingh'),
+    ('Jessore'),
+    ('Cox''s Bazar'),
+    ('Narayanganj');
+
+SELECT *
+FROM Factory
+ORDER BY id ;
+
+INSERT INTO Production_mgr (name, designation, profile_picture, nid, mobile_no,passwords, joining_date, salary, factory_id) VALUES
+    ('Mohammad Hossain', 'Manager', NULL, '123-456-7890', '01789012345','password56', '2023-01-01', 60000, 1240000001),
+    ('Fatima Akter', 'Supervisor', NULL, '123-456-7891', '01890234561','password57', '2023-02-15', 55000, 1240000002),
+    ('Ahmed Hossain', 'Manager', NULL, '234-567-8901', '01901234567','password58', '2023-03-01', 65000, 1240000003),
+    ('Ayesha Islam', 'Supervisor', NULL, '123-456-7822', '01567890123','password59', '2023-04-15', 58000, 1240000004),
+    ('Mustafa Hossain', 'Manager', NULL, '345-678-9012', '01678901234', 'password60','2023-05-01', 62000, 1240000005),
+    ('Nadia Akter', 'Supervisor', NULL, '123-456-7000', '01789123456','password61', '2023-06-15', 57000, 1240000006),
+    ('Abdul Hossain', 'Manager', NULL, '456-789-0123', '01890123456','password62', '2023-07-01', 66000, 1240000007),
+    ('Fariha Hossain', 'Supervisor', NULL, '123-990-7890', '01901234567','password63', '2023-08-15', 59000, 1240000008),
+    ('Imran Akter', 'Manager', NULL, '567-890-1234', '01567890123','password64', '2023-09-01', 63000, 1240000009),
+    ('Sadia Ahmed', 'Supervisor', NULL, '123-456-0000', '01678901234','password65', '2023-10-15', 56000, 1240000010),
+    ('Kamal Hossain', 'Manager', NULL, '678-901-2345', '01789012345','password66', '2023-11-01', 67000, 1240000011),
+    ('Tahmina Rahman', 'Supervisor', NULL, '123-456-8989', '01890123456','password67', '2023-12-15', 60000, 1240000001),
+    ('Rahim Khan', 'Coordinator', NULL, '789-012-3456', '01901234567','password68', '2024-01-01', 64000, 1240000011),
+    ('Sara Akter', 'Supervisor', NULL, '267-270-2676', '01567890123','password69', '2024-02-15', 58000, 1240000011),
+    ('Kabir Ahmed', 'Manager', NULL, '890-123-4567', '01678901234','password70', '2024-03-01', 65000, 1240000002);
+
+
+
+SELECT *
+FROM Production_mgr
+ORDER BY id ;
+
+
+INSERT INTO Delivery_mgr (name, designation, profile_picture, nid, mobile_no,passwords, joining_date, salary, branch_city) VALUES
+    ('Jamil Hasan', 'Manager', NULL, '123-456-7890', '01789012345','password71', '2023-01-01', 60000, 'Dhaka'),
+    ('Farhana Akter', 'Supervisor', NULL, '123-456-1211', '01890234561','password72', '2023-02-15', 55000, 'Chittagong'),
+    ('Abdul Bari', 'Manager', NULL, '234-567-8901', '01901234567','password73', '2023-03-01', 65000, 'Sylhet'),
+    ('Aliul Haque', 'Supervisor', NULL, '123-637-2678', '01567890123','password74', '2023-04-15', 58000, 'Rajshahi'),
+    ('Mustafizur Rahman', 'Manager', NULL, '345-678-9012', '01678901234','password75', '2023-05-01', 62000, 'Khulna'),
+    ('Nadia Khanom', 'Supervisor', NULL, '787-456-7890', '01789123456','password76', '2023-06-15', 57000, 'Barisal'),
+    ('Abdul Alim', 'Manager', NULL, '456-789-0123', '01890123456','password77', '2023-07-01', 66000, 'Comilla'),
+    ('Farhana Islam', 'Supervisor', NULL, 'XXX-XXX-XXXX', '01901234567','password78', '2023-08-15', 59000, 'Mymensingh'),
+    ('Imran Khan', 'Manager', NULL, '567-890-1234', '01567890123','password79', '2023-09-01', 63000, 'Jessore'),
+    ('Sadia Akter', 'Supervisor', NULL, '123-456-8988', '01678901234','password80', '2023-10-15', 56000, 'Cox''s Bazar'),
+    ('Kamal Hossain', 'Manager', NULL, '678-901-2345', '01789012345','password81', '2023-11-01', 67000, 'Narayanganj'),
+    ('Tahmina Rahman', 'Supervisor', NULL, '436-326-3633', '01890123456','password82', '2023-12-15', 60000, 'Dinajpur'),
+    ('Rahim Khan', 'Coordinator', NULL, '789-012-3456', '01901234567','password83', '2024-01-01', 64000, 'Rangpur'),
+    ('Sara Akter', 'Supervisor', NULL, '436-326-3630', '01567890123','password84', '2024-02-15', 58000, 'Bogra'),
+    ('Kabir Ahmed', 'Manager', NULL, '890-123-4567', '01678901234','password85', '2024-03-01', 65000, 'Kushtia'),
+    ('Nasrin Rahman', 'Supervisor', NULL, '436-326-3631', '01789012345', 'password86','2024-04-15', 57000, 'Dhaka'),
+    ('Abdul Basher', 'Manager', NULL, '901-234-5678', '01890123456','password87', '2024-05-01', 66000, 'Chittagong'),
+    ('Farida Akter', 'Supervisor', NULL, '436-326-3600', '01901234567','password88', '2024-06-15', 59000, 'Sylhet'),
+    ('Kamal Hossain', 'Manager', NULL, '012-345-6789', '01567890123', 'password89','2024-07-01', 63000, 'Rajshahi'),
+    ('Rachel Davis', 'Supervisor', NULL, '436-326-0000', '01678901234','password90', '2024-08-15', 56000, 'Khulna');
+
+
+
+
+SELECT *
+FROM Delivery_mgr
+ORDER BY id ;
+    
+    
+INSERT INTO Product (id, name,model,series, description,display, picture1, picture2, picture3, unit_price, minimum_delivery_time) VALUES
+    (1270000001,'Asus ExpertBook B1', 'B1400CBA','ExpertBook','Laptop Brand - Asus, Laptop Series - ExpertBook, Laptop Model - Asus ExpertBook B1 B1400CBA, Processor Brand - Intel, Processor Type - Intel Core i5, Processor Generation - 12th (Intel), Processor Model - Core i5 1235U, Performance-Core Base Frequency - 1.30GHz, Efficient-Core Base Frequency - 0.90GHz, Processor Max Turbo Frequency - 4.40GHz, Performance-Core Max Turbo Frequency - 4.40GHz, Efficient-Core Max Turbo Frequency - 3.30GHz, Processor Core - 10, Performance-Cores - 2, Efficient-Cores - 8, Processor Thread - 12, Processor Cache - 12MB, Chipset - Not Specified, Display Size - 14 Inch, Display Technology - FHD LED Display, Panel Type - TN, Display Resolution - 1920x1080, Display Surface - Not Specified, Touch Display - No, Display Refresh Rate - Not Specified, Display Bezel - Narrow Bezel, Display Features - Aspect Ratio: 16:9 LED Backlit Narrow border 220nits TN, NTSC: 45%, Screen-to-body ratio: 84 %, Secondary Screen Size - No Secondary Screen, Secondary Screen Technology - No Secondary Screen, Secondary Screen Resolution - No Secondary Screen, Memory (RAM) - 8GB, Installed Memory Details - Not Specified, Memory Type - DDR4, Memory Bus (MHz) - 3200MHz, Total Memory Slot - Not Specified, Empty Memory Slot - Not Specified, Max Memory Support - 32GB', '14" FHD LED', '1270000001_pic1.png', '1270000001_pic2.png','1270000001_pic3.png', 90000, 7),
+    (1270000002,'Asus ProArt Studiobook Pro', 'W7600','ProArt Studiobook','Turn your creative vision into reality with the ProArt Studiobook Pro 16 OLED studio laptop: it pushes every boundary to give you the effortless creative experience you’ve always wanted, but never thought possible. With a certified color-accurate 16-inch 3.2K 120 Hz or 4K 60 Hz OLED HDR 16:10 display, up to a breathtakingly powerful Intel® Core™ i9 processor, pro-grade NVIDIA RTX™ A3000 12 GB graphics, huge amounts of memory, advanced ultrafast storage, superb I/O connectivity, and ultra-precise fingertip control over your creative apps with the groundbreaking new ASUS Dial, ProArt Studiobook Pro 16 OLED is simply the best creator laptop we’ve ever made.', '16" OLED HDR', '1270000002_pic1.png',  '1270000002_pic2.png', '1270000002_pic3.png', 92000, 5),
+    (1270000003,'Asus ProArt Studiobook 16 OLED', 'H5600','ProArt Studiobook','Turn your creative vision into reality with the ProArt Studiobook 16 OLED studio laptop: it pushes every boundary to give you the effortless creative experience you’ve always wanted, but never thought possible. With a certified color-accurate 16-inch 4K OLED HDR 16:10 display, up to a breathtakingly powerful AMD Ryzen™ 9 5900HX processor, fast NVIDIA® GeForce RTX™ 3070 graphics, huge amounts of memory, advanced ultrafast storage, superb I/O connectivity, and ultra-precise fingertip control over your creative apps with the groundbreaking new ASUS Dial, ProArt Studiobook 16 OLED is simply the best creator laptop we’ve ever made.', '16" OLED HDR', '1270000003_pic1.png',  '1270000003_pic2.png', '1270000003_pic3.png', 225000, 6),
+    (1270000004,'Asus Zenbook Pro 16X OLED', 'UX7602','Zenbook','Zenbook Pro 16X OLED is a no-compromise creator laptop with a wealth of innovative design features and a brand-new all-metal design. Inside, it uses a new breakthrough ultra-compact ASUS Supernova system-on-module (SoM) design that enables ultra-powerful performance from the Intel® Core™ i9-12900H processor and NVIDIA® GeForce RTX™ 3060 GPU. Outside, there’s a world-leading 16:10 3.2K 60Hz OLED HDR NanoEdge touchscreen1. The new Active Aerodynamic System Ultra (AAS Ultra) mechanism powers the auto-tilting keyboard that ensures a comfortable typing angle, and AAS Ultra also enhances system cooling for maximum performance. There’s an all-new White RGB intelligent lighting system that enables smart interactivity features. The innovative ASUS Dial allows precise fingertip control of creative parameters in Adobe® apps, while the new larger ASUS NumberPad features haptic feedback and enhanced pressure sensitivity for easier number entry. Zenbook Pro 16X OLED redefines what a creator laptop should be, and helps you take your creativity to the next level.', '16" OLED HDR','1270000004_pic1.png', '1270000004_pic2.png', '1270000004_pic3.png', 163000, 9),
+    (1270000005,'Asus Zenbook Pro 14 Duo OLED','UX8402','Zenbook ','Get ready to meet the seriously powerful Zenbook Pro 14 Duo OLED, an Intel® Evo™-certified powerhouse that lets you turn up your creative powers to the max. The flagship Intel CPU and creator-grade NVIDIA® GPU are cooled for extreme performance by ASUS IceCool Plus technology, aided by the brand-new AAS Ultra mechanism, which vents the chassis and also tilts the next-generation ScreenPad™ Plus secondary touchscreen to a comfortable angle for a seamless and immersive visual experience. For studio-class visuals, the world-leading 2.8K OLED HDR 16:10 main touchscreen2 has a smooth 120 Hz refresh rate, PANTONE® Validated color accuracy, and a cinema-grade 100% DCI-P3 gamut. Zenbook Pro 14 Duo OLED puts its rivals in the shade, making it the ultimate compact OLED laptop for the discerning creator.','14.5" OLED NanoEdge','1270000005_pic1.png',  '1270000005_pic2.png', '1270000005_pic3.png', 249990, 5),
+    (1270000006,'Asus Zenbook S 13 OLED', 'UX5304','Zenbook','Lighten up your life with the ultra-thin and super-light Zenbook S 13 OLED! This 1 cm-thin2, 1 kg-light3 marvel uses efficient 13th Gen Intel® Core™ Processors, and the amazing 13.3-inch 16:10 3K OLED HDR NanoEdge4 display delivers brilliant visuals. ASUS is completely committed to purposeful innovation that supports a healthier planet, so we have also made Zenbook S 13 OLED the most eco-friendly Zenbook ever, in line with our core values. More care, less impact!', '13.3" OLED HDR', '1270000006_pic1.png', '1270000006_pic2.png', '1270000006_pic3.png', 189900, 8),
+    (1270000007,'Asus Zenbook 14 Flip OLED', 'UP3404','Zenbook','The versatile Zenbook 14 Flip OLED is everything you need for your busy on-the-go lifestyle. Its compact and elegant chassis now packs a bigger 14-inch 16:10 2.8K OLED HDR touchscreen with superb PANTONE® Validated color-accurate visuals, and it supports a 4096-pressure-level MPP 2.0 stylus for natural input. Powered by the latest 13th Gen Intel Core CPUs, Zenbook 14 Flip OLED has a class-leading 75 Wh battery, and its 1.5 kg-light chassis is just 15.9 mm thin, with a 360° any-position hinge for effortless versatility. There’s a powerful Harman Kardon-certified Dolby Atmos® sound system for awesome audio and crystal-clear conferencing. Zenbook 14 Flip OLED gives you more power and more versatility!', '14" OLED NanoEdge', '1270000007_pic1.png',  '1270000007_pic2.png', '1270000007_pic3.png',173000, 7),
+    (1270000008,'Asus Zenbook 17 Fold OLED','UX9702','Zenbook','Zenbook 17 Fold OLED leads the world with its amazing 17.3” Foldable OLED (FOLED) touchscreen1 that folds down instantly to a compact 12.5” size, making it smaller than a sheet of photocopier paper for easy carrying. The color-accurate 2.5K slim-bezel NanoEdge Dolby Vision screen is also PANTONE® Validated with TÜV Rheinland-certified low blue-light levels. Its ingenious multiple user modes are limited only by your imagination, and the detachable ASUS ErgoSense Bluetooth® keyboard and touchpad turns it into a powerful fully-featured laptop with a 12th Gen Intel® Core™ processor and a stunning Harman Kardon-certified quad-speaker Dolby Atmos® audio system. The innovative camera system includes a 5 MP AI webcam, a HD IR camera for fast face login, and a color sensor for automatic brightness and color temperature control.', '12.5" OLED','1270000008_pic1.png',  '1270000008_pic2.png', '1270000008_pic3.png',399990, 8),
+    (1270000009,'ASUS Vivobook Pro 15 OLED', 'K6502','Vivobook','Lighting up your creativity is easier than ever with the powerful Vivobook Pro 15 OLED. Equipped with the 13th Gen Intel® Core™ H-series CPU, a dual-fan, triple-vented cooling system and NVIDIA® GeForce RTX™ 3050 Ti Laptop GPU2, it’s designed to deliver maximum performance for everything creative, whether you’re an artist, a vlogger, a video creator, a musician, or just someone who likes to have fun. For maximum gaming power we’ve included a MUX switch that unleashes the full power of the GPU. Any kind of visual creation will look its best on the fantastic up to 2.8K OLED display, with its super-smooth 120 Hz refresh rate and ultra-accurate vivid colors, and your ears will really appreciate the powerful Dolby Atmos® sound system with its multi-dimensional audio. Get creative, get Vivobook Pro 15 OLED!', '15.6" OLED', '1270000009_pic1.png', '1270000009_pic2.png', '1270000009_pic3.png', 169990, 7),
+    (1270000010,'ASUS Vivobook S 16 Flip OLED', 'TN3604','Vivobook', 'Immerse yourself in a world of endless possibilities with Vivobook S 16 Flip OLED, the convertible laptop that gives you 360° of freedom. Experience the unstoppable power of its AMD Ryzen™ 7000-series Processor. Give your eyes a treat with its stunning 3.2K OLED NanoEdge touchscreen and Corning® Gorilla® Glass NBT™ scratch-resistant covering. Capture all your greatest ideas using the 4096 pressure-level stylus. Break the limits and make things happen with Vivobook S 16 Flip OLED!','16" OLED NanoEdge','1270000010_pic1.png', '1270000010_pic2.png', '1270000010_pic3.png', 142900, 4),
+    (1270000011,'ASUS Vivobook 15X OLED ', 'K3504','Vivobook','Grab your Vivobook 15X OLED and get things done! It’s the no-nonsense laptop with an amazing 2.8K 120Hz1 OLED NanoEdge display that’s bright, sharp and vividly colorful, and a speedy 13th Gen Intel® Core™ processor that zips through even the toughest task, whether it’s for work or play. With Vivobook 15X OLED at your side, you’ll be ready to take on the world!', '15.6" OLED NanoEdge', '1270000011_pic1.png', '1270000011_pic2.png', '1270000011_pic3.png', 189500, 6),
+    (1270000012,'ASUS Vivobook 15 OLED', 'X1505','Vivobook','Everything is smoother with the powerful ASUS Vivobook 15 OLED, the feature-packed laptop with a brilliant 120 Hz1 OLED HDR2 display that has a cinema-grade 100% DCI-P3 gamut. And everything’s easier too, thanks to user-friendly features including a 180° lay-flat hinge, a physical webcam shield and dedicated function keys to turn your mic on or off. Your health is in safe hands with ASUS Antimicrobial Guard Plus protecting frequently-touched surfaces, and the bigger touchpad is now more finger-friendly. Enjoy the smooth power of Vivobook 15 OLED!', '15.6" OLED NanoEdge','1270000012_pic1.png', '1270000012_pic2.png', '1270000012_pic3.png', 75000, 6),
+    (1270000013,'ASUS Vivobook Go 15 OLED ','E1504F','Vivobook','It’s light. It’s compact. It’s the ASUS Vivobook Go 15 OLED, and it’s designed to make you productive and keep you entertained wherever you go! With its 180° lay-flat hinge, physical webcam shield and loads of thoughtful design features — including a gorgeous OLED display —Vivobook Go 15 OLED is the laptop that sets you free!', '15.6" OLED NanoEdge', '1270000013_pic1.png', '1270000013_pic2.png', '1270000013_pic3.png', 63000, 6),
+    (1270000014,'ASUS Vivobook S 16X', 'S5602','Vivobook','Explore every possibility with Vivobook S 16X, the outstanding laptop that combines bold style with powerful performance. Powered by Intel® Core™ i5 H series processor, and featuring a 180° lay-flat hinge and a high-capacity 512 GB SSD, it’s your perfect choice for productivity, creativity or entertainment. Its stunning 16:10 2.5K display is TÜV Rheinland-certified for eye care. There are plenty of convenient I/O ports, including two Thunderbolt™ 4 ports, and it includes all the latest ASUS technology including ASUS AI Noise-Canceling Audio. Whatever your needs, Vivobook S 16X is the answer — so start exploring now!', '16" NanoEdge', '1270000014_pic1.png', '1270000014_pic2.png', '1270000014_pic3.png', 130000, 7),
+    (1270000015,'ASUS Vivobook 14X', 'X1403','Vivobook', 'Make your world shine with ASUS Vivobook 14X OLED, the feature-packed laptop with a brilliant OLED HDR display with a cinema-grade DCI-P3 gamut. Vivobook 14X OLED makes it easy to get things done, anywhere: everything about it has been improved, from its powerful 12th Gen Intel® processor to its 180° lay-flat hinge, modern colors and sleek geometric design. Make a bright new start today with Vivobook 14X OLED!','16" NanoEdge', '1270000015_pic1.png', '1270000015_pic2.png', '1270000015_pic3.png', 169500, 7);
+    -- (1270000016, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 69500, 7),
+    -- (1270000017, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 70000, 7),
+    -- (1270000018, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 86500, 6),
+    -- (1270000019, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 107000, 5),
+    -- (1270000020, 'B2402CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 100000, 5),
+    -- (1270000021, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 102000, 5),
+    -- (1270000022, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 110000, 9),
+    -- (1270000023, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 117000, 5),
+    -- (1270000024, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 130000, 6),
+    -- (1270000025, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 140000, 7),
+	-- (1270000026, 'B5302CEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 100000, 8),
+    -- (1270000027, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 120000, 7),
+    -- (1270000028, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 135000, 6),
+    -- (1270000029, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 128000, 5),
+    -- (1270000030, 'B5302FEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 145000, 7),
+    -- (1270000031, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 144000, 7),
+    -- (1270000032, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 155000, 4),
+    -- (1270000033, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 152000, 5),
+    -- (1270000034, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 120000, 4),
+    -- (1270000035, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 120000, 4),
+    -- (1270000036, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 118000, 4),
+    -- (1270000037, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 160000, 6),
+    -- (1270000038, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 160000, 6),
+    -- (1270000039, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), '1270000001_pic2.png', '1270000001_pic3.png', 160000, 6),
+    -- (1270000040, 'B5402FEA', '14" FHD LED', '1270000001_pic1.png', ''1270000001_pic2.png'', '1270000001_pic3.png' 160000, 5);
+
+SELECT *
+FROM Product
+ORDER BY id ;
+
+-- Insert data into Orders table
+INSERT INTO Orders (sub_id, product_id, customer_id, warehouse_mgr_id, qty, order_place_date, exp_delivery_date, paid_amount, due_amount, status) VALUES
+    (1, 1270000001, 1210000001, 1230000001, 2, '2024-01-27', '2024-02-05', 90000, 0, 'processing'),
+    (1, 1270000002, 1210000002, 1230000002, 3, '2024-01-28', '2024-02-06', 92000, 0, 'processing'),
+    (3, 1270000003, 1210000003, 1230000003, 1, '2024-01-29', '2024-02-07', 62500, 0, 'processing'),
+    (2, 1270000004, 1210000004, 1230000001, 2, '2024-01-30', '2024-02-08', 63000, 0, 'processing'),
+    (5, 1270000005, 1210000005, 1230000002, 3, '2024-01-31', '2024-02-09', 66000, 0, 'processing'),
+    (2, 1270000006, 1210000006, 1230000003, 1, '2024-02-01', '2024-02-10', 66150, 0, 'processing'),
+    (2, 1270000007, 1210000007, 1230000001, 2, '2024-02-02', '2024-02-11', 73000, 0, 'processing'),
+    (3, 1270000008, 1210000008, 1230000002, 3, '2024-02-03', '2024-02-12', 75000, 0, 'processing'),
+    (4, 1270000009, 1210000009, 1230000003, 1, '2024-02-04', '2024-02-13', 79000, 0, 'processing'),
+    (4, 1270000010, 1210000010, 1230000001, 2, '2024-02-05', '2024-02-14', 83500, 0, 'processing'),
+    (4, 1270000011, 1210000011, 1230000002, 3, '2024-02-06', '2024-02-15', 89500, 0, 'processing'),
+    (2, 1270000012, 1210000012, 1230000003, 1, '2024-02-07', '2024-02-16', 123000, 0, 'processing'),
+    (6, 1270000013, 1210000013, 1230000001, 2, '2024-02-08', '2024-02-17', 63000, 0, 'processing'),
+    (6, 1270000014, 1210000014, 1230000002, 3, '2024-02-09', '2024-02-18', 67000, 0, 'processing'),
+    (7, 1270000015, 1210000015, 1230000003, 1, '2024-02-10', '2024-02-19', 69500, 0, 'processing');
+
+SELECT *
+FROM Orders
+ORDER BY id;
+
+-- Insert data into Feedback table
+INSERT INTO Feedback (customer_id, order_id, stars) VALUES
+    (1210000001, 1280000001, 4),
+    (1210000002, 1280000002, 5),
+    (1210000003, 1280000003, 3),
+    (1210000004, 1280000004, 2),
+    (1210000005, 1280000005, 4),
+    (1210000006, 1280000006, 5),
+    (1210000007, 1280000007, 3),
+    (1210000008, 1280000008, 4),
+    (1210000009, 1280000009, 5),
+    (1210000010, 1280000010, 3),
+    (1210000011, 1280000011, 4),
+    (1210000012, 1280000012, 5);
+
+
+
+SELECT *
+FROM Feedback
+ORDER BY id;
+
+-- Insert data into Warehouse_stock table
+INSERT INTO Warehouse_stock (warehouse_id, product_id, available_qty) VALUES
+    (1220000001, 1270000001, 100),
+    (1220000001, 1270000002, 150),
+    (1220000002, 1270000003, 80),
+    (1220000002, 1270000004, 120),
+    (1220000003, 1270000005, 200),
+    (1220000003, 1270000006, 90),
+    (1220000004, 1270000007, 180),
+    (1220000004, 1270000008, 70),
+    (1220000005, 1270000009, 110),
+    (1220000005, 1270000010, 160),
+    (1220000006, 1270000011, 130),
+    (1220000006, 1270000012, 190),
+    (1220000007, 1270000013, 220),
+    (1220000007, 1270000014, 100),
+    (1220000008, 1270000015, 140);
+
+
+SELECT *
+FROM Warehouse_stock
+ORDER BY id;
+
+-- Insert data into Ware_request table
+INSERT INTO Ware_request (warehouse_id, production_mgr_id, ware_stock_id, request_date, qty, status) VALUES
+    (1220000001, 1250000001, 1310000001, '2024-01-01', 50, 'Pending'),
+    (1220000001, 1250000002, 1310000002, '2024-02-15', 30, 'Pending'),
+    (1220000002, 1250000003, 1310000003, '2024-03-01', 25, 'Pending'),
+    (1220000002, 1250000004, 1310000004, '2024-04-15', 40, 'Pending'),
+    (1220000003, 1250000005, 1310000005, '2024-05-01', 60, 'Pending'),
+    (1220000003, 1250000006, 1310000006, '2024-06-15', 20, 'Pending'),
+    (1220000004, 1250000007, 1310000007, '2024-07-01', 45, 'Pending'),
+    (1220000004, 1250000008, 1310000008, '2024-08-15', 55, 'Pending'),
+    (1220000005, 1250000009, 1310000009, '2024-09-01', 35, 'Pending'),
+    (1220000005, 1250000010, 1310000010, '2024-10-15', 70, 'Pending'),
+    (1220000006, 1250000011, 1310000011, '2024-11-01', 42, 'Pending'),
+    (1220000006, 1250000012, 1310000012, '2024-12-15', 28, 'Pending'),
+    (1220000007, 1250000013, 1310000013, '2025-01-01', 48, 'Pending'),
+    (1220000007, 1250000014, 1310000014, '2025-02-15', 32, 'Pending'),
+    (1220000008, 1250000015, 1310000015, '2025-03-01', 38, 'Pending');
+
+
+
+SELECT *
+FROM Ware_request
+ORDER BY id;
+
+-- Insert data into Factory_stock table
+INSERT INTO Factory_stock (factory_id, available_qty, last_added_date, product_id) VALUES
+    (1240000001, 100, '2023-01-01', 1270000001),
+    (1240000001, 150, '2023-01-02', 1270000002),
+    (1240000002, 80, '2023-01-03', 1270000003),
+    (1240000002, 120, '2023-01-04', 1270000004),
+    (1240000003, 200, '2023-01-05', 1270000005),
+    (1240000003, 90, '2023-01-06', 1270000006),
+    (1240000004, 180, '2023-01-07', 1270000007),
+    (1240000004, 70, '2023-01-08', 1270000008),
+    (1240000005, 110, '2023-01-09', 1270000009),
+    (1240000005, 160, '2023-01-10', 1270000010),
+    (1240000006, 130, '2023-01-11', 1270000011),
+    (1240000006, 190, '2023-01-12', 1270000012),
+    (1240000007, 220, '2023-01-13', 1270000013),
+    (1240000007, 100, '2023-01-14', 1270000014),
+    (1240000008, 140, '2023-01-15', 1270000015);
+
+
+SELECT *
+FROM Factory_stock
+ORDER BY id;
+
+-- Insert data into Ware_invoice table
+INSERT INTO Ware_invoice (ware_stock_id, ware_req_id, delivery_date, factory_stock_id) VALUES
+    (1310000001, 1320000001, '2023-01-20', 1330000001),
+    (1310000002, 1320000002, '2023-01-21', 1330000002),
+    (1310000003, 1320000003, '2023-01-22', 1330000003),
+    (1310000004, 1320000004, '2023-01-23', 1330000004),
+    (1310000005, 1320000005, '2023-01-24', 1330000005),
+    (1310000006, 1320000006, '2023-01-25', 1330000006),
+    (1310000007, 1320000007, '2023-01-26', 1330000007),
+    (1310000008, 1320000008, '2023-01-27', 1330000008),
+    (1310000009, 1320000009, '2023-01-28', 1330000009),
+    (1310000010, 1320000010, '2023-01-29', 1330000010),
+    (1310000011, 1320000011, '2023-01-30', 1330000011),
+    (1310000012, 1320000012, '2023-01-31', 1330000012),
+    (1310000013, 1320000013, '2023-02-01', 1330000013),
+    (1310000014, 1320000014, '2023-02-02', 1330000014),
+    (1310000015, 1320000015, '2023-02-03', 1330000015);
+
+
+SELECT *
+FROM Ware_invoice
+ORDER BY id;
+
+-- Insert data into Raw_material table
+-- Insert data for Storage
+INSERT INTO Raw_material (unit_price,type,name,company) VALUES
+  (512, 'Storage', '512 GB G3 SSD','PCLe'),
+  (256, 'Storage', '256GB G3 SSD','PCLe'),
+  (1000, 'Storage', '1TB HDD','PCLe'),
+  (12000,'Storage','1TB SSD','PCLe'),
+  (3200, 'RAM', '8GB DDR4 3200MHz','Lexar'),
+  (3200, 'RAM', '4GB DDR4 3200MHz','Lexar'),
+  (3200, 'RAM', '16GB DDR4','Lexar'),
+  (32000, 'RAM', '64GB DDR4 3200MHz','Lexar'),
+  (3000,'RAM', '48GB DDR4','Lexar'),
+  (4800, 'RAM', '16GB DDR5 4800MHz','Lexar'),
+  (3200, 'RAM', '32GB LPDDR5X 7500MHz','Lexar'),
+  (3200, 'RAM', '8GB LPDDR5 5500MHz','Lexar'),
+  (3000,'RAM', '8GB DDR4','Lexar'),
+  (4800, 'RAM', '16GB DDR4 3200MHz','Lexar'),
+  (32500, 'Processor', 'Core i3','Intel'),
+  (35000, 'Processor', 'Core i5','Intel'),
+  (12300, 'Processor', 'Core i7','Intel'),
+  (19000, 'Processor', 'Core i9','Intel'),
+  (25000, 'Processor', 'Ryzen™ 9 5900HX','AMD'),
+  (21000, 'Processor', 'Ryzen™ 7 7730U ','AMD'),
+  (16000, 'Processor', 'Ryzen™ 3 ','AMD');
+
+
+
+SELECT *
+FROM Raw_material
+ORDER BY id;
+
+-- Insert data into Factory_raw_stock table
+INSERT INTO Factory_raw_stock (product_id, raw_mat_id) VALUES
+    (1270000001, 1350000001),
+    (1270000002, 1350000002),
+    (1270000003, 1350000003),
+    (1270000004, 1350000001),
+    (1270000005, 1350000002),
+    (1270000006, 1350000003),
+    (1270000007, 1350000001),
+    (1270000008, 1350000002),
+    (1270000009, 1350000003),
+    (1270000010, 1350000001),
+    (1270000011, 1350000002),
+    (1270000012, 1350000003),
+    (1270000013, 1350000001),
+    (1270000014, 1350000002),
+    (1270000015, 1350000003);
+
+SELECT *
+FROM Factory_raw_stock
+ORDER BY id;
+
+-- Insert data into Supplier table
+INSERT INTO Supplier (store_name, owner_name, profile_picture, owner_nid, mobile_no, raw_mat_id) VALUES
+('Gadget Galaxy','Farhan Rahman', NULL, '567-678-9012', '01234567904', 1350000003),
+('FutureTech Solutions','Imran Ahmed', NULL, '123-456-7890', '01234567890', 1350000001),
+('ByteBazaar','Nusrat Jahan', NULL, '234-567-8901', '01234567891', 1350000002),
+('Digital Dynamics','Ayesha Khan', NULL, '345-678-9012', '01234567892', 1350000003),
+('Techno Haven','Saima Khan', NULL, '456-789-0123', '01234567893', 1350000001),
+('Quantum Quotient','Kamrul Islam', NULL, '567-890-1234', '01234567894', 1350000002),
+('TechNest Bangladesh','Rajib Hasan', NULL, '789-012-3456', '01234567896', 1350000001),
+('CyberSphere Electronics','Sabrina Akhter', NULL, '890-123-4567', '01234567897', 1350000002),
+('BitWise Technologies','Zahirul Islam', NULL, '123-234-5678', '01234567900', 1350000002),
+('Infinity Innovations','Meherun Nesa', NULL, '456-567-8901', '01234567903', 1350000002);
+
+
+SELECT *
+FROM Supplier
+ORDER BY id;
+
+-- Insert data into Factory_request table
+INSERT INTO Factory_request (req_date, production_mgr_id, factory_r_stock_id, supplier_id, status) VALUES
+('2023-02-10', 1250000001, 1360000001, 1370000001, 'Pending'),
+('2023-02-11', 1250000002, 1360000002, 1370000002, 'Pending'),
+('2023-02-12', 1250000003, 1360000003, 1370000003, 'Pending'),
+('2023-02-13', 1250000004, 1360000004, 1370000004, 'Pending'),
+('2023-02-14', 1250000005, 1360000005, 1370000005, 'Pending'),
+('2023-02-15', 1250000006, 1360000006, 1370000006, 'Pending'),
+('2023-02-16', 1250000007, 1360000007, 1370000007, 'Pending'),
+('2023-02-17', 1250000008, 1360000008, 1370000008, 'Pending'),
+('2023-02-18', 1250000009, 1360000009, 1370000009, 'Pending'),
+('2023-02-19', 1250000010, 1360000010, 1370000010, 'Pending');
+
+
+
+SELECT *
+FROM Factory_request
+ORDER BY id;
+
+-- Insert data into Factory_invoice table
+INSERT INTO Factory_invoice (delivery_date, factory_req_id, factory_r_stock_id) VALUES
+    ('2024-01-31', 1380000001, 1360000001),
+    ('2024-02-01',1380000002, 1360000002),
+    ('2024-02-02', 1380000003, 1360000003),
+    ('2024-02-03', 1380000004, 1360000004),
+    ('2024-02-04', 1380000005, 1360000005),
+    ('2024-02-05', 1380000006, 1360000006),
+    ('2024-02-06', 1380000007, 1360000007),
+    ('2024-02-07', 1380000008, 1360000008),
+    ('2024-02-08', 1380000009, 1360000009),
+    ('2024-02-09', 1380000010, 1360000010);
+
+
+SELECT 
+    *
+FROM
+    Factory_invoice
+ORDER BY id;
+
+
+INSERT INTO Delivery (order_id, delivery_mgr_id, delivery_time) VALUES
+(1280000001, 1260000001, '2023-02-10'),
+(1280000002, 1260000002, '2023-02-11'),
+(1280000003, 1260000003, '2023-02-12'),
+(1280000004, 1260000004, '2023-02-13'),
+(1280000005, 1260000005, '2023-02-14'),
+(1280000006, 1260000006, '2023-02-15'),
+(1280000007, 1260000007, '2023-02-16'),
+(1280000008, 1260000008, '2023-02-17'),
+(1280000009, 1260000009, '2023-02-18'),
+(1280000010, 1260000010, '2023-02-19'),
+(1280000011, 1260000011, '2023-02-20'),
+(1280000012, 1260000012, '2023-02-21'),
+(1280000013, 1260000013, '2023-02-22'),
+(1280000014, 1260000014, '2023-02-23'),
+(1280000015, 1260000015, '2023-02-24');
+
+-- Insert data into Customer_invoice table
+INSERT INTO Customer_invoice (order_id, order_sub_id, qty, ware_stock_id, delivery_id, product_id) VALUES
+(1280000001, 1, 5, 1310000001, 1420000001, 1270000001),
+(1280000002, 1, 3, 1310000002, 1420000002, 1270000002),
+(1280000003, 3, 2, 1310000003, 1420000003, 1270000003),
+(1280000004, 2, 1, 1310000004, 1420000004, 1270000004),
+(1280000005, 5, 4, 1310000005, 1420000005, 1270000005),
+(1280000006, 2, 3, 1310000006, 1420000006, 1270000006),
+(1280000007, 2, 2, 1310000007, 1420000007, 1270000007),
+(1280000008, 3, 1, 1310000008, 1420000008, 1270000008),
+(1280000009, 4, 4, 1310000009, 1420000009, 1270000009),
+(1280000010, 4, 3, 1310000010, 1420000010, 1270000010),
+(1280000011, 4, 2, 1310000011, 1420000011, 1270000011),
+(1280000012, 2, 1, 1310000012, 1420000012, 1270000012),
+(1280000013, 6, 4, 1310000013, 1420000013, 1270000013),
+(1280000014, 6, 3, 1310000014, 1420000014, 1270000014),
+(1280000015, 7, 2, 1310000015, 1420000015, 1270000015);
+-- Add more rows as needed.
+
+
+
+SELECT 
+    *
+FROM
+  Customer_invoice  
+ORDER BY id;
+
+
+
+
+SELECT 
+    *
+FROM
+    delivery
+ORDER BY id;
+
+
+INSERT INTO Supply_mgr (name, designation, profile_picture, nid, mobile_no, passwords, joining_date, salary, factory_id)
+VALUES
+('Asif Ahmed', 'Supply Manager', NULL, '123-456-7890', '01711223344', 'password1', '2023-01-01', 50000, 1240000001),
+('Milon Begum', 'Supply Officer', NULL, '234-567-8901', '01711223345', 'password2', '2023-01-02', 45000, 1240000001),
+('Kama Hossain', 'Supply Coordinator', NULL, '345-678-9012', '01711223346', 'password3', '2023-01-03', 40000, 1240000001),
+('Nazi Khan', 'Supply Manager', NULL, '456-789-0123', '01711223347', 'password4', '2023-01-04', 55000, 1240000001),
+('Imran Hossian', 'Supply Officer', NULL, '567-890-1234', '01711223348', 'password5', '2023-01-05', 47000, 1240000001),
+('Ayesh Khan', 'Supply Coordinator', NULL, '678-901-2345', '01711223349', 'password6', '2023-01-06', 42000, 1240000001),
+('Medini Hasan', 'Supply Manager', NULL, '789-012-3456', '01711223350', 'password7', '2023-01-07', 53000, 1240000001),
+('Sadi Ahmed', 'Supply Officer', NULL, '890-123-4567', '01711223351', 'password8', '2023-01-08', 46000, 1240000001),
+('Rahi Begum', 'Supply Coordinator', NULL, '123-234-5678', '01711223352', 'password9', '2023-01-09', 41000, 1240000001),
+('Abir Hossain', 'Supply Manager', NULL, '234-345-6789', '01711223353', 'password10', '2023-01-10', 54000, 1240000001),
+('Tasli Khan', 'Supply Officer', NULL, '345-456-7890', '01711223354', 'password11', '2023-01-11', 48000, 1240000001),
+('Jamal Khan', 'Supply Coordinator', NULL, '456-567-8901', '01711223355', 'password12', '2023-01-12', 43000, 1240000001),
+('Suriya Akhter', 'Supply Manager', NULL, '567-678-9012', '01711223356', 'password13', '2023-01-13', 52000, 1240000001),
+('Abdulla Rahman', 'Supply Officer', NULL, '678-789-0123', '01711223357', 'password14', '2023-01-14', 49000, 1240000001),
+('Sofiya Khan', 'Supply Coordinator', NULL, '789-890-1234', '01711223358', 'password15', '2023-01-15', 44000, 1240000001);
+
+
+
+
+SET FOREIGN_KEY_CHECKs=0;
+DROP TABLE `linkify`.`city`, `linkify`.`customer`, `linkify`.`customer_invoice`, `linkify`.`delivery`, `linkify`.`delivery_mgr`, `linkify`.`factory`, `linkify`.`factory_invoice`, `linkify`.`factory_raw_stock`, `linkify`.`factory_request`, `linkify`.`factory_stock`, `linkify`.`feedback`, `linkify`.`orders`, `linkify`.`product`, `linkify`.`production_mgr`, `linkify`.`raw_material`, `linkify`.`supplier`, `linkify`.`supply_mgr`, `linkify`.`ware_invoice`, `linkify`.`ware_request`, `linkify`.`warehouse`, `linkify`.`warehouse_mgr`, `linkify`.`warehouse_stock`;
+SET FOREIGN_KEY_CHECKs=1;

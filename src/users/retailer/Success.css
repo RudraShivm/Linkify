@@ -1,0 +1,41 @@
+.success-container {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  height: 100vh;
+  flex-direction: row;
+}
+.success-icon {
+  position: absolute;
+  top: 28%;
+  height: 100px;
+  width: 100px;
+}
+.success-msg {
+  color: var(--primary-font-color);
+  position: relative;
+  top: 43%;
+  font-size: 2rem;
+  margin-left: 20px;
+}
+.success-redirect-btn-container {
+  position: absolute;
+  top: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.success-redirect-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #35a53f;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.success-redirect-btn:hover {
+  background-color: #35a53fcc;
+  transform: perspective(1px) scale(1.1) rotate(5deg);
+}

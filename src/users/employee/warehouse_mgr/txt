@@ -1,0 +1,769 @@
+DROP DATABASE LINKIFY;
+CREATE DATABASE LINKIFY;
+USE LINKIFY;
+
+
+CREATE TABLE City(
+	name VARCHAR(100) DEFAULT '',
+	PRIMARY KEY(name)
+); 
+
+CREATE TABLE Customer (
+	id INT AUTO_INCREMENT,
+    profile_picture LONGBLOB,
+    store_name VARCHAR(200) DEFAULT '',
+    city VARCHAR(100),
+    mobile_no VARCHAR(11),
+    owner_name VARCHAR(100) DEFAULT '',
+    owner_nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    PRIMARY KEY(id),
+	FOREIGN KEY(city) REFERENCES City(name),
+    CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1210000001;
+
+
+
+CREATE TABLE Warehouse(
+	id INT,
+    city VARCHAR(100) DEFAULT '',
+    PRIMARY KEY(id),
+    FOREIGN KEY(city) REFERENCES City(name)
+);
+-- 1220000001
+
+
+CREATE TABLE Warehouse_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture LONGBLOB,
+    nid VARCHAR(15) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    warehouse_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1230000001;
+
+
+
+CREATE TABLE Factory(
+	id INT AUTO_INCREMENT,
+    city VARCHAR(100),
+    PRIMARY KEY(id),
+    FOREIGN KEY(city) REFERENCES City(name)
+)AUTO_INCREMENT=1240000001;
+
+
+
+CREATE TABLE Production_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture LONGBLOB,
+    nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    factory_id INT,
+    PRIMARY KEY(id),
+	FOREIGN KEY(factory_id) REFERENCES Factory(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1250000001;
+
+
+CREATE TABLE Delivery_mgr(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(200),
+    designation VARCHAR(30),
+    profile_picture LONGBLOB,
+    nid VARCHAR(15) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    joining_date DATE NOT NULL,
+    salary INT DEFAULT 0,
+    branch_city VARCHAR(100),
+    FOREIGN KEY(branch_city) REFERENCES City(name),
+    PRIMARY KEY(id),
+	CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1260000001;
+
+
+
+
+CREATE TABLE Product (
+    id INT ,
+    name VARCHAR(100),
+    description VARCHAR(200),
+    picture1 BLOB,
+    picture2 BLOB,
+    picture3 BLOB,
+    unit_price INT,
+    minimum_delivery_time INT,
+    PRIMARY KEY (id)
+) ;
+-- 1270000001
+
+
+CREATE TABLE Orders(
+	id INT AUTO_INCREMENT,
+    sub_id INT,
+    product_id INT,
+    customer_id INT,
+    warehouse_mgr_id INT,
+    qty INT DEFAULT 0,
+	order_place_date DATE NOT NULL,
+    exp_delivery_date DATE,
+    paid_amount INT,
+    due_amount INT,
+    status VARCHAR(20) DEFAULT 'processing',
+    PRIMARY KEY(id,sub_id),
+    FOREIGN KEY(customer_id) REFERENCES Customer(id),
+	FOREIGN KEY(warehouse_mgr_id) REFERENCES Warehouse_mgr(id),
+    FOREIGN KEY(product_id) REFERENCES Product(id)
+)AUTO_INCREMENT=1280000001;
+
+
+
+
+CREATE TABLE Feedback(
+	id INT AUTO_INCREMENT,
+    customer_id INT,
+    order_id INT,
+    stars INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(customer_id) REFERENCES Customer(id),
+    FOREIGN KEY(order_id) REFERENCES Orders(id),
+    CHECK (stars>=0 AND stars<=5)
+)AUTO_INCREMENT=1290000001;
+
+
+CREATE TABLE Warehouse_stock (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_id INT,
+    product_id INT,
+    available_qty INT,
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+    FOREIGN KEY(product_id) REFERENCES Product(id)
+) AUTO_INCREMENT=1310000001;
+
+
+
+CREATE TABLE Ware_request(
+	id INt AUTO_INCREMENT,
+	warehouse_id INT,
+    production_mgr_id INT,
+    ware_stock_id INT,
+    request_date DATE NOT NULL,
+    qty INT DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'Pending',
+    PRIMARY KEY(id),
+	FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+	FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id),
+    FOREIGN KEY(production_mgr_id) REFERENCES Production_mgr(id)
+)AUTO_INCREMENT=1320000001;
+
+
+
+CREATE TABLE Factory_stock(
+	id INT AUTO_INCREMENT primary key,
+	factory_id INT,
+	available_qty INT,
+    last_added_date DATE NOT NULL,
+    product_id INT,
+    FOREIGN KEY(factory_id) REFERENCES Factory(id),
+	FOREIGN KEY(product_id) REFERENCES Product(id)
+)AUTO_INCREMENT=1330000001;
+
+
+CREATE TABLE Ware_invoice(
+	id INT AUTO_INCREMENT,
+    ware_stock_id INT,
+    ware_req_id INT,
+    delivery_date DATE NOT NULL,
+    factory_stock_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id),
+    FOREIGN KEY(ware_req_id) REFERENCES Ware_request(id),
+    FOREIGN KEY(factory_stock_id) REFERENCES Factory_stock(id)
+)AUTO_INCREMENT=1340000001;
+
+
+
+CREATE TABLE Raw_material(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(100),
+    unit_price INT DEFAULT 0,
+    PRIMARY KEY(id),
+    company VARCHAR(100),
+    type VARCHAR (50)
+)AUTO_INCREMENT=1350000001;
+
+
+
+CREATE TABLE Factory_raw_stock(
+	id INT AUTO_INCREMENT unique,
+	product_id INT,
+    raw_mat_id INT,
+    PRIMARY KEY(product_id,raw_mat_id)
+)AUTO_INCREMENT=1360000001;	
+
+CREATE TABLE  Supplier(
+	id INT AUTO_INCREMENT,
+    store_name VARCHAR(100) DEFAULT '',
+	owner_name VARCHAR(100) DEFAULT '',
+    profile_picture LONGBLOB,
+    owner_nid VARCHAR(12) DEFAULT 'XXX-XXX-XXXX',
+    mobile_no VARCHAR(11),
+    raw_mat_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(raw_mat_id) REFERENCES Raw_material(id),
+    CHECK (mobile_no LIKE '01%')
+)AUTO_INCREMENT=1370000001;
+
+
+
+CREATE TABLE Factory_request(
+	id INT AUTO_INCREMENT,
+    req_date DATE NOT NULL,
+    production_mgr_id INT,
+    factory_r_stock_id INT,
+    supplier_id INT,
+    status VARCHAR(20) DEFAULT 'Pending',
+    PRIMARY KEY(id),
+    FOREIGN KEY(factory_r_stock_id) REFERENCES Factory_raw_stock(id),
+    FOREIGN KEY(production_mgr_id) REFERENCES Production_mgr(id),
+    FOREIGN KEY(supplier_id) REFERENCES Supplier(id)
+)AUTO_INCREMENT=1380000001;
+
+
+
+CREATE TABLE Factory_invoice(
+	id INT AUTO_INCREMENT,
+    delivery_date DATE NOT NULL,
+    factory_req_id INT,
+    factory_r_stock_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(factory_req_id) REFERENCES Factory_request(id),
+    FOREIGN KEY(factory_r_stock_id) REFERENCES Factory_raw_stock(id)
+)AUTO_INCREMENT=1390000001;
+
+CREATE TABLE Customer_invoice(
+	order_id INT,
+    order_sub_id INT,
+    qty INT,
+    ware_stock_id INT,
+    delivery_id INT,
+    product_id INT,
+    PRIMARY KEY(order_id,order_sub_id),
+    FOREIGN KEY(ware_stock_id) REFERENCES Warehouse_stock(id)
+);
+
+
+CREATE TABLE Delivery(
+	order_id INT AUTO_INCREMENT unique,
+    delivery_mgr_id INT	,
+    delivery_time DATE,
+    PRIMARY KEY(order_id),
+    FOREIGN KEY(delivery_mgr_id) REFERENCES Delivery_mgr(id),
+    FOREIGN KEY(order_id) REFERENCES Orders(id)
+);
+
+
+
+-- Insert data into City table
+INSERT INTO City (name) VALUES
+	('Dhaka'),
+    ('Chittagong'),
+    ('Sylhet'),
+    ('Rajshahi'),
+    ('Khulna'),
+    ('Barisal'),
+    ('Comilla'),
+    ('Mymensingh'),
+    ('Jessore'),
+    ('Cox''s Bazar'),
+    ('Narayanganj'),
+    ('Dinajpur'),
+    ('Rangpur'),
+    ('Bogra'),
+    ('Kushtia');
+
+SELECT *
+FROM City;
+
+-- Insert data into Customer table
+INSERT INTO Customer (profile_picture, store_name, city, mobile_no, owner_name, owner_nid) VALUES
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'ABC Mart', 'Dhaka', '01234567891', 'Mohammad Rahman', '123-456-7890'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'XYZ Store', 'Chittagong', '01789012345', 'Fatima Akter', '123-222-3333'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'PQR Shop', 'Sylhet', '01678901234', 'Ahmed Hossain', '234-567-8901'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'LMN Market', 'Dhaka', '01890123456', 'Ayesha Islam', '123-444-5555'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'EFG Mall', 'Rajshahi', '01901234567', 'Mustafa Ahmed', '345-678-9012'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'UVW Emporium', 'Khulna', '01567890123', 'Nadia Khan', '333-333-2344'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'GHI Supermart', 'Barisal', '01456789012', 'Abdul Bari', '456-789-0123'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'JKL Boutique', 'Dhaka', '01345678901', 'Fariha Chowdhury', '456-789-0125'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'MNO Shop', 'Chittagong', '01678901234', 'Imran Khan', '567-890-1234'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'STU Plaza', 'Sylhet', '01789012345', 'Sadia Ahmed', '456-789-0156'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'PQR Shop', 'Dhaka', '01890123456', 'Kamal Hossain', '678-901-2345'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'ABC Mart', 'Rajshahi', '01901234567', 'Tahmina Rahman', '456-789-3553'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'JKL Boutique', 'Khulna', '01567890123', 'Rahim Khan', '789-012-3456'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'EFG Mall', 'Barisal', '01456789012', 'Sara Akter', '456-789-3553'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'GHI Supermart', 'Dhaka', '01345678901', 'Kabir Ahmed', '890-123-4567'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'LMN Market', 'Chittagong', '01678901234', 'Farida Islam', '121-444-7858'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'UVW Emporium', 'Sylhet', '01789012345', 'Rahman Khan', '901-234-5678'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'MNO Shop', 'Dhaka', '01890123456', 'Jahanara Khan', '456-789-3555'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'STU Plaza', 'Rajshahi', '01901234567', 'Jamal Hossain', '012-345-6789'),
+    (LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'PQR Shop', 'Khulna', '01567890123', 'Nasrin Rahman', '343-575-1616');
+
+
+
+SELECT *
+FROM Customer;
+
+
+
+-- Insert data into Warehouse table
+INSERT INTO Warehouse (id,City) VALUES
+    (1220000001,'Dhaka'),
+    (1220000002,'Chittagong'),
+    (1220000003,'Sylhet'),
+    (1220000004,'Rajshahi'),
+    (1220000005,'Khulna'),
+    (1220000006,'Barisal'),
+    (1220000007,'Comilla'),
+    (1220000008,'Mymensingh'),
+    (1220000009,'Jessore'),
+    (1220000010,'Cox''s Bazar'),
+    (1220000011,'Narayanganj'),
+    (1220000012,'Dinajpur'),
+    (1220000013,'Rangpur'),
+    (1220000014,'Bogra'),
+    (1220000015,'Kushtia');
+
+
+SELECT *
+FROM Warehouse;
+
+
+INSERT INTO Warehouse_mgr (name, designation, profile_picture, nid, mobile_no, joining_date, salary, warehouse_id) VALUES
+    ('Mohammad Ali', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7890', '01789012345', '2023-01-01', 50000, 1220000001),
+    ('Fatima Begam', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '456-789-3252', '01890123456', '2023-02-15', 45000, 1220000002),
+    ('Ahmed Rahim', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '234-567-8901', '01901234567', '2023-03-01', 55000, 1220000003),
+    ('Ayesha Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '111-111-2222', '01567890123', '2023-04-15', 48000, 1220000004),
+    ('Mustafa Ali', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '345-678-9012', '01678901234', '2023-05-01', 52000, 1220000005),
+    ('Nadia Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '456-789-9999', '01789012345', '2023-06-15', 47000, 1220000006),
+    ('Abdul Khan', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '456-789-0123', '01890123456', '2023-07-01', 56000, 1220000007),
+    ('Farida Chowdhury', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '151-267-5547', '01901234567', '2023-08-15', 49000, 1220000008),
+    ('Imr Khan', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '567-890-1234', '01567890123', '2023-09-01', 53000, 1220000009),
+    ('Sadi Ahmed', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '151-267-3673', '01678901234', '2023-10-15', 46000, 1220000010),
+    ('Kamai Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '678-901-2345', '01789012345', '2023-11-01', 57000, 1220000011),
+    ('Tahmida Rahman', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '145-632-3763', '01890123456', '2023-12-15', 50000, 1220000012),
+    ('Rahim Rahman', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '762-276-2767', '01901234567', '2024-01-01', 54000, 1220000013),
+    ('Sara Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '762-276-2760', '01567890123', '2024-02-15', 48000, 1220000014),
+    ('Kabir Rahman', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '890-123-4567', '01678901234', '2024-03-01', 55000, 1220000015),
+    ('Farida Rahman', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '762-276-2761', '01789012345', '2024-04-15', 47000, 1220000001),
+    ('Rahman Khan', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '901-234-5678', '01890123456', '2024-05-01', 56000, 1220000002),
+    ('Jahanara Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '762-276-2700', '01901234567', '2024-06-15', 49000, 1220000003),
+    ('Jama Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '012-345-6789', '01567890123', '2024-07-01', 53000, 1220000004),
+    ('Nasrin Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '762-276-2701', '01678901234', '2024-08-15', 46000, 1220000005);
+
+
+
+SELECT *
+FROM Warehouse_mgr;
+
+
+-- Insert data into Factory table
+INSERT INTO Factory ( city) VALUES
+	('Dhaka'),
+    ('Chittagong'),
+    ('Sylhet'),
+    ('Rajshahi'),
+    ('Khulna'),
+    ('Barisal'),
+    ('Comilla'),
+    ('Mymensingh'),
+    ('Jessore'),
+    ('Cox''s Bazar'),
+    ('Narayanganj');
+
+SELECT *
+FROM Factory
+ORDER BY id ;
+
+INSERT INTO Production_mgr (name, designation, profile_picture, nid, mobile_no, joining_date, salary, factory_id) VALUES
+    ('Mohammad Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7890', '01789012345', '2023-01-01', 60000, 1240000001),
+    ('Fatima Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7891', '01890234561', '2023-02-15', 55000, 1240000002),
+    ('Ahmed Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '234-567-8901', '01901234567', '2023-03-01', 65000, 1240000003),
+    ('Ayesha Islam', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7822', '01567890123', '2023-04-15', 58000, 1240000004),
+    ('Mustafa Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '345-678-9012', '01678901234', '2023-05-01', 62000, 1240000005),
+    ('Nadia Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7000', '01789123456', '2023-06-15', 57000, 1240000006),
+    ('Abdul Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '456-789-0123', '01890123456', '2023-07-01', 66000, 1240000007),
+    ('Fariha Hossain', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-990-7890', '01901234567', '2023-08-15', 59000, 1240000008),
+    ('Imran Akter', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '567-890-1234', '01567890123', '2023-09-01', 63000, 1240000009),
+    ('Sadia Ahmed', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-0000', '01678901234', '2023-10-15', 56000, 1240000010),
+    ('Kamal Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '678-901-2345', '01789012345', '2023-11-01', 67000, 1240000011),
+    ('Tahmina Rahman', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-8989', '01890123456', '2023-12-15', 60000, 1240000001),
+    ('Rahim Khan', 'Coordinator', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '789-012-3456', '01901234567', '2024-01-01', 64000, 1240000011),
+    ('Sara Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '267-270-2676', '01567890123', '2024-02-15', 58000, 1240000011),
+    ('Kabir Ahmed', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '890-123-4567', '01678901234', '2024-03-01', 65000, 1240000002);
+
+
+
+SELECT *
+FROM Production_mgr
+ORDER BY id ;
+
+
+INSERT INTO Delivery_mgr (name, designation, profile_picture, nid, mobile_no, joining_date, salary, branch_city) VALUES
+    ('Jamil Hasan', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-7890', '01789012345', '2023-01-01', 60000, 'Dhaka'),
+    ('Farhana Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-1211', '01890234561', '2023-02-15', 55000, 'Chittagong'),
+    ('Abdul Bari', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '234-567-8901', '01901234567', '2023-03-01', 65000, 'Sylhet'),
+    ('Aliul Haque', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-637-2678', '01567890123', '2023-04-15', 58000, 'Rajshahi'),
+    ('Mustafizur Rahman', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '345-678-9012', '01678901234', '2023-05-01', 62000, 'Khulna'),
+    ('Nadia Khanom', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '787-456-7890', '01789123456', '2023-06-15', 57000, 'Barisal'),
+    ('Abdul Alim', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '456-789-0123', '01890123456', '2023-07-01', 66000, 'Comilla'),
+    ('Farhana Islam', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), 'XXX-XXX-XXXX', '01901234567', '2023-08-15', 59000, 'Mymensingh'),
+    ('Imran Khan', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '567-890-1234', '01567890123', '2023-09-01', 63000, 'Jessore'),
+    ('Sadia Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '123-456-8988', '01678901234', '2023-10-15', 56000, 'Cox''s Bazar'),
+    ('Kamal Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '678-901-2345', '01789012345', '2023-11-01', 67000, 'Narayanganj'),
+    ('Tahmina Rahman', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '436-326-3633', '01890123456', '2023-12-15', 60000, 'Dinajpur'),
+    ('Rahim Khan', 'Coordinator', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '789-012-3456', '01901234567', '2024-01-01', 64000, 'Rangpur'),
+    ('Sara Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '436-326-3630', '01567890123', '2024-02-15', 58000, 'Bogra'),
+    ('Kabir Ahmed', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '890-123-4567', '01678901234', '2024-03-01', 65000, 'Kushtia'),
+    ('Nasrin Rahman', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '436-326-3631', '01789012345', '2024-04-15', 57000, 'Dhaka'),
+    ('Abdul Basher', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '901-234-5678', '01890123456', '2024-05-01', 66000, 'Chittagong'),
+    ('Farida Akter', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '436-326-3600', '01901234567', '2024-06-15', 59000, 'Sylhet'),
+    ('Kamal Hossain', 'Manager', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '012-345-6789', '01567890123', '2024-07-01', 63000, 'Rajshahi'),
+    ('Rachel Davis', 'Supervisor', LOAD_FILE('E:\\Linkify\\ppp.jpg'), '436-326-0000', '01678901234', '2024-08-15', 56000, 'Khulna');
+
+
+
+
+SELECT *
+FROM Delivery_mgr
+ORDER BY id ;
+    
+    
+INSERT INTO Product (id, name, description, picture1, picture2, picture3, unit_price, minimum_delivery_time) VALUES
+    (1270000001, 'B1400CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 90000, 7),
+    (1270000002, 'B1400CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 92000, 5),
+    (1270000003, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 62500, 6),
+    (1270000004, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 63000, 9),
+    (1270000005, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 66000, 5),
+    (1270000006, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 66150, 8),
+    (1270000007, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 73000, 7),
+    (1270000008, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 75000, 8),
+    (1270000009, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 79000, 7),
+    (1270000010, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 83500, 4),
+    (1270000011, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 89500, 6),
+    (1270000012, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 123000, 6),
+    (1270000013, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 63000, 6),
+    (1270000014, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 67000, 7),
+    (1270000015, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 69500, 7),
+    (1270000016, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 69500, 7),
+    (1270000017, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 70000, 7),
+    (1270000018, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 86500, 6),
+    (1270000019, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 107000, 5),
+    (1270000020, 'B2402CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 100000, 5),
+    (1270000021, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 102000, 5),
+    (1270000022, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 110000, 9),
+    (1270000023, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 117000, 5),
+    (1270000024, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 130000, 6),
+    (1270000025, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 140000, 7),
+    (1270000026, 'B5302CEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 100000, 8),
+    (1270000027, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 120000, 7),
+    (1270000028, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 135000, 6),
+    (1270000029, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 128000, 5),
+    (1270000030, 'B5302FEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 145000, 7),
+    (1270000031, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 144000, 7),
+    (1270000032, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 155000, 4),
+    (1270000033, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 152000, 5),
+    (1270000034, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 120000, 4),
+    (1270000035, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 120000, 4),
+    (1270000036, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 118000, 4),
+    (1270000037, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 160000, 6),
+    (1270000038, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 160000, 6),
+    (1270000039, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 160000, 6),
+    (1270000040, 'B5402FEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), LOAD_FILE('E:\\Linkify\\pic3.jpg'), 160000, 5);
+
+SELECT *
+FROM Product
+ORDER BY id ;
+
+-- Insert data into Orders table
+INSERT INTO Orders (sub_id, product_id, customer_id, warehouse_mgr_id, qty, order_place_date, exp_delivery_date, paid_amount, due_amount, status) VALUES
+    (1, 1270000001, 1210000001, 1230000001, 2, '2024-01-27', '2024-02-05', 90000, 0, 'processing'),
+    (1, 1270000002, 1210000002, 1230000002, 3, '2024-01-28', '2024-02-06', 92000, 0, 'processing'),
+    (3, 1270000003, 1210000003, 1230000003, 1, '2024-01-29', '2024-02-07', 62500, 0, 'processing'),
+    (2, 1270000004, 1210000004, 1230000001, 2, '2024-01-30', '2024-02-08', 63000, 0, 'processing'),
+    (5, 1270000005, 1210000005, 1230000002, 3, '2024-01-31', '2024-02-09', 66000, 0, 'processing'),
+    (2, 1270000006, 1210000006, 1230000003, 1, '2024-02-01', '2024-02-10', 66150, 0, 'processing'),
+    (2, 1270000007, 1210000007, 1230000001, 2, '2024-02-02', '2024-02-11', 73000, 0, 'processing'),
+    (3, 1270000008, 1210000008, 1230000002, 3, '2024-02-03', '2024-02-12', 75000, 0, 'processing'),
+    (4, 1270000009, 1210000009, 1230000003, 1, '2024-02-04', '2024-02-13', 79000, 0, 'processing'),
+    (4, 1270000010, 1210000010, 1230000001, 2, '2024-02-05', '2024-02-14', 83500, 0, 'processing'),
+    (4, 1270000011, 1210000011, 1230000002, 3, '2024-02-06', '2024-02-15', 89500, 0, 'processing'),
+    (2, 1270000012, 1210000012, 1230000003, 1, '2024-02-07', '2024-02-16', 123000, 0, 'processing'),
+    (6, 1270000013, 1210000013, 1230000001, 2, '2024-02-08', '2024-02-17', 63000, 0, 'processing'),
+    (6, 1270000014, 1210000014, 1230000002, 3, '2024-02-09', '2024-02-18', 67000, 0, 'processing'),
+    (7, 1270000015, 1210000015, 1230000003, 1, '2024-02-10', '2024-02-19', 69500, 0, 'processing');
+
+SELECT *
+FROM Orders
+ORDER BY id;
+
+-- Insert data into Feedback table
+INSERT INTO Feedback (customer_id, order_id, stars) VALUES
+    (1210000001, 1280000001, 4),
+    (1210000002, 1280000002, 5),
+    (1210000003, 1280000003, 3),
+    (1210000004, 1280000004, 2),
+    (1210000005, 1280000005, 4),
+    (1210000006, 1280000006, 5),
+    (1210000007, 1280000007, 3),
+    (1210000008, 1280000008, 4),
+    (1210000009, 1280000009, 5),
+    (1210000010, 1280000010, 3),
+    (1210000011, 1280000011, 4),
+    (1210000012, 1280000012, 5);
+
+
+
+SELECT *
+FROM Feedback
+ORDER BY id;
+
+-- Insert data into Warehouse_stock table
+INSERT INTO Warehouse_stock (warehouse_id, product_id, available_qty) VALUES
+    (1220000001, 1270000001, 100),
+    (1220000001, 1270000002, 150),
+    (1220000002, 1270000003, 80),
+    (1220000002, 1270000004, 120),
+    (1220000003, 1270000005, 200),
+    (1220000003, 1270000006, 90),
+    (1220000004, 1270000007, 180),
+    (1220000004, 1270000008, 70),
+    (1220000005, 1270000009, 110),
+    (1220000005, 1270000010, 160),
+    (1220000006, 1270000011, 130),
+    (1220000006, 1270000012, 190),
+    (1220000007, 1270000013, 220),
+    (1220000007, 1270000014, 100),
+    (1220000008, 1270000015, 140);
+
+
+SELECT *
+FROM Warehouse_stock
+ORDER BY id;
+
+-- Insert data into Ware_request table
+INSERT INTO Ware_request (warehouse_id, production_mgr_id, ware_stock_id, request_date, qty, status) VALUES
+    (1220000001, 1250000001, 1310000001, '2024-01-01', 50, 'Approved'),
+    (1220000001, 1250000002, 1310000002, '2024-02-15', 30, 'Pending'),
+    (1220000002, 1250000003, 1310000003, '2024-03-01', 25, 'Pending'),
+    (1220000002, 1250000004, 1310000004, '2024-04-15', 40, 'Approved'),
+    (1220000003, 1250000005, 1310000005, '2024-05-01', 60, 'Pending'),
+    (1220000003, 1250000006, 1310000006, '2024-06-15', 20, 'Pending'),
+    (1220000004, 1250000007, 1310000007, '2024-07-01', 45, 'Approved'),
+    (1220000004, 1250000008, 1310000008, '2024-08-15', 55, 'Pending'),
+    (1220000005, 1250000009, 1310000009, '2024-09-01', 35, 'Pending'),
+    (1220000005, 1250000010, 1310000010, '2024-10-15', 70, 'Approved'),
+    (1220000006, 1250000011, 1310000011, '2024-11-01', 42, 'Pending'),
+    (1220000006, 1250000012, 1310000012, '2024-12-15', 28, 'Approved'),
+    (1220000007, 1250000013, 1310000013, '2025-01-01', 48, 'Pending'),
+    (1220000007, 1250000014, 1310000014, '2025-02-15', 32, 'Pending'),
+    (1220000008, 1250000015, 1310000015, '2025-03-01', 38, 'Approved');
+
+
+
+SELECT *
+FROM Ware_request
+ORDER BY id;
+
+-- Insert data into Factory_stock table
+INSERT INTO Factory_stock (factory_id, available_qty, last_added_date, product_id) VALUES
+    (1240000001, 100, '2023-01-01', 1270000001),
+    (1240000001, 150, '2023-01-02', 1270000002),
+    (1240000002, 80, '2023-01-03', 1270000003),
+    (1240000002, 120, '2023-01-04', 1270000004),
+    (1240000003, 200, '2023-01-05', 1270000005),
+    (1240000003, 90, '2023-01-06', 1270000006),
+    (1240000004, 180, '2023-01-07', 1270000007),
+    (1240000004, 70, '2023-01-08', 1270000008),
+    (1240000005, 110, '2023-01-09', 1270000009),
+    (1240000005, 160, '2023-01-10', 1270000010),
+    (1240000006, 130, '2023-01-11', 1270000011),
+    (1240000006, 190, '2023-01-12', 1270000012),
+    (1240000007, 220, '2023-01-13', 1270000013),
+    (1240000007, 100, '2023-01-14', 1270000014),
+    (1240000008, 140, '2023-01-15', 1270000015);
+
+
+SELECT *
+FROM Factory_stock
+ORDER BY id;
+
+-- Insert data into Ware_invoice table
+INSERT INTO Ware_invoice (ware_stock_id, ware_req_id, delivery_date, factory_stock_id) VALUES
+    (1310000001, 1320000001, '2023-01-20', 1330000001),
+    (1310000002, 1320000002, '2023-01-21', 1330000002),
+    (1310000003, 1320000003, '2023-01-22', 1330000003),
+    (1310000004, 1320000004, '2023-01-23', 1330000004),
+    (1310000005, 1320000005, '2023-01-24', 1330000005),
+    (1310000006, 1320000006, '2023-01-25', 1330000006),
+    (1310000007, 1320000007, '2023-01-26', 1330000007),
+    (1310000008, 1320000008, '2023-01-27', 1330000008),
+    (1310000009, 1320000009, '2023-01-28', 1330000009),
+    (1310000010, 1320000010, '2023-01-29', 1330000010),
+    (1310000011, 1320000011, '2023-01-30', 1330000011),
+    (1310000012, 1320000012, '2023-01-31', 1330000012),
+    (1310000013, 1320000013, '2023-02-01', 1330000013),
+    (1310000014, 1320000014, '2023-02-02', 1330000014),
+    (1310000015, 1320000015, '2023-02-03', 1330000015);
+
+
+SELECT *
+FROM Ware_invoice
+ORDER BY id;
+
+-- Insert data into Raw_material table
+-- Insert data for Storage
+INSERT INTO Raw_material (unit_price,type,name,company) VALUES
+  (512, 'Storage', '512 GB G3 SSD','PCLe'),
+  (256, 'Storage', '256GB G3 SSD','PCLe'),
+  (1000, 'Storage', '1TB HDD','PCLe'),
+  (3200, 'RAM', '8GB DDR4 3200MHz','Lexar'),
+  (3200, 'RAM', '4GB DDR4 3200MHz','Lexar'),
+  (3200, 'RAM', '16GB DDR4','Lexar'),
+  (3000,'RAM', '4GB DDR4','Lexar'),
+  (4800, 'RAM', '16GB DDR5 4800MHz','Lexar'),
+  (3000,'RAM', '8GB DDR4','Lexar'),
+  (4800, 'RAM', '16GB DDR4 3200MHz','Lexar'),
+  (32500, 'Processor', 'Core i3','Intel'),
+  (35000, 'Processor', 'Core i5','Intel'),
+  (12300, 'Processor', 'Core i7','Intel');
+
+
+
+SELECT *
+FROM Raw_material
+ORDER BY id;
+
+-- Insert data into Factory_raw_stock table
+INSERT INTO Factory_raw_stock ( product_id, raw_mat_id)
+VALUES
+( 12700001, 13500001),
+( 12700002, 13500002),
+( 12700003, 13500003),
+( 12700004,13500004),
+( 12700005, 13500005);
+
+SELECT *
+FROM Factory_raw_stock
+ORDER BY id;
+
+-- Insert data into Supplier table
+INSERT INTO Supplier ( name, owner_name, owner_nid, mobile_no, raw_mat_id)
+VALUES
+( 'Metropolis Supplier', 'John Supplier', '123456789012', '01987654321', 1350000001),
+( 'Speedy Suppliers', 'Barry Supplier', '456789012345', '01234567890', 1350000002),
+( 'Gotham Materials', 'Bruce Supplier', '789012345678', '01123456789', 1350000003),
+( 'Arrow Supplies', 'Oliver Supplier', '987654321098', '01789012345', 1350000004),
+( 'Atlantean Resources', 'Arthur Supplier', '654321098765', '01234567891', 1350000005);
+
+
+SELECT *
+FROM Supplier
+ORDER BY id;
+
+-- Insert data into Factory_request table
+INSERT INTO Factory_request ( req_date, production_mgr_id, factory_r_stock_id, supplier_id)
+VALUES
+( '2024-01-20', 1250000001, 1360000001, 1370000001),
+( '2024-01-21', 1250000002, 1360000002, 1370000002),
+( '2024-01-22', 1250000003, 1360000003, 1370000003),
+('2024-01-23', 1250000004, 1360000004, 1370000004),
+( '2024-01-24', 1250000005, 1360000005, 1370000005);
+
+SELECT *
+FROM Factory_request
+ORDER BY id;
+
+-- Insert data into Factory_invoice table
+INSERT INTO Factory_invoice ( delivery_date, factory_req_id, factory_r_stock_id)
+VALUES
+( '2024-01-24', 1380000001, 1360000001),
+( '2024-01-25', 1380000002, 1360000002),
+( '2024-01-26', 1380000003, 1360000003),
+( '2024-01-27', 1380000004, 1360000004),
+( '2024-01-28', 1380000005, 1360000005);
+
+SELECT 
+    *
+FROM
+    Factory_invoice
+ORDER BY id;
+
+-- Insert data into Customer_invoice table
+INSERT INTO Customer_invoice (order_id, order_sub_id, qty, ware_stock_id, delivery_id, product_id)
+VALUES
+(1, 1, 10, 1310000001, 1, 1),
+(2, 2, 8, 1310000002, 2, 2),
+(3, 3, 15, 1310000003, 3, 3),
+(4, 4, 12,1310000004, 4, 4),
+(5, 5, 20, 1310000005, 5, 5);
+
+-- Insert data into Delivery table
+INSERT INTO Delivery (order_id, delivery_mgr_id, delivery_time)
+VALUES
+(1280000001, 1260000001, '2024-01-15'),
+(1280000002, 1260000002, '2024-01-17'),
+(1280000003, 1260000003, '2024-01-18'),
+(1280000004, 1260000004, '2024-01-19'),
+(1280000005, 1260000005, '2024-01-20');
+
+
+
+INSERT INTO Product (id, name, description, picture1, picture2, picture3, unit_price, minimum_delivery_time) VALUES
+    (1270000001, 'B1400CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), '1270000001_3.png', 90000, 7),
+    (1270000002, 'B1400CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), '1270000001_3.png', 92000, 5),
+    (1270000003, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 62500, 6),
+    (1270000004, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 63000, 9),
+    (1270000005, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 66000, 5),
+    (1270000006, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 66150, 8),
+    (1270000007, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 73000, 7),
+    (1270000008, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 75000, 8),
+    (1270000009, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 79000, 7),
+    (1270000010, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 83500, 4),
+    (1270000011, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 89500, 6),
+    (1270000012, 'B1400CEAE', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 123000, 6),
+    (1270000013, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 63000, 6),
+    (1270000014, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 67000, 7),
+    (1270000015, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 69500, 7),
+    (1270000016, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 69500, 7),
+    (1270000017, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 70000, 7),
+    (1270000018, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 86500, 6),
+    (1270000019, 'B1500CEAE', '15.6" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 107000, 5),
+    (1270000020, 'B2402CBA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 100000, 5),
+    (1270000021, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 102000, 5),
+    (1270000022, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 110000, 9),
+    (1270000023, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 117000, 5),
+    (1270000024, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 130000, 6),
+    (1270000025, 'B3402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 140000, 7),
+    (1270000026, 'B5302CEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 100000, 8),
+    (1270000027, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 120000, 7),
+    (1270000028, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 135000, 6),
+    (1270000029, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 128000, 5),
+    (1270000030, 'B5302FEA', '13.3" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 145000, 7),
+    (1270000031, 'B5302FEA', '13.3" FHD OLED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 144000, 7),
+    (1270000032, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 155000, 4),
+    (1270000033, 'B5302FEA', '13.3" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'), '1270000001_3.png', 152000, 5),
+    (1270000034, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 120000, 4),
+    (1270000035, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 120000, 4),
+    (1270000036, 'B5402CEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 118000, 4),
+    (1270000037, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 160000, 6),
+    (1270000038, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 160000, 6),
+    (1270000039, 'B5402FEA', '14" FHD LED TOUCH', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 160000, 6),
+    (1270000040, 'B5402FEA', '14" FHD LED', LOAD_FILE('E:\\Linkify\\pic1.jpg'), LOAD_FILE('E:\\Linkify\\pic2.jpg'),'1270000001_3.png', 160000, 5);

@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap");
+.cart-info-container {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 80px;
+  /* margin-bottom: 20px; */
+  gap: 20px;
+  font-size: 1.1rem;
+}
+.cart-row-container {
+  height: 100px;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 15px;
+  background-color: #fff;
+  animation: slideInFromLeft 0.6s ease-in-out forwards;
+  animation-delay: calc(-0.1s * var(--i));
+}
+.cart-row-container:nth-child(1) {
+  --i: 1;
+}
+.cart-row-container:nth-child(2) {
+  --i: 2;
+}
+.cart-row-container:nth-child(3) {
+  --i: 3;
+}
+.cart-row-container:nth-child(4) {
+  --i: 4;
+}
+.cart-row-container:nth-child(5) {
+  --i: 5;
+}
+.cart-row-container:hover {
+  box-shadow: 0 0 10px 0 #ffffff;
+  transition: 0.1s;
+}
+.cart-name,
+.cart-total-price,
+.cart-qty-container,
+.cart-btn {
+  font-size: var(--primary-font-size);
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.cart-qty-container > input {
+  width: 100%;
+  height: 30px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  text-align: center;
+}
+.cart-image-container img {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+.cart-btn {
+  background-color: #ffffff00;
+  border: none;
+  cursor: pointer;
+}
+.cart-del-icon {
+  width: 30px;
+  height: 30px;
+}
+.cart-name {
+  width: 20%;
+}
+.cart-total-price {
+  width: 20%;
+}
+.cart-qty-container {
+  width: 20%;
+}
+.empty-cart {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-top: 20vh;
+  font-family: "Fira Mono", monospace;
+  animation: transitionIN 0.5s ease-in-out;
+}
+.title-container {
+  position: relative;
+}
+.order-btn-container {
+  position: absolute;
+  top: 16px;
+  right: 15vw;
+}
+.order-btn {
+  width: 10vw;
+  height: 40px;
+  background-color: #205f17;
+}
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-10%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

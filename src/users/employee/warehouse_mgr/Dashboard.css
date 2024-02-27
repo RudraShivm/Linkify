@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&display=swap");
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.card-container {
+  /* font */
+  /* width : 70vw; */
+  animation: transitionIN 0.5s ease-in-out;
+  margin-top: 20vh;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 20vw;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  /* border: 1px solid #000; */
+  position: relative;
+  background-color: #0094e900;
+  /* background-image: linear-gradient(160deg, #bde5ebd7 20%, #fffffffd 100%); */
+
+  border-radius: 10px;
+  background-color: #d6dddd;
+  padding: 20px;
+  width: 30vw;
+  height: 200px;
+  display: flex;
+  font-family: "Baloo Bhaijaan 2", sans-serif;
+  &:hover {
+    box-shadow: #aeaaaa 0px 0px 10px;
+    /* background-image: linear-gradient(160deg, #80d0c7d7 0%, #fffffffd 100%); */
+    transform: scale(1.02) translate(0px, -5px);
+    transition: all 0.3s ease-in-out;
+  }
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+
+.link {
+  text-decoration: none;
+  font-weight: 500;
+  color: #000;
+  font-size: 2rem;
+}
+
+.card > .details {
+  position: absolute;
+  bottom: 30px;
+  font-size: 1.5rem;
+  font-weight: 200;
+  font-family: "Baloo Bhaijaan 2", sans-serif;
+}
+.notification-container {
+  width: 89vw;
+}
+#notif {
+  text-align: left;
+  margin-left: 2.5vw;
+}
+.notification-details {
+  padding: 20px;
+  margin: 2vw;
+  line-height: 1.5;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  background-color: #eff3c7;
+}
+#warning {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  object-fit: cover;
+}
+.card .warning {
+  position: absolute;
+  top: 60px;
+  left: 280px;
+  font-size: 1.2rem;
+  font-weight: 200;
+  font-family: "Baloo Bhaijaan 2", sans-serif;
+}
+.card .warning2 {
+  position: absolute;
+  top: 90px;
+  left: 280px;
+  font-size: 1.2rem;
+  font-weight: 200;
+  font-family: "Baloo Bhaijaan 2", sans-serif;
+}
+@keyframes transitionIN {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}

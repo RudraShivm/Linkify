@@ -1,0 +1,141 @@
+:root {
+  --primary-font: "Roboto", sans-serif;
+  --accent-color: #aad7d9;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+/* https://unsplash.com/photos/black-iphone-4-on-black-laptop-computer-8l30Cc1IcT8?utm_content=creditShareLink&utm_medium=referral&utm_source=unsplash */
+/* body {
+  background: url('../../../../public/nubelson-fernandes-8l30Cc1IcT8-unsplash.jpg') repeat center top fixed;
+  background: ; 
+  background-color: #000;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  animation: transitionIN 0.5s ease-in-out;
+} */
+.employee-body {
+  position: absolute;
+  z-index: 0;
+  min-height: 100vh;
+  position: relative;
+  background-color: #000;
+  /* opacity: 0.8; */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /* animation: transitionIN 0.5s ease-in-out; */
+}
+
+.employee-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../../../../public/nubelson-fernandes-8l30Cc1IcT8-unsplash.jpg")
+    repeat center top fixed;
+  opacity: 0.5; /* Adjust this value to change the opacity */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  z-index: -1;
+}
+.link-Container {
+  backdrop-filter: blur(14px);
+  padding-right: 20px;
+  height: 5vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  /* background-color: #00000000; */
+  /* animation: transitionIN 0.5s ease-in-out; */
+  right: 0px;
+  top: 0px;
+}
+.link-Container.scrolled {
+  background-color: #101010c5;
+  backdrop-filter: none;
+}
+.navlink {
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 400;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 13px;
+  color: var(--primary-font-color) !important;
+  transition: all 0.3s ease-in-out;
+  animation: cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s forwards;
+  &:hover {
+    color: #aad7d9 !important;
+    background-color: rgba(255, 255, 255, 0.162);
+  }
+}
+.noti-icon:hover {
+  transform: scale(1.1);
+  animation: infinite;
+}
+.info {
+  padding: 30px 0px 0px 70px;
+  margin: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.navlink.logout-container {
+  display: inline-block;
+  font-size: 16px;
+  width: 26px; /* Adjust size as needed */
+  height: 26px; /* Adjust size as needed */
+  padding-left: 12px;
+  border-radius: 100%; /* Makes the button circular */
+  overflow: hidden; /* Ensures the image fits within the button */
+  cursor: pointer; /* Deletes the default cursor on the button */
+  &:hover {
+    transform: rotate(-30deg);
+    background-color: #00000000;
+  }
+}
+.notification-panel {
+  position: fixed;
+  z-index: 102;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: -101;
+}
+.logout {
+  width: 100%;
+  height: 100%;
+  transform: scale(1.2) translateX(-2px);
+  object-fit: cover;
+}
+@keyframes transitionIN {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}

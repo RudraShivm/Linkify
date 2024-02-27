@@ -1,0 +1,27 @@
+.invoice-form-container {
+  background-color: aliceblue;
+  margin: 3vh 5vw;
+  padding: 40px 60px 20px 60px;
+  border-radius: 15px;
+  font: var(--pr-font-family);
+  font-weight: var(--pr-font-weight);
+  font-style: var(--pr-font-style);
+  font-size: 1.1rem;
+  line-height: 33px;
+}
+.extra-box {
+  height: 3vh;
+}
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid #000;
+  margin-top: 20px;
+}
+.btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

@@ -1,0 +1,15 @@
+.retailer-body {
+  font-size: 1rem;
+  min-height: 100vh;
+  position: relative;
+  background-color: #222222;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /* animation: transitionIN 0.5s ease-in-out; */
+}
+#retailer-link-container {
+  backdrop-filter: blur(14px);
+  background-color: #222222cf;
+}

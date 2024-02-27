@@ -1,0 +1,79 @@
+:root {
+  --primary-font: "Roboto", sans-serif;
+  --primary-font-color: #ddd;
+  --primary-text-font-color: #000000;
+  --etable-td-bcolor: #fafafa93;
+  --etable-th-bcolor: rgba(132, 132, 132, 0.381);
+  --product-theme-color1: #edf047;
+  --product-theme-color2: #47f0e2;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+.profile-picture-container {
+  height: 20vh;
+  width: 100%;
+  /* border-radius: 50%; */
+  /* background-color: rgba(255, 255, 255, 0.8); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5vh;
+  /* overflow: hidden; */
+}
+.profile-picture {
+  height: 20vh;
+  width: 20vh;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  animation: transitionIN 0.5s ease-in-out;
+}
+
+.pp {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This will make the image cover the entire element */
+  object-position: center; /* This will center the image within the element */
+}
+.info-card {
+  height: 46vh;
+  margin-top: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: transitionIN 0.5s ease-in-out;
+}
+.data {
+  border: 0px;
+  border-radius: 10px;
+  height: 55vh;
+  width: 40vw;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 40px 10px;
+  /* margin: 10vw 0px 0px 20vw; */
+}
+.profile-th {
+  padding-left: 50px;
+  font: var(--head-font-family);
+  background-color: rgba(0, 0, 0, 0);
+  font-weight: var(--head-font-weight);
+  text-align: left;
+  font-size: 1.3rem;
+}
+.profile-td {
+  /* padding: 10px; */
+  /* font: var(--primary-font); */
+  color: var(--primary-text-font-color);
+  font: var(--pr-font-family);
+  font-size: 1.3rem;
+  /* font-size: 1.2rem; */
+  /* font-weight: 200; */
+  text-align: left;
+  border: 0px;
+  background-color: rgba(0, 0, 0, 0);
+}

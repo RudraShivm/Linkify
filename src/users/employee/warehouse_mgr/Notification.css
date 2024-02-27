@@ -1,0 +1,22 @@
+.notification-container {
+  width: 89vw;
+}
+#notif {
+  text-align: left;
+  margin-left: 2.5vw;
+}
+.notification-details {
+  animation: transitionIN 0.5s forwards ease-in-out;
+  padding: 20px;
+  margin: 2vw;
+  line-height: 1.5;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  background-color: #eff3c7;
+}
+#warning {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  object-fit: cover;
+}

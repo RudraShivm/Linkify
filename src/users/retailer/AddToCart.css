@@ -1,0 +1,120 @@
+.Add-to-Cart-container {
+  position: fixed;
+  bottom: 20px;
+  right: 80px;
+  display: flex;
+  justify-content: center;
+  /* padding: 20px; */
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  height: 70px;
+  width: 25vw;
+  margin: auto;
+  z-index: 100;
+}
+.Add-to-Cart-container.desc-add-to-cart {
+  position: static;
+  /* top: 20px;
+  right: 80px; */
+  display: flex;
+  justify-content: left;
+  /* padding: 20px; */
+  background-color: #f2f2f200;
+  border-radius: 10px;
+  height: 70px;
+  width: 100%;
+  margin: 30px 0px 0px 15px;
+  /* left: 15px; */
+  z-index: 100;
+}
+
+.Add-to-Cart-container.desc-add-to-cart > form {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  gap: 10px;
+}
+.Add-to-Cart-container.desc-add-to-cart > form > input {
+  padding: 10px;
+  width: 50px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+.Add-to-Cart-container.desc-add-to-cart > form > button {
+  font-size: 1.1rem;
+  background-color: var(--product-theme-color1);
+  color: #000;
+  /* text-align */
+  font-weight: 500;
+}
+.Add-to-Cart-container.desc-add-to-cart > form > button:hover {
+  background-color: rgba(250, 254, 7, 0.904);
+  color: #000;
+  /* text-align */
+  /* font-weight: 600; */
+  font-style: italic;
+}
+.Add-to-Cart-container > form {
+  /* height: 10vh; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  /* width: 70%; */
+  padding: 0px;
+}
+.Add-to-Cart-container > form > input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  /* margin-top: 5px; */
+  width: 50%;
+}
+.Add-to-Cart-btn {
+  width: 10vw;
+  margin-top: 0px;
+  margin-left: 10px;
+  background-color: #205f17;
+  height: 42px;
+  font-size: 1rem;
+}
+
+.Add-to-Cart-container.active-addToCart {
+  animation: transitionLEFTCart 0.2s ease-in-out;
+}
+.Add-to-Cart-container.hidden-addToCart {
+  animation: transitionLEFTCartreverse 0.2s ease-in-out forwards;
+  /* display: none; */
+}
+@keyframes transitionLEFTCart {
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes transitionLEFTCartreverse {
+  0% {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0px);
+  }
+  99% {
+    visibility: visible;
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  100% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}

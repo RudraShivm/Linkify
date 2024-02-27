@@ -1,0 +1,70 @@
+#order-row-container {
+  height: initial;
+  animation: transitionIN 0.5s ease-in-out;
+  font-size: 1.1rem;
+  animation: slideInFromLeft 0.6s ease-in-out forwards;
+}
+.order-details {
+  /* margin: 20px 0px; */
+}
+.order-name-model-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0px;
+}
+.order-item-name {
+  width: 20vw;
+  text-align: center;
+}
+.order-item-status {
+  width: 8vw;
+  height: 100%;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  cursor: pointer;
+}
+.order-item-status > .pending {
+  /* text-align: center; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 3px 10px;
+  border-radius: 15px;
+  border: 1px solid #ddd;
+  background-color: #ffcc00;
+}
+.order-item-status > .processing {
+  /* text-align: center; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* width: 100px; */
+  height: 25px;
+  padding: 3px 10px;
+  border-radius: 15px;
+  border: 1px solid #ddd;
+  background-color: #33bbf1;
+}
+.order-item-exp-delivery-date > img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  margin-bottom: -5px;
+}
+.order .order-item-status {
+}
+.order-invoice-container {
+  border-radius: 10px;
+  padding: 3px 10px;
+}
+.order-invoice-container.not-available {
+  background-color: rgb(235, 103, 103);
+}
+.order-invoice-container.available {
+  background-color: rgb(71, 239, 71);
+}
