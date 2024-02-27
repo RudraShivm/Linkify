@@ -8,7 +8,7 @@ function Login() {
   const [mgr_id, setMgr_id] = useState(localStorage.getItem('mgr_id') || '');
   const [mgr_pass, setMgr_pass] = useState(localStorage.getItem('mgr_pass') || '');
   const [remember, setRemember] = useState(false);
-  const url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/password`;
+  const url=`https://linkify-swart.vercel.app/users/employee/warehouse_mgr/${mgr_id}/password`;
 
   useEffect(() => {
     if (remember) {
