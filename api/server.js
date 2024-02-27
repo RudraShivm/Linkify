@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import stripe from "stripe";
+import process from "process";
 import api from "./api";
 import {
   addToCart,
@@ -40,8 +41,8 @@ import {
   queryCart,
   setCart,
   updateCart,
-} from "./database.js";
-const app = express.Router();
+} from "../backend/database.js";
+const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -429,7 +430,7 @@ app.use((err, req, res) => {
   }
 });
 
-// const port = process.env.PORT || 3000;
-// app.listen(port, () => console.log(`Server ready on port ${port}`));
 app.use("/api/v1", api);
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server ready on port ${port}`));
 export default app;
