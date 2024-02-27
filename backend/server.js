@@ -48,6 +48,13 @@ app.use(express.json());
 const stripeInstance = stripe(
   "sk_test_51OiJl9Lgd2pARuX3fCxFbkgZuJGLzlTJi4dzbjJss22wyOlj9UeD64HTy0XlTYrtdH2Y3PUPoG8QiT9TEQKOsV3I00r6vLRxn0"
 );
+console.log("dsada");
+app.get(
+  "/",
+  async (req, res) => {
+    res.json("Welcome to the Linkify API!");
+  }
+);
 
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/orders",
