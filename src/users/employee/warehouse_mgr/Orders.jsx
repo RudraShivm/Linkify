@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useParams,Link } from 'react-router-dom';
-import './orders.css';
-import { jsPDF as jspdf } from 'jspdf'
+import { jsPDF as jspdf } from 'jspdf';
 import 'jspdf-autotable';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import './Orders.css';
 const Orders = () => {
     const { mgr_id } = useParams();
     const [orders, setOrders] = useState([]);
