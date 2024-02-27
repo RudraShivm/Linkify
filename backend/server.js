@@ -1,7 +1,7 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import process from "process";
+import stripe from "stripe";
+import api from "./api";
 import {
   addToCart,
   createInvoice,
@@ -41,11 +41,8 @@ import {
   setCart,
   updateCart,
 } from "./database.js";
-dotenv.config();
-
 const app = express();
 app.use(cors());
-import stripe from "stripe";
 app.use(express.json());
 
 const stripeInstance = stripe(
@@ -385,33 +382,49 @@ app.get(
     res.send(result);
   }
 );
-app.post("/users/employee/warehouse_mgr/:warehouse_mgr_id/:order_id/createInvoice", async (req, res) => {
-  try {
-    console.log(req.body);
+app.post(
+  "/users/employee/warehouse_mgr/:warehouse_mgr_id/:order_id/createInvoice",
+  async (req, res) => {
+    try {
+      console.log(req.body);
 
-      const promises = req.body.data.map(order =>{ 
-          createInvoice(order.id, order.sub_id, order.qty, order.warehouse_stock_id, req.params.warehouse_mgr_id, order.product_id)
+      const promises = req.body.data.map((order) => {
+        createInvoice(
+          order.id,
+          order.sub_id,
+          order.qty,
+          order.warehouse_stock_id,
+          req.params.warehouse_mgr_id,
+          order.product_id
+        );
       });
       const results = await Promise.all(promises);
-      if (results.every(result => result.data === 'Invoice created successfully')) {
-          res.send("All invoices created successfully");
+      if (
+        results.every(
+          (result) => result.data === "Invoice created successfully"
+        )
+      ) {
+        res.send("All invoices created successfully");
       } else {
-          res.send("Some invoices were not created successfully");
+        res.send("Some invoices were not created successfully");
       }
-  } catch (err) {
+    } catch (err) {
       console.log(err);
       res.status(500).send("An error occurred while creating invoices");
+    }
+  }
+);
+
+app.use((err, req, res) => {
+  console.error(err.stack);
+  if (err.message === "Not Found") {
+    res.status(404).send("Not Found");
+  } else {
+    res.status(500).send("Something broke!");
   }
 });
 
-  app.use((err, req, res, ) => {
-    console.error(err.stack);
-    if (err.message === 'Not Found') {
-      res.status(404).send('Not Found');
-    } else {
-      res.status(500).send('Something broke!');
-    }
-  });
-  
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => console.log(`Server ready on port ${port}`));
+// const port = process.env.PORT || 3000;
+// app.listen(port, () => console.log(`Server ready on port ${port}`));
+app.use("/api/v1", api);
+export default app;
