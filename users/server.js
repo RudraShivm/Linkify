@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import stripe from "stripe";
 import process from "process";
-import api from "./api";
+import api from "./api.js";
 import {
   addToCart,
   createInvoice,
