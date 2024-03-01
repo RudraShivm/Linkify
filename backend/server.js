@@ -2,12 +2,16 @@ import cors from "cors";
 import express from "express";
 import stripe from "stripe";
 import process from "process";
-import api from "./api.js";
 import {
   addToCart,
+  confirmDelivery,
   createInvoice,
+  getAllInvoice,
   getAllProductInfo,
   getCart,
+  getDeliveryMgrInfo,
+  getDeliveryMgrPass,
+  getFactoryStock,
   getFactoryinfo,
   getGroupedOrders,
   getInvoice,
@@ -18,9 +22,11 @@ import {
   getPendingOrders,
   getPendingWareReqNumber,
   getProcessingDemand,
+  getProcessingOrderNumber,
   getProcessingOrders,
   getProductInfoByID,
   getProductMgrPass,
+  getRawStock,
   getRetailerOrdersID,
   getRetailerOrdersbyID,
   getRetailerPass,
@@ -41,7 +47,7 @@ import {
   queryCart,
   setCart,
   updateCart,
-} from "../backend/database.js";
+} from "./database.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -69,7 +75,6 @@ app.get(
       req.params.warehouse_mgr_id,
       req.params.order_id
     );
-    console.log(result);
     res.send(result);
   }
 );
@@ -246,9 +251,30 @@ app.get("/users/retailer/:retailer_id/password", async (req, res) => {
   res.send(result);
 });
 app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/password",
+  async (req, res) => {
+    const result = await getDeliveryMgrPass(req.params.delivery_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
   "/users/employee/production_mgr/:production_mgr_id/password",
   async (req, res) => {
     const result = await getProductMgrPass(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/product_stock",
+  async (req, res) => {
+    const result = await getFactoryStock();
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/raw_stock",
+  async (req, res) => {
+    const result = await getRawStock();
     res.send(result);
   }
 );
@@ -260,9 +286,23 @@ app.get(
   }
 );
 app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/profile",
+  async (req, res) => {
+    const result = await getDeliveryMgrInfo(req.params.delivery_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/dashboard/pending_order_number",
   async (req, res) => {
     const result = await getPendingOrderNumber(req.params.warehouse_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/warehouse_mgr/:warehouse_mgr_id/dashboard/processing_order_number",
+  async (req, res) => {
+    const result = await getProcessingOrderNumber(req.params.warehouse_mgr_id);
     res.send(result);
   }
 );
@@ -329,7 +369,6 @@ app.get("/users/retailer/home/:retailer_id/getCart", async (req, res) => {
 });
 app.post("/users/retailer/home/:retailer_id/setCart", async (req, res) => {
   const result = await setCart(req.params.retailer_id, req.body.cartInfo);
-  // console.log(req.body.cartInfo);
   res.send(result);
 });
 app.post(
@@ -381,6 +420,14 @@ app.get(
     res.send(result);
   }
 );
+
+app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/invoice",
+  async (req, res) => {
+    const result = await getAllInvoice(req.params.order_id);
+    res.send(result);
+  }
+);
 app.get(
   "/users/retailer/home/:retailer_id/orders/:order_id/invoice",
   async (req, res) => {
@@ -391,46 +438,59 @@ app.get(
 app.post(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/:order_id/createInvoice",
   async (req, res) => {
-    try {
-      console.log(req.body);
+    await getInvoice(req.params.order_id).then(async (res2) => {
+      if (res2.length === 0) {
+        const promises = req.body.data.map((order) => {
+          return createInvoice(
+            order.id,
+            order.sub_id,
+            order.qty,
+            order.warehouse_stock_id,
+            req.params.warehouse_mgr_id,
+            order.product_id,
+            order.paid_amount
+          );
+        });
 
-      const promises = req.body.data.map((order) => {
-        createInvoice(
-          order.id,
-          order.sub_id,
-          order.qty,
-          order.warehouse_stock_id,
-          req.params.warehouse_mgr_id,
-          order.product_id
-        );
-      });
-      const results = await Promise.all(promises);
-      if (
-        results.every(
-          (result) => result.data === "Invoice created successfully"
-        )
-      ) {
-        res.send("All invoices created successfully");
+        try {
+          const results = await Promise.all(promises);
+          if (
+            results.every((result) => result === "Invoice created successfully")
+          ) {
+            res.send("All invoices created successfully");
+          } else {
+            res.send("Some invoices were not created successfully");
+          }
+        } catch (error) {
+          console.error(error);
+          res.status(500).send("An error occurred while creating invoices");
+        }
       } else {
-        res.send("Some invoices were not created successfully");
+        res.send("Invoice already created");
       }
-    } catch (err) {
-      console.log(err);
-      res.status(500).send("An error occurred while creating invoices");
+    });
+  }
+);
+
+app.post(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/invoice/confirm_delivery",
+  async (req, res) => {
+    const result = await confirmDelivery(req.body.order_id);
+    if (result === "Order delivery confirmed successfully") {
+      res.send(result);
+    } else {
+      res.send("Order delivery confirmation failed");
     }
   }
 );
 
-// app.use((err, req, res) => {
-//   console.error(err.stack);
-//   if (err.message === "Not Found") {
-//     res.status(404).send("Not Found");
-//   } else {
-//     res.status(500).send("Something broke!");
-//   }
-// });
-
-// app.use("/api/v1", api);
-// const port = process.env.PORT || 3000;
-// app.listen(port, () => console.log(`Server ready on port ${port}`));
-// export default app;
+app.use((err, req, res) => {
+  console.error(err.stack);
+  if (err.message === "Not Found") {
+    res.status(404).send("Not Found");
+  } else {
+    res.status(500).send("Something broke!");
+  }
+});
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server ready on port ${port}`));

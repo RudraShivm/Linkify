@@ -14,16 +14,16 @@ dotenv.config();
 //   .promise();
 const { Pool } = pg;
 
-// const pool = new Pool({
-//   user: "postgres",
-//   host: "localhost",
-//   database: "Linkify",
-//   password: "123",
-//   port: 5432,
-// });
 const pool = new Pool({
-  connectionString: process.env.POSTGRESS_URL,
-})
+  user: "postgres",
+  host: "localhost",
+  database: "Linkify",
+  password: "123",
+  port: 5432,
+});
+// const pool = new Pool({
+//   connectionString: process.env.POSTGRESS_URL,
+// })
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(
     `SELECT Orders.*,P.model,P.picture1 
@@ -45,7 +45,6 @@ export async function getOrders(warehouse_mgr_id) {
   return res.rows;
 }
 export async function getOrdersByID(warehouse_mgr_id, order_id) {
-  console.log(order_id, warehouse_mgr_id);
   const res = await pool.query(
     `SELECT Orders.*,P.name,P.model,P.picture1,C.store_name,C.owner_name,C.city,WS.available_qty,WS.id AS warehouse_stock_id
     FROM Orders 
@@ -68,7 +67,6 @@ export async function getOrdersByID(warehouse_mgr_id, order_id) {
     Orders.sub_id ASC;`,
     [warehouse_mgr_id, order_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getGroupedOrders(warehouse_mgr_id) {
@@ -164,14 +162,7 @@ export async function processOrder(warehouse_mgr_id, order_id) {
         (product) =>
           product.warehouse_stock_id === orders.rows[i].warehouse_stock_id
       )?.demand_qty || 0;
-    console.log(
-      "processing qty: " +
-        processing_qty +
-        " available qty: " +
-        orders.rows[i].available_qty +
-        " order qty: " +
-        orders.rows[i].qty
-    );
+
     if (orders.rows[i].qty > orders.rows[i].available_qty - processing_qty) {
       available = false;
       break;
@@ -196,11 +187,20 @@ export async function getWareMgrPass(warehouse_mgr_id) {
   console.log(res.rows);
   return res.rows;
 }
-export async function getRetailerPass(reatailer_id) {
+export async function getRetailerPass(retailer_id) {
   const res = await pool.query(
     `SELECT passwords FROM Customer
       WHERE id = $1`,
-    [reatailer_id]
+    [retailer_id]
+  );
+  console.log(res.rows);
+  return res.rows;
+}
+export async function getDeliveryMgrPass(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT passwords FROM Delivery_mgr
+      WHERE id = $1`,
+    [delivery_mgr_id]
   );
   console.log(res.rows);
   return res.rows;
@@ -238,6 +238,12 @@ export async function getWarehouseStock(warehouse_mgr_id) {
 }
 export async function getPendingOrderNumber(warehouse_mgr_id) {
   const res = await pool.query(`SELECT * FROM get_pending_order_no($1)`, [
+    warehouse_mgr_id,
+  ]);
+  return res.rows;
+}
+export async function getProcessingOrderNumber(warehouse_mgr_id) {
+  const res = await pool.query(`SELECT * FROM get_processing_order_no($1)`, [
     warehouse_mgr_id,
   ]);
   return res.rows;
@@ -563,6 +569,15 @@ export async function getRetailerOrdersbyID(retailer_id, order_id) {
   return res.rows;
 }
 
+export async function getDeliveryMgrInfo(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT * FROM Delivery_mgr
+      WHERE id = $1`,
+    [delivery_mgr_id]
+  );
+  return res.rows;
+}
+
 export async function getProductbyID(product_id) {
   const res = await pool.query(
     `SELECT name,model
@@ -573,11 +588,36 @@ export async function getProductbyID(product_id) {
   return res.rows;
 }
 
+export async function getAllInvoice() {
+  const res = await pool.query(
+    `SELECT C.*,D.name as delivery_mgr_name,W.name as warehouse_mgr_name,CC.id as customer_id,CC.store_name,CC.owner_name,CC.city,O.order_place_date,P.name,P.model,O.exp_delivery_date,O.status
+    FROM Customer_invoice C 
+    JOIN Orders O ON C.order_id = O.id AND C.order_sub_id = O.sub_id
+    JOIN Product P ON C.product_id = P.id
+    JOIN Customer CC ON O.customer_id = CC.id
+    JOIN Delivery_mgr D ON C.delivery_mgr_id = D.id
+    JOIN Warehouse_mgr W ON C.warehouse_mgr_id = W.id
+    ORDER BY 
+    CASE 
+      WHEN O.status = 'delivery-pending' THEN 1
+      WHEN O.status = 'completed' THEN 2
+      ELSE 4
+    END,
+    O.exp_delivery_date DESC,
+    C.order_sub_id ASC`
+  );
+  return res.rows == undefined ? [] : res.rows;
+}
 export async function getInvoice(order_id) {
   const res = await pool.query(
-    `SELECT *
-    FROM Customer_invoice
-    WHERE order_id = $1`,
+    `SELECT C.*,D.name as delivery_mgr_name,W.name as warehouse_mgr_name,CC.store_name,CC.owner_name,CC.city,O.order_place_date,P.name,P.model,O.exp_delivery_date
+    FROM Customer_invoice C 
+    JOIN Orders O ON C.order_id = O.id AND C.order_sub_id = O.sub_id
+    JOIN Product P ON C.product_id = P.id
+    JOIN Customer CC ON O.customer_id = CC.id
+    JOIN Delivery_mgr D ON C.delivery_mgr_id = D.id
+    JOIN Warehouse_mgr W ON C.warehouse_mgr_id = W.id
+    WHERE C.order_id = $1`,
     [order_id]
   );
   return res.rows == undefined ? [] : res.rows;
@@ -588,7 +628,8 @@ export async function createInvoice(
   qty,
   warehouse_stock_id,
   warehouse_mgr_id,
-  product_id
+  product_id,
+  paid_amount
 ) {
   const compatible_delivery_mgr_ID = await pool.query(
     `SELECT M.id as M_id, COUNT(CI.order_id) as countOrder
@@ -607,8 +648,8 @@ export async function createInvoice(
     [order_id]
   );
   await pool.query(
-    `INSERT INTO Customer_invoice (order_id,order_sub_id,qty,ware_stock_id,warehouse_mgr_id,delivery_mgr_id,product_id) VALUES
-    ($1,$2,$3,$4,$5,$6,$7)`,
+    `INSERT INTO Customer_invoice (order_id,order_sub_id,qty,ware_stock_id,warehouse_mgr_id,delivery_mgr_id,product_id,paid_amount) VALUES
+    ($1,$2,$3,$4,$5,$6,$7,$8)`,
     [
       order_id,
       order_sub_id,
@@ -617,7 +658,60 @@ export async function createInvoice(
       warehouse_mgr_id,
       compatible_delivery_mgr_ID.rows[0]?.m_id,
       product_id,
+      paid_amount,
     ]
   );
+  await pool.query(
+    `UPDATE Warehouse_stock SET available_qty = available_qty - $1 WHERE id = $2`,
+    [qty, warehouse_stock_id]
+  );
+  //have to do many works here
+  await pool.query(
+    `UPDATE Orders SET status = 'delivery-pending' WHERE id = $1`,
+    [order_id]
+  );
   return "Invoice created successfully";
+}
+
+export async function confirmDelivery(order_id) {
+  try {
+    await pool.query(`UPDATE Orders SET status = 'delivered' WHERE id = $1`, [
+      order_id,
+    ]);
+    return "Order delivery confirmed successfully";
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getFactoryStockbyID(production_mgr_id) {
+  const res = await pool.query(
+    `SELECT F.*,P.name,P.model
+    FROM Factory F
+    JOIN Product P ON F.product_id = P.id
+    JOIN Production_mgr M ON F.id = M.factory_id
+    WHERE M.id = $1`,
+    [production_mgr_id]
+  );
+  return res.rows;
+}
+export async function getFactoryStock() {
+  const res = await pool.query(
+    `SELECT F.*,P.name,P.model
+    FROM Factory F
+    JOIN Product P ON F.product_id = P.id`
+  );
+  console.log(res.rows);
+  return res.rows;
+}
+export async function getRawStock() {
+  const res = await pool.query(
+    `SELECT F.raw_mat_id,R.id AS raw_mat_id,R.name AS raw_mat_name,R.type
+    FROM Factory_raw_stock F
+    JOIN Raw_material R ON R.id = F.raw_mat_id
+    GROUP BY F.raw_mat_id`
+  );
+  console.log(res.rows);
+  return res.rows;
 }

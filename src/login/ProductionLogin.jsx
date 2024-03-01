@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LoginForm from './LoginForm';
 import './Login.css';
 
 function Login() {
@@ -43,15 +44,7 @@ function Login() {
   }
 
   return (
-      <form onSubmit={handleSubmit} method="get" className="login-form">
-        <input type="text" value={mgr_id} onChange={(e) => setMgr_id(e.target.value)}/>
-        <input type="password" value={mgr_pass} onChange={(e) => setMgr_pass(e.target.value)}/>
-        <label className='rempass'>
-          <input  type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}/>
-          Remember Password
-        </label>
-        <button className="login-submit" type="submit">Login</button>
-      </form>
+    <LoginForm handleSubmit={handleSubmit} mgr_id={mgr_id} setMgr_id={setMgr_id} mgr_pass={mgr_pass} setMgr_pass={setMgr_pass} remember={remember} setRemember={setRemember}/>
   );
 }
 

@@ -110,6 +110,7 @@ function Submit_ware_req() {
                 <button type="submit" className='btn submit-button' id='sub_ware_req_btn'>Submit</button>
                 </div>
             </form>
+            <div className='extra-box'></div>
         </div>
     )
 }

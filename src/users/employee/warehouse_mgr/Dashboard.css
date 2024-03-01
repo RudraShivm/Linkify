@@ -10,7 +10,7 @@
   /* font */
   /* width : 70vw; */
   animation: transitionIN 0.5s ease-in-out;
-  margin-top: 20vh;
+  margin-top: 10vh;
   display: grid;
   grid-template-columns: auto auto;
   grid-gap: 20vw;
@@ -28,7 +28,7 @@
   background-color: #d6dddd;
   padding: 20px;
   width: 30vw;
-  height: 200px;
+  height: 230px;
   display: flex;
   font-family: "Baloo Bhaijaan 2", sans-serif;
   &:hover {
@@ -51,6 +51,8 @@
 .card > .details {
   position: absolute;
   bottom: 30px;
+}
+.card > .details > div {
   font-size: 1.5rem;
   font-weight: 200;
   font-family: "Baloo Bhaijaan 2", sans-serif;

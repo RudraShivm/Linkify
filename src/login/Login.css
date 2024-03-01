@@ -19,7 +19,7 @@ input[type="password"] {
   width: 100%;
   max-width: 300px;
 }
-input[type='checkbox']{
+input[type="checkbox"] {
   width: 15px;
   height: 15px;
   margin: 0px 10px;
@@ -40,8 +40,26 @@ input[type='checkbox']{
   cursor: pointer;
   width: 100%;
   max-width: 300px;
+  position: relative;
+  z-index: 2;
 }
 
 .login-submit:hover {
   background-color: #555;
+}
+.lottie-main {
+  width: 450px;
+  height: 450px;
+  position: absolute;
+  z-index: 1;
+  right: -4vw;
+  bottom: -13vh;
+}
+.lottie-main2 {
+  width: 250px;
+  height: 250px;
+  position: absolute;
+  z-index: 0;
+  bottom: -10vh;
+  right: -6vw;
 }

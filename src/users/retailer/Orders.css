@@ -20,15 +20,17 @@
   text-align: center;
 }
 .order-item-status {
-  width: 8vw;
+  width: 11vw;
   height: 100%;
   /* display: flex;
   align-items: center;
   justify-content: center; */
   cursor: pointer;
 }
-.order-item-status > .pending {
-  /* text-align: center; */
+.order-item-status > .pending,
+.order-item-status > .processing,
+.order-item-status > .delivered,
+.order-item-status > .delivery-pending {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,27 +38,25 @@
   padding: 3px 10px;
   border-radius: 15px;
   border: 1px solid #ddd;
+}
+
+.order-item-status > .pending {
   background-color: #ffcc00;
 }
 .order-item-status > .processing {
-  /* text-align: center; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* width: 100px; */
-  height: 25px;
-  padding: 3px 10px;
-  border-radius: 15px;
-  border: 1px solid #ddd;
   background-color: #33bbf1;
+}
+.order-item-status > .delivery-pending {
+  background-color: #eb84f6;
+}
+.order-item-status > .delivered {
+  background-color: #33f139;
 }
 .order-item-exp-delivery-date > img {
   width: 20px;
   height: 20px;
   margin-right: 8px;
   margin-bottom: -5px;
-}
-.order .order-item-status {
 }
 .order-invoice-container {
   border-radius: 10px;
@@ -67,4 +67,8 @@
 }
 .order-invoice-container.available {
   background-color: rgb(71, 239, 71);
+}
+
+.clickable-link {
+  cursor: pointer;
 }

@@ -1,15 +1,15 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from './LoginForm';
 import './Login.css';
+import LoginForm from './LoginForm';
 
 function Login() {
   const navigate = useNavigate();
   const [mgr_id, setMgr_id] = useState(localStorage.getItem('mgr_id') || '');
   const [mgr_pass, setMgr_pass] = useState(localStorage.getItem('mgr_pass') || '');
   const [remember, setRemember] = useState(false);
-  const url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/password`;
+  const url=`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/password`;
 
   useEffect(() => {
     if (remember) {
@@ -33,8 +33,8 @@ function Login() {
         }
       });
       if(flag === 1){
-        navigate(`/user/employee/warehouse_mgr/home/${mgr_id}`);
-        navigate(`/user/employee/warehouse_mgr/home/${mgr_id}/dashboard`);
+        navigate(`/user/employee/delivery_mgr/home/${mgr_id}`);
+        navigate(`/user/employee/delivery_mgr/home/${mgr_id}/dashboard`);
       }else{
         alert("Wrong Password");
       }
@@ -45,8 +45,7 @@ function Login() {
   }
 
   return (
-    <LoginForm handleSubmit={handleSubmit} mgr_id={mgr_id} setMgr_id={setMgr_id} mgr_pass={mgr_pass} setMgr_pass={setMgr_pass} remember={remember} setRemember={setRemember}/>
-  
+      <LoginForm handleSubmit={handleSubmit} mgr_id={mgr_id} setMgr_id={setMgr_id} mgr_pass={mgr_pass} setMgr_pass={setMgr_pass} remember={remember} setRemember={setRemember}/>
   );
 }
 

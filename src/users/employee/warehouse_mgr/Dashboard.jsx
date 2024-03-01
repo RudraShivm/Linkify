@@ -10,6 +10,7 @@ import NotificationComponent from './Notification';
 function Dashboard() {
     const { mgr_id } = useParams();
     const [orderno,setOrderno]=useState(0);
+    const [processingOrderNo,setProcessingOrderNo]=useState(0);
     const [reqno,setReqno]=useState(0);
     const [stock,setStock]=useState([]);
     const [nearingOrders,setNearingOrders]=useState([]);
@@ -21,6 +22,7 @@ function Dashboard() {
     const url5=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
     const url6= `http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/nearingOrders`;
     const url7= `http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/expiredOrders`;
+    const url8=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/dashboard/processing_order_number`;
     useEffect(()=>{
         axios.get(url3)
         .then(res=>{
@@ -60,6 +62,11 @@ function Dashboard() {
         .catch(err=>{
             console.log(err)
         })
+
+        axios.get(url8)
+        .then(res=>{
+            setProcessingOrderNo(res.data[0]?.get_processing_order_no);
+        })
     },[setOrderno,setReqno,url3,url4,url5, url6])
     return (
         <>
@@ -78,7 +85,12 @@ function Dashboard() {
                     {`${expiredOrders.length} expired orders`}
                 </div>
                 <div className='details'>
+                    <div>
                     {orderno==null?0:orderno} pending orders
+                    </div>
+                    <div>
+                    {processingOrderNo==null?0:processingOrderNo} processing orders
+                    </div>
                 </div>
             </div>
         </Link>
@@ -86,7 +98,9 @@ function Dashboard() {
             <div className='card'>
                 Ware Request
                 <div className='details'>
+                    <div>
                     {reqno==null?0:reqno} pending requests
+                    </div>
                 </div>
             </div>
         </Link>

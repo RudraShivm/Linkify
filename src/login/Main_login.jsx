@@ -3,6 +3,8 @@ import { Link, Outlet, Routes,Route } from "react-router-dom";
 import "./App.css";
 import Emp_login from "./Emp_login";
 import RetailerLogin from "./RetailerLogin";
+import Lottie from "lottie-react";
+import animationData from "./../../public/laptop.json";
 function Main_login() {
   const [clickState, setClickState] = React.useState(0);
   useEffect(() => {
@@ -31,6 +33,9 @@ function Main_login() {
 
   return (
     <div className="Main-login-container">
+      <div className="lottie-main">
+      <Lottie animationData={animationData}/>
+      </div>
       <div className="heading-container">
         <Link to="/" onClick={()=>setClickState(0)}>
         <p className={`site-heading ${clickStatefn(clickState)}`}>Linkify</p>

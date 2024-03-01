@@ -46,8 +46,8 @@ function Login() {
   return (
     <div>
       <form className='login-form' onSubmit={handleSubmit} method="get">
-        <input type="text" value={retailer_id} onChange={(e) => setRetailer_id(e.target.value)}/>
-        <input type="password" value={retailer_pass} onChange={(e) => setRetailer_pass(e.target.value)}/>
+        <input type="text" value={retailer_id} placeholder='id' onChange={(e) => setRetailer_id(e.target.value)}/>
+        <input type="password" value={retailer_pass} placeholder='password' onChange={(e) => setRetailer_pass(e.target.value)}/>
         <label className='rempass'>
           <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}/>
           Remember Password

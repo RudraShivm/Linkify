@@ -1,0 +1,41 @@
+.stock-menu {
+  background-color: rgb(21, 21, 21);
+  color: var(--primary-font-color);
+  position: absolute;
+  z-index: 100;
+  top: 10vh;
+  left: 52.5vw;
+  width: 8vw;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  font-size: 1.1rem;
+  animation: transitionDOWN2 0.2s ease-in-out;
+}
+.stock-menu :visited {
+  color: var(--primary-font-color);
+}
+.option-1,
+.option-2 {
+  padding: 4px 4px;
+  margin: 5px 0px;
+  cursor: pointer;
+}
+
+@keyframes transitionDOWN2 {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.visible {
+  display: flex;
+}
+.not-visible {
+  display: none;
+}

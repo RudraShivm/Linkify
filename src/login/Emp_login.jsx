@@ -4,6 +4,7 @@ import { Link, useNavigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import ProductionLogin from "./ProductionLogin.jsx";
 import WarehouseLogin from "./WarehouseLogin.jsx";
+import DeliveryLogin from "./DeliveryLogin.jsx";
 function Emp_login({callbackfn}){
   const navigate = useNavigate();
   const[clickState,setClickState]=React.useState(0);
@@ -29,11 +30,13 @@ function Emp_login({callbackfn}){
       <div className={`login-col2 ${clickState==1 ? "active" : "inactive"}`}>
         <Link to='warehouse_mgr' onClick={toggleClickState}> Login as Warehouse Manager</Link>
         <Link to='production_mgr' onClick={toggleClickState}> Login as Production Manager</Link>
+        <Link to='delivery_mgr' onClick={toggleClickState}> Login as Delivery Manager</Link>
         </div>
         <div className="login-col3">
         <Routes>
           <Route path='warehouse_mgr' element={<WarehouseLogin/>}></Route>
           <Route path='production_mgr' element={<ProductionLogin/>}></Route>
+          <Route path='delivery_mgr' element={<DeliveryLogin/>}></Route>
         </Routes>
       </div>
     </div>

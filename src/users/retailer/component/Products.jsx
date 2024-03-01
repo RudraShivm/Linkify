@@ -2,6 +2,8 @@ import {React, useEffect, useState} from 'react'
 import axios from 'axios';
 import { Link,useParams } from 'react-router-dom';
 import TypingEffect from './TypingEffect';
+import Lottie from 'lottie-react';
+import animationData from './../../../../public/Animation - 1709300997815.json';
 import './Products.css';
 {/* <a href="https://www.flaticon.com/free-icons/truck" title="truck icons">Truck icons created by Pixel perfect - Flaticon</a> */}
 function Products() {
@@ -35,8 +37,8 @@ function Products() {
             <span className='brace'>&#10100;</span><TypingEffect/><span className='brace'>&#10101;</span>
             </div>
         </div>
-        <div className='home-img'>
-            <img src='/public/industry.gif'/>
+        <div className='lottie'>
+        <Lottie animationData={animationData}/>
         </div>
     </div>
     <div className='heading'>Products</div>
