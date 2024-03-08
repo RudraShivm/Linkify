@@ -749,7 +749,7 @@ app.post(
           }
         } catch (error) {
           console.error(error);
-          res.status(500).send("An error occurred while creating invoices");
+          res.send("An error occurred while creating invoices");
         }
       } else {
         res.send("Invoice already created");
@@ -795,7 +795,7 @@ app.post(
             }
           } catch (error) {
             console.error(error);
-            res.status(500).send("An error occurred while creating invoices");
+            res.send("An error occurred while creating invoices");
           }
         } else {
           res.send("Insufficient stock");
@@ -805,7 +805,7 @@ app.post(
       }
     } catch (error) {
       console.error(error);
-      res.status(500).send("An error occurred while creating invoices");
+      res.send("An error occurred while creating invoices");
     }
   }
 );
@@ -825,9 +825,9 @@ app.post(
 app.use((err, req, res) => {
   console.error(err.stack);
   if (err.message === "Not Found") {
-    res.status(404).send("Not Found");
+    res.send("Not Found");
   } else {
-    res.status(500).send("Something broke!");
+    res.send("Something broke!");
   }
 });
 const port = process.env.PORT || 3000;
