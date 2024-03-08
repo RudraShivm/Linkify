@@ -370,30 +370,22 @@ app.post(
     });
   }
 );
-app.get("/users/admin/ware_mgr",
-  async (req, res) => {
-    const result = await getAllWareMgrInfo();
-    res.send(result);
-  }
-);
-app.get("/users/admin/production_mgr",
-  async (req, res) => {
-    const result = await getAllProductionMgrInfo();
-    res.send(result);
-  }
-);
-app.get("/users/admin/delivery_mgr",
-  async (req, res) => {
-    const result = await getAllDeliveryMgrInfo();
-    res.send(result);
-  }
-);
-app.get("/users/admin/supply_mgr",
-  async (req, res) => {
-    const result = await getAllSupplyMgrInfo();
-    res.send(result);
-  }
-);
+app.get("/users/admin/ware_mgr", async (req, res) => {
+  const result = await getAllWareMgrInfo();
+  res.send(result);
+});
+app.get("/users/admin/production_mgr", async (req, res) => {
+  const result = await getAllProductionMgrInfo();
+  res.send(result);
+});
+app.get("/users/admin/delivery_mgr", async (req, res) => {
+  const result = await getAllDeliveryMgrInfo();
+  res.send(result);
+});
+app.get("/users/admin/supply_mgr", async (req, res) => {
+  const result = await getAllSupplyMgrInfo();
+  res.send(result);
+});
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/password",
   async (req, res) => {
@@ -822,12 +814,12 @@ app.post(
   }
 );
 
-app.use((err, req, res) => {
+app.use((err) => {
   console.error(err.stack);
   if (err.message === "Not Found") {
-    res.send("Not Found");
+    console.log("Not Found");
   } else {
-    res.send("Something broke!");
+    console.log(err);
   }
 });
 const port = process.env.PORT || 3000;

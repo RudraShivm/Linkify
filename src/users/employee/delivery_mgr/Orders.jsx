@@ -4,6 +4,7 @@ import { jsPDF as jspdf } from 'jspdf';
 import 'jspdf-autotable';
 import { Link, useParams,useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { baseurl } from '../../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/alert" title="alert icons">Alert icons created by feen - Flaticon</a> */}
 {/* <a href="https://www.flaticon.com/free-icons/warning" title="warning icons">Warning icons created by Creatype - Flaticon</a> */}
 function Orders() {
@@ -16,7 +17,7 @@ function Orders() {
 
     useEffect(() => {
         if(tableType === 'All'){
-            axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/invoice`)
+            axios.get(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/invoice`)
             .then(res => {
                 setInvoiceRow(res.data);
                 setFilteredRows(res.data);

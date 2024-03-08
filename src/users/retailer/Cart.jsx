@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './Cart.css';
+import { baseurl } from '../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/garbage-bin" title="garbage bin icons">Garbage bin icons created by Dragon Icons - Flaticon</a> */}
 function Cart() {
   let { retailer_id } = useParams();
@@ -15,8 +16,8 @@ function Cart() {
   }
   
   const [cartInfo, setCartInfo] = useState([]);
-  const url=`http://localhost:3000/users/retailer/home/${retailer_id}/getCart`;
-  const url2 = `http://localhost:3000/users/retailer/home/${retailer_id}/setCart`;
+  const url=`${baseurl}/users/retailer/home/${retailer_id}/getCart`;
+  const url2 = `${baseurl}/users/retailer/home/${retailer_id}/setCart`;
   
   
   useEffect(()=>{axios.get(url)
@@ -53,7 +54,7 @@ function Cart() {
 
   const checkout =async()=>{
     try{
-      const res=await fetch(`http://localhost:3000/users/retailer/home/${retailer_id}/create-payment-session`,{
+      const res=await fetch(`${baseurl}/users/retailer/home/${retailer_id}/create-payment-session`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -74,9 +75,9 @@ function Cart() {
       alert('Your cart is empty😞');
     } else {
       // const url=checkout();
-      // if(url===`http://localhost:3000/users/retailer/home/${retailer_id}/success`){
+      // if(url===`${baseurl}/users/retailer/home/${retailer_id}/success`){
         console.log("sda");
-        axios.post(`http://localhost:3000/users/retailer/home/${retailer_id}/placeOrder`, {cartInfo})
+        axios.post(`${baseurl}/users/retailer/home/${retailer_id}/placeOrder`, {cartInfo})
         .then(res => {
           console.log(res.data);
           if (res.data === 'Order placed successfully') {

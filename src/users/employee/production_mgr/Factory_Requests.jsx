@@ -1,12 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 
 function Factory_Requests() {
   const {mgr_id} = useParams();
   const [Factory_Requests, setFactory_Requests] = useState([]);
   useEffect(() => {
-    axios.get(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/factory_requests`)
+    axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/factory_requests`)
     .then(response => {
       setFactory_Requests(response.data);
     })

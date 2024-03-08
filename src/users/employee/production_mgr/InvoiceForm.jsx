@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState,useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import './InvoiceForm.css';
+import { baseurl } from '../../../baseurl';
 function InvoiceForm() {
     let params = useParams();
     const location = useLocation();
@@ -19,7 +20,7 @@ function InvoiceForm() {
 
     const handleClick = () => {
         if(reqData.every((reqData) => reqData.available_qty >= reqData.qty)){
-        axios.post(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/createInvoice`, {data: reqData})
+        axios.post(`${baseurl}/users/employee/production_mgr/${mgr_id}/createInvoice`, {data: reqData})
             .then((res) => {
                 if(res.data==="All invoices created successfully"){
                     if (timeoutRef.current) {

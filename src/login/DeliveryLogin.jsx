@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import LoginForm from './LoginForm';
+import { baseurl } from '../baseurl';
 
 function Login() {
   const navigate = useNavigate();
   const [mgr_id, setMgr_id] = useState(localStorage.getItem('mgr_id') || '');
   const [mgr_pass, setMgr_pass] = useState(localStorage.getItem('mgr_pass') || '');
   const [remember, setRemember] = useState(false);
-  const url=`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/password`;
+  const url=`${baseurl}/users/employee/delivery_mgr/${mgr_id}/password`;
 
   useEffect(() => {
     if (remember) {

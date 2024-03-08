@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { jsPDF as jspdf } from 'jspdf';
 import 'jspdf-autotable';
 import './Orders.css';
+import { baseurl } from '../../baseurl';
 
 {/* <a href="https://www.flaticon.com/free-icons/time-management" title="time management icons">Time management icons created by kmg design - Flaticon</a> */}
 function Orders() {
@@ -14,7 +15,7 @@ function Orders() {
   const [productModel, setProductModel] = useState({});
   const [invoiceInfo, setInvoiceInfo] = useState({});
   useEffect(() => {
-    axios.get(`http://localhost:3000/users/retailer/home/${retailer_id}/ordersID`)
+    axios.get(`${baseurl}/users/retailer/home/${retailer_id}/ordersID`)
     .then(res => {
       setOrderID(res.data);
     })
@@ -32,13 +33,13 @@ function Orders() {
       const newOrderInfo = [];
       const invoiceInfo = {};
       for (let i = 0; i < orderID.length; i++) {
-        const res = await axios.get(`http://localhost:3000/users/retailer/home/${retailer_id}/orders/${orderID[i].id}`);
+        const res = await axios.get(`${baseurl}/users/retailer/home/${retailer_id}/orders/${orderID[i].id}`);
         newOrderInfo.push(res.data);
-        const invoice = await axios.get(`http://localhost:3000/users/retailer/home/${retailer_id}/orders/${orderID[i].id}/invoice`);
+        const invoice = await axios.get(`${baseurl}/users/retailer/home/${retailer_id}/orders/${orderID[i].id}/invoice`);
         invoiceInfo[orderID[i].id]=invoice.data;
 
         for (const item of res.data) {
-          const res = await axios.get(`http://localhost:3000/users/retailer/home/${retailer_id}/products/${item.product_id}`);
+          const res = await axios.get(`${baseurl}/users/retailer/home/${retailer_id}/products/${item.product_id}`);
           newProductNames[item.id] = res.data[0].name;
           newProductModel[item.id] = res.data[0].model;
         }

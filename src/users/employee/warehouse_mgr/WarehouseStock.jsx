@@ -2,27 +2,28 @@ import axios from 'axios'
 import React, { useState,useEffect } from 'react'
 import { useParams,Link } from 'react-router-dom'
 import './WarehouseStock.css'
+import { baseurl } from '../../../baseurl';
 function WarehouseStock() {
     const {mgr_id}=useParams();
     const [warehouseStock, setWarehouseStock] = useState([]);
     const [pendingDemand, setPendingDemand] = useState([]);
     const [processingDemand, setProcessingDemand] = useState([]);
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`)
         .then(res => {
             setWarehouseStock(res.data);
         }).catch(err => {
             console.log(err);
         });
 
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/pending_demand`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/pending_demand`)
         .then(res => {
             setPendingDemand(res.data);
         }).catch(err => {
             console.log(err);
         });
         
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/processing_demand`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/processing_demand`)
         .then(res => {
             setProcessingDemand(res.data);
         }).catch(err => {

@@ -1,11 +1,12 @@
 import axios from 'axios';
 import React, { useEffect,useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 function Product_Stock() {
     const {mgr_id} = useParams();
     const [products, setProducts] = useState([]);
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/product_stock`)
+        axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/product_stock`)
         .then(response => {
             setProducts(response.data);
         })

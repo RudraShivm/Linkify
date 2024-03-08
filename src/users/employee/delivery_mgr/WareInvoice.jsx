@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 
 function WareInvoice() {
     let params = useParams();
@@ -16,7 +17,7 @@ function WareInvoice() {
 
     const handleClick = () => {
         if(invoice.every((invoice) => invoice.available_qty >= invoice.qty)){
-        axios.post(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/ware_invoice/make_delivery`, {data: invoice})
+        axios.post(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/ware_invoice/make_delivery`, {data: invoice})
             .then((res) => {
                 if(res.data==="All Warehouse Deliveries Confirmed"){
                     if (timeoutRef.current) {

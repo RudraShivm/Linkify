@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import './Dashboard.css';
 import Notification from './Notification';
 import NotificationComponent from './Notification';
+import { baseurl } from '../../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/alert" title="alert icons">Alert icons created by feen - Flaticon</a> */}
 {/* <a href="https://www.flaticon.com/free-icons/warning" title="warning icons">Warning icons created by Creatype - Flaticon</a> */}
 function Dashboard() {
@@ -17,12 +18,12 @@ function Dashboard() {
     const [expiredOrders,setExpiredOrders]=useState([]);
     const url1=`/user/employee/warehouse_mgr/home/${mgr_id}/orders`;
     const url2=`/user/employee/warehouse_mgr/home/${mgr_id}/ware_req`;
-    const url3=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/dashboard/pending_order_number`;
-    const url4=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/dashboard/pending_ware_req_number`;
-    const url5=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
-    const url6= `http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/nearingOrders`;
-    const url7= `http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/expiredOrders`;
-    const url8=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/dashboard/processing_order_number`;
+    const url3=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/dashboard/pending_order_number`;
+    const url4=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/dashboard/pending_ware_req_number`;
+    const url5=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
+    const url6= `${baseurl}/users/employee/warehouse_mgr/${mgr_id}/orders/nearingOrders`;
+    const url7= `${baseurl}/users/employee/warehouse_mgr/${mgr_id}/orders/expiredOrders`;
+    const url8=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/dashboard/processing_order_number`;
     useEffect(()=>{
         axios.get(url3)
         .then(res=>{

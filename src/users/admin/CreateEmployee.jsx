@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateEmployee.css';
 import axios from 'axios';
+import { baseurl } from '../../baseurl';
 function CreateEmployee() {
   const [employeeType, setEmployeeType] = useState('');
   const [bannerVisible, setBannerVisible] = useState(false);
@@ -39,7 +40,7 @@ const handleSubmit = (e) => {
     data.append('profile_picture', image);
     data.append('employeeType', employeeType);
     data.append('delivery_type', delivery_type);
-    axios.post('http://localhost:3000/users/admin/create_employee', data)
+    axios.post(`${baseurl}/users/admin/create_employee`, data)
     .then((res) => {
         if(res.data==="Employee created successfully"){
             if (timeoutRef.current) {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState,useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 function Invoice() {
     let params = useParams();
     const [invoice, setInvoice] = useState([]);
@@ -12,7 +13,7 @@ function Invoice() {
     const id = params.order_id;
     const mgr_id = params.mgr_id;
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/retailer/home/${mgr_id}/orders/${id}/invoice`)
+        axios.get(`${baseurl}/users/retailer/home/${mgr_id}/orders/${id}/invoice`)
         .then(res => {
             setInvoice(res.data);
             setTotalAmount(res.data.reduce((sum, currentOrder) => sum + (parseInt(currentOrder?.paid_amount,10) || 0), 0));
@@ -25,7 +26,7 @@ function Invoice() {
     };
 
     const handleClick = () => {
-        axios.post(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/retailer/invoice/confirm_delivery`, {order_id: id})
+        axios.post(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/retailer/invoice/confirm_delivery`, {order_id: id})
         .then((res) => {
             console.log(res.data);
             if(res.data==="Order delivery confirmed successfully"){

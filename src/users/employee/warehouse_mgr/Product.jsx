@@ -2,6 +2,7 @@ import axios from 'axios';
 import { React, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Product.css';
+import { baseurl } from '../../../baseurl';
 
 function Product() {
     const  navigate  = useNavigate();
@@ -9,7 +10,7 @@ function Product() {
     const {mgr_id}=useParams();
     const[data,setData]=useState([]);
 
-    const url=`http://localhost:3000/users/employee/products/${product_id}`;
+    const url=`${baseurl}/users/employee/products/${product_id}`;
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");};
     useEffect(() => {

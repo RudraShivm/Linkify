@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './AddToCart.css';
+import { baseurl } from '../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/shopping-cart" title="shopping cart icons">Shopping cart icons created by Pixel perfect - Flaticon</a> */}
 function AddToCart({cartVisible,toggleAddToCart, visibleStatefn,setBannerVisible,setBannerinfo}) {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ function AddToCart({cartVisible,toggleAddToCart, visibleStatefn,setBannerVisible
         setQty(value);
     }
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/retailer/home/${retailer_id}/products/${product_id}/queryCart`)
+        axios.get(`${baseurl}/users/retailer/home/${retailer_id}/products/${product_id}/queryCart`)
         .then(res => {
             setCart(res.data);
         })
@@ -37,7 +38,7 @@ function AddToCart({cartVisible,toggleAddToCart, visibleStatefn,setBannerVisible
         }
             if(cart.length>0){
                 console.log('Product already in cart');
-                axios.post(`http://localhost:3000/users/retailer/home/${retailer_id}/products/${product_id}/updateCart`, postobj)
+                axios.post(`${baseurl}/users/retailer/home/${retailer_id}/products/${product_id}/updateCart`, postobj)
                 .then(() => {
                         console.log('Updated Cart Successfully!');
                         if (timeoutRef.current) {
@@ -52,7 +53,7 @@ function AddToCart({cartVisible,toggleAddToCart, visibleStatefn,setBannerVisible
                         })
                     }else{
                 console.log('Product already not in cart');
-                axios.post(`http://localhost:3000/users/retailer/home/${retailer_id}/products/${product_id}/addToCart`, postobj)
+                axios.post(`${baseurl}/users/retailer/home/${retailer_id}/products/${product_id}/addToCart`, postobj)
                 .then(() => {
                     console.log('Added To Cart Successfully!');
                     if (timeoutRef.current) {

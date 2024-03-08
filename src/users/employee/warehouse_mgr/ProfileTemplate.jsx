@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './Profile.css';
+import { baseurl } from '../../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/user" title="user icons">User icons created by Freepik - Flaticon</a> */}
 function ProfileTemplate({mgr_id,designation}) {
     const [data,setData]=useState([]);
-    const url=`http://localhost:3000/users/employee/${designation}/${mgr_id}/profile`;
+    const url=`${baseurl}/users/employee/${designation}/${mgr_id}/profile`;
     
     useEffect(() => {
         axios.get(url)

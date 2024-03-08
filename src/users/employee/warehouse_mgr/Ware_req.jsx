@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import Filter from './Filter';
 import './Orders.css';
+import { baseurl } from '../../../baseurl';
 
 const Ware_req = () => {
     const { mgr_id } = useParams();
@@ -29,7 +30,7 @@ const Ware_req = () => {
     }
     
     useEffect(() => {
-        let url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/ware_req?warehouse_stock_id=${warehouse_stock_id}&request_date=${request_date}&factory_id=${factory_id}`;
+        let url=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/ware_req?warehouse_stock_id=${warehouse_stock_id}&request_date=${request_date}&factory_id=${factory_id}`;
         axios.get(url)
         .then(res => {
             setReqdata(res.data);

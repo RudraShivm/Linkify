@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import "./EditEmployee.css";
+import { baseurl } from '../../baseurl';
 function EditEmployee() {
   const [tableType, setTableType] = useState('Warehouse');
   const [bannerVisible, setBannerVisible] = useState(false);
@@ -14,28 +15,28 @@ function EditEmployee() {
   const [editData, setEditData] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/users/admin/ware_mgr`)
+    axios.get(`${baseurl}/users/admin/ware_mgr`)
     .then(res => {
         setWare_mgr(res.data);
     })
     .catch(err => {
         console.log(err);
     })
-    axios.get(`http://localhost:3000/users/admin/production_mgr`)
+    axios.get(`${baseurl}/users/admin/production_mgr`)
     .then(res => {
         setProduction_mgr(res.data);
     })
     .catch(err => {
         console.log(err);
     })
-    axios.get(`http://localhost:3000/users/admin/delivery_mgr`)
+    axios.get(`${baseurl}/users/admin/delivery_mgr`)
     .then(res => {
         setDelivery_mgr(res.data);
     })
     .catch(err => {
         console.log(err);
     })
-    axios.get(`http://localhost:3000/users/admin/supply_mgr`)
+    axios.get(`${baseurl}/users/admin/supply_mgr`)
     .then(res => {
         setSupply_mgr(res.data);
     })

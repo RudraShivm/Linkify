@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 
 function SubmitFactoryReq() {
     const {mgr_id} = useParams();
@@ -11,7 +12,7 @@ function SubmitFactoryReq() {
     const timeoutRef = useRef(null);
     const [updatedData, setUpdatedData] = useState([]);
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/raw_stock`)
+        axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/raw_stock`)
         .then(response => {
             setRaw_stock(response.data);
         })
@@ -20,7 +21,7 @@ function SubmitFactoryReq() {
         })
     }, [mgr_id]);
     const handleUpdate =()=>{
-        axios.post(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/submit_factory_req`, {data:updatedData?updatedData:[]})
+        axios.post(`${baseurl}/users/employee/production_mgr/${mgr_id}/submit_factory_req`, {data:updatedData?updatedData:[]})
         .then(response => {
             console.log(response.data);
             if(response.data==="Factory request created successfully"){

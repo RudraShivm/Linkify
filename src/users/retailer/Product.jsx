@@ -3,6 +3,7 @@ import { React, useEffect, useState } from 'react';
 import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import AddToCart from './AddToCart';
 import './Product.css';
+import { baseurl } from '../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/right" title="right icons">Right icons created by inkubators - Flaticon</a> */}
 {/* <a href="https://www.flaticon.com/free-icons/left" title="left icons">Left icons created by th studio - Flaticon</a> */}
 function Product() {
@@ -22,7 +23,7 @@ function Product() {
     else setCartVisible(1);
   };
 
-  const url = `http://localhost:3000/users/retailer/home/${retailer_id}/products/${product_id}`;
+  const url = `${baseurl}/users/retailer/home/${retailer_id}/products/${product_id}`;
   const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };

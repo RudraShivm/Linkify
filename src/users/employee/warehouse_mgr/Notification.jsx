@@ -1,12 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 
 const NotificationComponent= ()=> {
     const {mgr_id}=useParams();
     const [stock,setStock]=useState([]);
     const [pendingDemand, setPendingDemand] = useState([]);
-    const url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
+    const url=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
     
     useEffect(()=>{
         axios.get(url)
@@ -17,7 +18,7 @@ const NotificationComponent= ()=> {
             console.log(err)
         })
 
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/pending_demand`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/pending_demand`)
         .then(res => {
             setPendingDemand(res.data);
             console.log(res.data);

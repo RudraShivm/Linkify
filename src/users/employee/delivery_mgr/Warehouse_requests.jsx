@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 
 function Warehouse_requests() {
     const { mgr_id } = useParams();
@@ -9,7 +10,7 @@ const [tableType, setTableType] = useState('All');
 const [filteredData, setFilteredData] = useState([]);
   const navigate = useNavigate();
 useEffect(() => {
-    axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/ware_invoice`)
+    axios.get(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/ware_invoice`)
     .then(res => {
         setReqdata(res.data);
     })

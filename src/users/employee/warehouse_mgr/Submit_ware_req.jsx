@@ -3,14 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 // import './orders.css'
 import './Submit_ware_req.css'
+import { baseurl } from '../../../baseurl';
 function Submit_ware_req() {
     const { mgr_id } = useParams();
     const [factory_info,setFactory_info]=useState([]);
     const [warehouse_stock,setWarehouse_stock]=useState([]);
     const [selected, setSelected] = useState([]);
 
-    const url1=`http://localhost:3000/factory_info`;
-    const url2=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
+    const url1=`${baseurl}/factory_info`;
+    const url2=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
 
     useEffect(() => {
         axios.get(url1)
@@ -61,7 +62,7 @@ function Submit_ware_req() {
                     ware_stock_id: item.ware_stock_id,
                     qty: item.qty,    
                 }
-                axios.post(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/ware_req/submit`, postobj)
+                axios.post(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/ware_req/submit`, postobj)
                 .then(res => {
                     console.log(res);
                     console.log(res.data);

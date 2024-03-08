@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import InvoiceForm from './InvoiceForm';
+import { baseurl } from '../../../baseurl';
 function FactoryRequests() {
   const {mgr_id} = useParams();
   const [file, setFile] = useState(null);
@@ -35,7 +36,7 @@ function FactoryRequests() {
       };
     }, []);
     useEffect(() => {
-      axios.get(`http://localhost:3000/users/employee/supply_mgr/${mgr_id}/factory_requests`)
+      axios.get(`${baseurl}/users/employee/supply_mgr/${mgr_id}/factory_requests`)
       .then(response => {
         setFactory_Requests(response.data);
       })
@@ -73,7 +74,7 @@ function FactoryRequests() {
     const formData = new FormData();
     formData.append('pdf', file);
 
-    axios.post(`http://localhost:3000/users/employee/supply_mgr/${mgr_id}/factory_req/${reqID}/submit_invoice`, formData, {
+    axios.post(`${baseurl}/users/employee/supply_mgr/${mgr_id}/factory_req/${reqID}/submit_invoice`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -105,7 +106,7 @@ function FactoryRequests() {
   };
   const handleClick = (id,status) => {
     if(status=="pending"){
-        axios.post(`http://localhost:3000/users/employee/supply_mgr/${mgr_id}/factory_req/${id}/process`)
+        axios.post(`${baseurl}/users/employee/supply_mgr/${mgr_id}/factory_req/${id}/process`)
         .then((res) => {
             setFactory_Requests(res.data);
             setFilteredData(res.data);

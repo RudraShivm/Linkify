@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState,useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import "./InvoiceForm.css";
+import { baseurl } from '../../../baseurl';
 function InvoiceForm() {
     let params = useParams();
     const [order, setOrder] = useState([]);
@@ -13,7 +14,7 @@ function InvoiceForm() {
     const id = params.order_id;
     const mgr_id = params.mgr_id;
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/${id}`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/orders/${id}`)
         .then(res => {
             setOrder(res.data);
             setTotalAmount(res.data.reduce((sum, currentOrder) => sum + (currentOrder?.paid_amount || 0), 0));
@@ -27,7 +28,7 @@ function InvoiceForm() {
 
     const handleClick = () => {
         if(order.every((order) => order.available_qty >= order.qty)){
-        axios.post(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/${id}/createInvoice`, {data: order})
+        axios.post(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/${id}/createInvoice`, {data: order})
         .then((res) => {
             if(res.data==="All invoices created successfully"){
                 if (timeoutRef.current) {

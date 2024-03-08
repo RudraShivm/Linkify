@@ -2,12 +2,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import './Notification.css';
+import { baseurl } from '../../../baseurl';
 const NotificationComponent= ()=> {
     const {mgr_id}=useParams();
     const [stock,setStock]=useState([]);
     const [pendingDemand, setPendingDemand] = useState([]);
     const [log,setLog]=useState([]);
-    const url=`http://localhost:3000/users/employee/production_mgr/${mgr_id}/missing_logs`;
+    const url=`${baseurl}/users/employee/production_mgr/${mgr_id}/missing_logs`;
     
     useEffect(()=>{
         axios.get(url)

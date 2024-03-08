@@ -4,6 +4,7 @@ import 'jspdf-autotable';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams,useNavigate } from 'react-router-dom';
 import './Orders.css';
+import { baseurl } from '../../../baseurl';
 const Orders = () => {
     const { mgr_id } = useParams();
     const [orders, setOrders] = useState([]);
@@ -13,7 +14,7 @@ const Orders = () => {
     const [bannerColor, setBannerColor] = useState('green');
   const timeoutRef = useRef(null);
     const navigate = useNavigate();
-    const url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders`;
+    const url=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/orders`;
 
     useEffect(() => {
         axios.get(url)
@@ -35,7 +36,7 @@ const Orders = () => {
             console.log(err);
         })
     }else if(tableType === 'Pending'){
-            axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/pendingorders`)
+            axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/pendingorders`)
             .then(res => {
                 setOrders(res.data);
             })
@@ -43,7 +44,7 @@ const Orders = () => {
                 console.log(err);
             })
     }else if(tableType === 'Processing'){
-            axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/processingorders`)
+            axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/processingorders`)
             .then(res => {
                 setOrders(res.data);
             })
@@ -88,7 +89,7 @@ const Orders = () => {
     }
     const handleClick = (id, status) => {
         if(status === 'pending'){
-            axios.post(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/processOrder`, {id:id})
+            axios.post(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/orders/processOrder`, {id:id})
             .then (res => {
                 if(res.data==='Insufficient stock'){
                     if (timeoutRef.current) {

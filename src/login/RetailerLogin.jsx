@@ -2,13 +2,14 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { baseurl } from '../baseurl';
 
 function Login() {
   const navigate = useNavigate();
   const [retailer_id, setRetailer_id] = useState(localStorage.getItem('retailer_id') || '');
   const [retailer_pass, setRetailer_pass] = useState(localStorage.getItem('retailer_pass') || '');
   const [remember, setRemember] = useState(false);
-  const url=`http://localhost:3000/users/retailer/${retailer_id}/password`;
+  const url=`${baseurl}/users/retailer/${retailer_id}/password`;
 
   useEffect(() => {
     if (remember) {

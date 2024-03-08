@@ -5,6 +5,7 @@ import './Warehouse_Requests.css';
 import InvoiceButton from './InvoiceButton';
 import InvoiceForm from './InvoiceForm';
 import ProcessButton from './ProcessButton';
+import { baseurl } from '../../../baseurl';
 function Warehouse_Requests() {
   const { mgr_id } = useParams();
   const [reqdata, setReqdata] = useState([]);
@@ -19,7 +20,7 @@ function Warehouse_Requests() {
   const [selected, setSelected] = useState([]);
     const navigate = useNavigate();
   useEffect(() => {
-      axios.get(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/ware_req`)
+      axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/ware_req`)
       .then(res => {
           setReqdata(res.data);
       })
@@ -57,7 +58,7 @@ function Warehouse_Requests() {
       };
     const handleClick = (id,status) => {
         if(status=="pending"){
-            axios.post(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/ware_req/${id}/process`)
+            axios.post(`${baseurl}/users/employee/production_mgr/${mgr_id}/ware_req/${id}/process`)
             .then((res) => {
                 setReqdata(res.data);
                 setFilteredData(res.data);

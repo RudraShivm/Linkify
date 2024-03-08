@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useParams } from 'react-router-dom';
+import { baseurl } from '../../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/logout" title="logout icons">Logout icons created by Uniconlabs - Flaticon</a> */}
 const Home = () => {
     const { mgr_id } = useParams();
@@ -9,14 +10,14 @@ const Home = () => {
     const [factory_delivery_mgr, setFactory_delivery_mgr] = useState([]);
 
     useEffect(() => {
-      axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/factory`)
+      axios.get(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/factory`)
       .then(response => {
         setFactory_delivery_mgr(response.data);
       })
       .catch(error => {
         console.log(error);
       })
-      axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/warehouse`)
+      axios.get(`${baseurl}/users/employee/delivery_mgr/${mgr_id}/warehouse`)
       .then(response => {
         setWarehouse_delivery_mgr(response.data);
       })

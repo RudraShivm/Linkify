@@ -2,12 +2,13 @@ import React from 'react'
 import { useParams,Link, useNavigate, Route, Routes } from 'react-router-dom'
 import { useState,useEffect } from 'react'
 import axios from 'axios'
+import { baseurl } from '../../../baseurl';
 function Invoice() {
     const {mgr_id}=useParams();
     const [processingorders, setProcessingorders] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {
-        axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/processingorders`)
+        axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/processingorders`)
         .then(res => {
             setProcessingorders(res.data);
         })

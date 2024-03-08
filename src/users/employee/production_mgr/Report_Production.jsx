@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState,useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './Report_Production.css';
+import { baseurl } from '../../../baseurl';
 function Report_Production() {
   const {mgr_id} = useParams();
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ function Report_Production() {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/report_log`)
+    axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/report_log`)
     .then(response => {
       setData(response.data.map(item => ({...item, date: toLocalISOString(new Date(item.date))})));
       const startDate = new Date('2024-02-29');
@@ -50,7 +51,7 @@ function Report_Production() {
         };
       }
     }).filter(item => item!==undefined);
-    axios.post(`http://localhost:3000/users/employee/production_mgr/${mgr_id}/report_log`, {data:updatedData?updatedData:[]})
+    axios.post(`${baseurl}/users/employee/production_mgr/${mgr_id}/report_log`, {data:updatedData?updatedData:[]})
     .then(response => {
       if(response.data==="All production logs created successfully"){
         if (timeoutRef.current) {
