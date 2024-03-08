@@ -1,1 +1,1 @@
-export const baseurl = 'http://localhost:8000';
+export const baseurl = 'https://linkify-3pk6.onrender.com';
