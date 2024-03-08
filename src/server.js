@@ -72,7 +72,7 @@ import {
   setCart,
   submitInvoiceSupplyMgr,
   updateCart,
-} from "./database.js";
+} from "./backend/database.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
