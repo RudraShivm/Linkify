@@ -2,7 +2,7 @@ import axios from 'axios';
 import { jsPDF as jspdf } from 'jspdf';
 import 'jspdf-autotable';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams,useNavigate } from 'react-router-dom';
 import './Orders.css';
 const Orders = () => {
     const { mgr_id } = useParams();
@@ -12,6 +12,7 @@ const Orders = () => {
   const [bannerinfo, setBannerinfo] = useState('');
     const [bannerColor, setBannerColor] = useState('green');
   const timeoutRef = useRef(null);
+    const navigate = useNavigate();
     const url=`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders`;
 
     useEffect(() => {
@@ -112,6 +113,8 @@ const Orders = () => {
             .catch(err => {
                 console.log(err);
             })
+        }else if(status === 'processing'){
+            navigate(`/user/employee/warehouse_mgr/home/${mgr_id}/Invoice/${id}/form`);
         }
     }
     const switchAll = () => {

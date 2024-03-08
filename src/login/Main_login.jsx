@@ -5,6 +5,7 @@ import Emp_login from "./Emp_login";
 import RetailerLogin from "./RetailerLogin";
 import Lottie from "lottie-react";
 import animationData from "./../../public/laptop.json";
+import AdminLogin from "./AdminLogin";
 function Main_login() {
   const [clickState, setClickState] = React.useState(0);
   useEffect(() => {

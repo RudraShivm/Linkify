@@ -5,6 +5,7 @@ import "./App.css";
 import ProductionLogin from "./ProductionLogin.jsx";
 import WarehouseLogin from "./WarehouseLogin.jsx";
 import DeliveryLogin from "./DeliveryLogin.jsx";
+import SupplyLogin from "./SupplyLogin.jsx";
 function Emp_login({callbackfn}){
   const navigate = useNavigate();
   const[clickState,setClickState]=React.useState(0);
@@ -31,12 +32,14 @@ function Emp_login({callbackfn}){
         <Link to='warehouse_mgr' onClick={toggleClickState}> Login as Warehouse Manager</Link>
         <Link to='production_mgr' onClick={toggleClickState}> Login as Production Manager</Link>
         <Link to='delivery_mgr' onClick={toggleClickState}> Login as Delivery Manager</Link>
+        <Link to='supply_mgr' onClick={toggleClickState}> Login as Supply Manager</Link>
         </div>
         <div className="login-col3">
         <Routes>
           <Route path='warehouse_mgr' element={<WarehouseLogin/>}></Route>
           <Route path='production_mgr' element={<ProductionLogin/>}></Route>
           <Route path='delivery_mgr' element={<DeliveryLogin/>}></Route>
+          <Route path='supply_mgr' element={<SupplyLogin/>}></Route>
         </Routes>
       </div>
     </div>

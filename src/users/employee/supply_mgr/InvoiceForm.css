@@ -1,0 +1,70 @@
+.form-container {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.form-container .nested-box1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  width: 40%;
+  height: 40%;
+  background-color: rgb(28, 28, 28);
+  border-radius: 10px;
+}
+#invoice-form-btn {
+  margin-top: 10px;
+  width: 100px;
+  height: 30px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#invoice-form-btn:hover {
+  background-color: #45a049;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #cee1ed;
+  color: #080808;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+  background-color: #66e7ee;
+}
+.invoice-form-table {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 100;
+  margin-bottom: 32px;
+}
+.invoice-form-back-img {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}

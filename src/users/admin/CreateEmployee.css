@@ -1,0 +1,75 @@
+/* CreateEmployee.css */
+
+.form-container2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  /* background-color: #f5f5f5; */
+}
+
+.form-container2 form {
+  background: #2d2d2d;
+  width: 70%;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container2 form div {
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+.form-container2 form label {
+  /* display:; */
+  color: #ddd;
+  width: 30%;
+  margin-right: 10px;
+  font: var(--pr-font-family);
+  font-weight: var(--pr-font-weight);
+  font-style: var(--pr-font-style);
+  font-size: 1.1rem;
+}
+.form-container2 form select {
+  height: 30px;
+  border-radius: 4px;
+  /* padding: 10px; */
+}
+.form-container2 form input[type="text"],
+.form-container2 form input[type="password"],
+.form-container2 form input[type="number"],
+.form-container2 form input[type="date"] {
+  /* width: 100%; */
+  height: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin: 5px 0px;
+  font-size: 1.1rem;
+}
+#admin-file-input {
+  display: flex;
+  background-color: #f6fbb9;
+  /* height: 30px; */
+  padding: 10px;
+  border-radius: 4px;
+}
+.form-container2 form input[type="submit"] {
+  /* height: 10px; */
+  background-color: #007bff;
+  font-size: 1.1rem;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-container2 form input[type="submit"]:hover {
+  background-color: #0056b3;
+}

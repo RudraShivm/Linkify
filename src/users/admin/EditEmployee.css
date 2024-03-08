@@ -1,0 +1,22 @@
+.right-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  min-height: 100vh;
+}
+.table-container2 > table {
+  margin: 10px 0px;
+}
+.table-container2 {
+  width: 90%;
+}
+#admin_table {
+  animation: transitionIN 0.5s ease-in-out;
+  background-color: #fff;
+  width: 100%;
+  border-collapse: collapse;
+  /* border-radius: 20px 20px 0px 0px; */
+  border-spacing: 0;
+  border: 1px solid #ddd;
+}

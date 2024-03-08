@@ -30,6 +30,7 @@
 .order-item-status > .pending,
 .order-item-status > .processing,
 .order-item-status > .delivered,
+.order-item-status > .completed,
 .order-item-status > .delivery-pending {
   display: flex;
   align-items: center;
@@ -50,6 +51,9 @@
   background-color: #eb84f6;
 }
 .order-item-status > .delivered {
+  background-color: #33f139;
+}
+.order-item-status > .completed {
   background-color: #33f139;
 }
 .order-item-exp-delivery-date > img {

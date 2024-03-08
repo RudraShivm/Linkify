@@ -1,0 +1,17 @@
+#process-button {
+  position: absolute;
+  bottom: 20px;
+  right: 165px;
+  width: 128px;
+  height: 35px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: #63edeff0;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  animation: transitionPOP 0.2s ease-in-out;
+}

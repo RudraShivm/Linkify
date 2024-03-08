@@ -25,7 +25,7 @@ function Invoice() {
     };
 
     const handleClick = () => {
-        axios.post(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/invoice/confirm_delivery`, {order_id: id})
+        axios.post(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/retailer/invoice/confirm_delivery`, {order_id: id})
         .then((res) => {
             console.log(res.data);
             if(res.data==="Order delivery confirmed successfully"){
@@ -66,10 +66,6 @@ function Invoice() {
             <td>{invoice[0]?.order_place_date.split(`T`)[0]}</td>
         </tr>
         <tr>
-            <td><b>Order Delivery Date</b></td>
-            <td>{invoice[0]?.exp_delivery_date.split(`T`)[0]}</td>
-        </tr>
-        <tr>
             <td style={{'paddingRight':'100px'}}><b>Retailer Store Name</b></td>
             <td>{invoice[0]?.store_name}</td>
         </tr>
@@ -84,6 +80,22 @@ function Invoice() {
         <tr>
             <td><b>Paid Amount</b></td>
             <td>{numberWithCommas(totalAmount)} bdt</td>
+        </tr>
+        <tr>
+            <td><b>Issued by</b></td>
+            <td>{invoice[0]?.warehouse_mgr_name}</td>
+        </tr>
+        <tr>
+            <td><b>Issue Date</b></td>
+            <td>{invoice[0]?.issue_date.split(`T`)[0]}</td>
+        </tr>
+        <tr>
+            <td><b>Delivered by</b></td>
+            <td>{invoice[0]?.delivery_mgr_name}</td>
+        </tr>
+        <tr>
+            <td><b>Delivery Date</b></td>
+            <td>{(new Date()).toISOString().split('T')[0]}</td>
         </tr>
     </tbody>
     </table>

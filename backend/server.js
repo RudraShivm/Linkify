@@ -1,20 +1,34 @@
 import cors from "cors";
 import express from "express";
-import stripe from "stripe";
+import multer from "multer";
 import process from "process";
+import stripe from "stripe";
 import {
   addToCart,
-  confirmDelivery,
+  confirmDeliveryRetailer,
+  createEmployee,
+  createFactoryReq,
   createInvoice,
-  getAllInvoice,
+  createInvoiceFactory,
+  getAdminPass,
+  getAllDeliveryMgrInfo,
   getAllProductInfo,
+  getAllProductionMgrInfo,
+  getAllSupplyMgrInfo,
+  getAllWareMgrInfo,
   getCart,
   getDeliveryMgrInfo,
   getDeliveryMgrPass,
+  getFactoryDeliveryMgr,
+  getFactoryReqProductionMgr,
+  getFactoryReqSupplyMgr,
   getFactoryStock,
   getFactoryinfo,
   getGroupedOrders,
   getInvoice,
+  getInvoiceDeliveryMgr,
+  getInvoiceWarehouse,
+  getMissingLogs,
   getOrders,
   getOrdersByID,
   getPendingDemand,
@@ -26,13 +40,18 @@ import {
   getProcessingOrders,
   getProductInfoByID,
   getProductMgrPass,
+  getProductionLog,
   getRawStock,
   getRetailerOrdersID,
   getRetailerOrdersbyID,
   getRetailerPass,
+  getSupplyMgrInfo,
+  getSupplyMgrPass,
+  getWareInvoiceDelivery,
   getWareMgrInfo,
   getWareMgrPass,
   getWareRequests,
+  getWareRequestsFactory,
   getWareRequests_with_d_filter,
   getWareRequests_with_df_filter,
   getWareRequests_with_f_filter,
@@ -40,26 +59,38 @@ import {
   getWareRequests_with_sd_filter,
   getWareRequests_with_sdf_filter,
   getWareRequests_with_sf_filter,
-  getWareStocks,
+  getWarehouseDeliveryMgr,
+  getWarehouseStock,
+  makeProductionLog,
   makeWareReq,
+  makeWarehouseDelivery,
   placeOrder,
   processOrder,
+  processReqProductionMgr,
+  processReqSupplyMgr,
   queryCart,
   setCart,
+  submitInvoiceSupplyMgr,
   updateCart,
 } from "./database.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const stripeInstance = stripe(
   "sk_test_51OiJl9Lgd2pARuX3fCxFbkgZuJGLzlTJi4dzbjJss22wyOlj9UeD64HTy0XlTYrtdH2Y3PUPoG8QiT9TEQKOsV3I00r6vLRxn0"
 );
-app.get("/lol", (req, res) => {
-  res.json({
-    message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",
-  });
-});
+
+app.post(
+  "/users/employee/supply_mgr/:supply_mgr_id/factory_req/:req_id/submit_invoice",
+  upload.single("pdf"),
+  async (req, res) => {
+    await submitInvoiceSupplyMgr(req.file, req.params.req_id).then((result) => {
+      res.send(result);
+    });
+  }
+);
 
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/orders",
@@ -124,6 +155,7 @@ app.get(
     res.send(result);
   }
 );
+
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/pending_demand",
   async (req, res) => {
@@ -216,6 +248,63 @@ app.get(
     }
   }
 );
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/ware_req",
+  async (req, res) => {
+    const result = await getWareRequestsFactory(req.params.production_mgr_id);
+    // console.log(result);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/ware_invoice",
+  async (req, res) => {
+    const result = await getWareInvoiceDelivery(req.params.delivery_mgr_id);
+    res.send(result);
+  }
+);
+app.post(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/ware_invoice/make_delivery",
+  async (req, res) => {
+    const promises = req.body.data.map((item) => {
+      if (req.body.data.some((item) => item.status === "delivered")) {
+        return "Delivery already recorded for request(s)";
+      }
+      return makeWarehouseDelivery(item.id, item.warehouse_id);
+    });
+    try {
+      const results = await Promise.all(promises);
+      if (
+        results.every(
+          (result) => result === "Warehouse delivery confirmed successfully"
+        )
+      ) {
+        res.send("All Warehouse Deliveries Confirmed");
+      } else {
+        res.send("Some warehouse deliveries were not created successfully");
+      }
+    } catch (err) {
+      console.log(err);
+      res.send("Error occured while making warehouse delivery");
+    }
+  }
+);
+app.post(
+  "/users/employee/production_mgr/:production_mgr_id/ware_req/:req_id/process",
+  async (req, res) => {
+    await processReqProductionMgr(req.params.req_id);
+    const result = await getWareRequestsFactory(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.post(
+  "/users/employee/supply_mgr/:supply_mgr_id/factory_req/:req_id/process",
+  async (req, res) => {
+    await processReqSupplyMgr(req.params.req_id);
+    const result = await getFactoryReqSupplyMgr(req.params.supply_mgr_id);
+    res.send(result);
+  }
+);
 app.get("/factory_info", async (req, res) => {
   const result = await getFactoryinfo();
   res.send(result);
@@ -223,7 +312,7 @@ app.get("/factory_info", async (req, res) => {
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/warehouse_stock",
   async (req, res) => {
-    const result = await getWareStocks(req.params.warehouse_mgr_id);
+    const result = await getWarehouseStock(req.params.warehouse_mgr_id);
     res.send(result);
   }
 );
@@ -232,10 +321,76 @@ app.post(
   async (req, res) => {
     const result = await makeWareReq(
       req.body.warehouse_id,
-      req.body.production_mgr_id,
       req.body.ware_stock_id,
+      req.body.factory_id,
       req.body.qty
     );
+    res.send(result);
+  }
+);
+// app.get("/pic", async (req, res) => {
+//   const result = await getPic(1230000026);
+//   console.log("result" + result);
+//   if (result.length > 0) {
+//     const imageData = result[0].profile_picture;
+//     res.writeHead(200, {
+//       "Content-Type": "image/png",
+//       "Content-Length": imageData.length,
+//     });
+//     res.end(imageData);
+//   } else {
+//     return "No image found";
+//   }
+// });
+
+app.post(
+  "/users/admin/create_employee",
+  multer().single("profile_picture"),
+  async (req, res) => {
+    console.log(req.body);
+    console.log(req.file); // This will log the uploaded file
+
+    // You can access the uploaded file from req.file
+    const profile_picture = req.file.buffer;
+
+    await createEmployee(
+      req.body.employeeType,
+      req.body.name,
+      profile_picture,
+      req.body.nid,
+      req.body.mobile_no,
+      req.body.password,
+      req.body.joining_date,
+      req.body.salary,
+      req.body.department_id,
+      req.body.delivery_type
+    ).then((result) => {
+      console.log("result" + result);
+      res.send(result);
+    });
+  }
+);
+app.get("/users/admin/ware_mgr",
+  async (req, res) => {
+    const result = await getAllWareMgrInfo();
+    res.send(result);
+  }
+);
+app.get("/users/admin/production_mgr",
+  async (req, res) => {
+    const result = await getAllProductionMgrInfo();
+    res.send(result);
+  }
+);
+app.get("/users/admin/delivery_mgr",
+  async (req, res) => {
+    const result = await getAllDeliveryMgrInfo();
+    res.send(result);
+  }
+);
+app.get("/users/admin/supply_mgr",
+  async (req, res) => {
+    const result = await getAllSupplyMgrInfo();
     res.send(result);
   }
 );
@@ -265,6 +420,17 @@ app.get(
   }
 );
 app.get(
+  "/users/employee/supply_mgr/:supply_mgr_id/password",
+  async (req, res) => {
+    const result = await getSupplyMgrPass(req.params.supply_mgr_id);
+    res.send(result);
+  }
+);
+app.get("/users/admin/:admin_id/password", async (req, res) => {
+  const result = await getAdminPass(req.params.admin_id);
+  res.send(result);
+});
+app.get(
   "/users/employee/production_mgr/:production_mgr_id/product_stock",
   async (req, res) => {
     const result = await getFactoryStock();
@@ -274,10 +440,115 @@ app.get(
 app.get(
   "/users/employee/production_mgr/:production_mgr_id/raw_stock",
   async (req, res) => {
+    const result = await getRawStock(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/report_log",
+  async (req, res) => {
+    const result = await getProductionLog(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/factory_requests",
+  async (req, res) => {
+    const result = await getFactoryReqProductionMgr(
+      req.params.production_mgr_id
+    );
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/supply_mgr/:supply_mgr_id/factory_requests",
+  async (req, res) => {
+    console.log(req.params.supply_mgr_id);
+    const result = await getFactoryReqSupplyMgr(req.params.supply_mgr_id);
+    res.send(result);
+  }
+);
+app.post(
+  "/users/employee/production_mgr/:production_mgr_id/submit_factory_req",
+  async (req, res) => {
+    console.log("aaaaaa" + JSON.stringify(req.body.data));
+    const promises = req.body.data.map(async (data) => {
+      return createFactoryReq(
+        req.params.production_mgr_id,
+        data.qty,
+        data.stock_id
+      );
+    });
+    try {
+      const results = await Promise.all(promises);
+      console.log(results);
+      if (
+        results.every(
+          (result) => result === "Factory request created successfully"
+        )
+      ) {
+        res.send("Factory request created successfully");
+      } else {
+        res.send("Some factory request(s) were not created successfully");
+      }
+    } catch (err) {
+      console.log(err);
+      res.send("Error occured while creating factory request");
+    }
+  }
+);
+app.post(
+  "/users/employee/production_mgr/:production_mgr_id/report_log",
+  async (req, res) => {
+    const promises = req.body.data.map((data) => {
+      return makeProductionLog(
+        req.params.production_mgr_id,
+        data.date,
+        data.qty
+      );
+    });
+    try {
+      const results = await Promise.all(promises);
+      if (
+        results.every(
+          (result) => result === "Production log created successfully"
+        )
+      ) {
+        console.log("s");
+        res.send("All production logs created successfully");
+      } else if (
+        results.some((result) => result === "Production log already exists")
+      ) {
+        res.send("Some production logs were already created!");
+      } else if (
+        results.some((result) => result === "Insufficient raw material")
+      ) {
+        res.send("Insufficient raw material for some log(s). Try again!");
+      }
+    } catch (err) {
+      console.log(err);
+      res.send("Error occured while making production log");
+    }
+  }
+);
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/warehouse_requests",
+  async (req, res) => {
     const result = await getRawStock();
     res.send(result);
   }
 );
+app.get(
+  "/users/employee/production_mgr/:production_mgr_id/missing_logs",
+  async (req, res) => {
+    const result = await getMissingLogs(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.get("/users/employee/products/:product_id", async (req, res) => {
+  const result = await getProductInfoByID(req.params.product_id);
+  res.send(result);
+});
 app.get(
   "/users/employee/warehouse_mgr/:warehouse_mgr_id/profile",
   async (req, res) => {
@@ -289,6 +560,13 @@ app.get(
   "/users/employee/delivery_mgr/:delivery_mgr_id/profile",
   async (req, res) => {
     const result = await getDeliveryMgrInfo(req.params.delivery_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/supply_mgr/:supply_mgr_id/profile",
+  async (req, res) => {
+    const result = await getSupplyMgrInfo(req.params.supply_mgr_id);
     res.send(result);
   }
 );
@@ -324,13 +602,7 @@ app.get(
     res.send(result);
   }
 );
-app.get(
-  "/users/retailer/home/warehouse_mgr/products/:product_id",
-  async (req, res) => {
-    const result = await getProductInfoByID(req.params.product_id);
-    res.send(result);
-  }
-);
+
 app.post(
   "/users/retailer/home/:retailer_id/products/:product_id/addToCart",
   async (req, res) => {
@@ -424,7 +696,7 @@ app.get(
 app.get(
   "/users/employee/delivery_mgr/:delivery_mgr_id/invoice",
   async (req, res) => {
-    const result = await getAllInvoice(req.params.order_id);
+    const result = await getInvoiceDeliveryMgr(req.params.delivery_mgr_id);
     res.send(result);
   }
 );
@@ -432,6 +704,20 @@ app.get(
   "/users/retailer/home/:retailer_id/orders/:order_id/invoice",
   async (req, res) => {
     const result = await getInvoice(req.params.order_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/warehouse",
+  async (req, res) => {
+    const result = await getWarehouseDeliveryMgr(req.params.delivery_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
+  "/users/employee/delivery_mgr/:delivery_mgr_id/factory",
+  async (req, res) => {
+    const result = await getFactoryDeliveryMgr(req.params.delivery_mgr_id);
     res.send(result);
   }
 );
@@ -471,11 +757,63 @@ app.post(
     });
   }
 );
+app.post(
+  "/users/employee/production_mgr/:production_mgr_id/createInvoice",
+  async (req, res) => {
+    const promises2 = req.body.data.map((req2) => {
+      return getInvoiceWarehouse(req2.id);
+    });
+    try {
+      const results2 = await Promise.all(promises2);
+      if (results2.every((result) => result.length === 0)) {
+        if (
+          req.body.data.every(
+            (req2) => req2.factory_available_qty >= req2.issue_qty
+          )
+        ) {
+          const promises = req.body.data.map((req2) => {
+            return createInvoiceFactory(
+              req.params.production_mgr_id,
+              req2.id,
+              req2.factory_id,
+              req2.ware_stock_id,
+              req2.issue_qty,
+              req2.factory_stock_id
+            );
+          });
+
+          try {
+            const results = await Promise.all(promises);
+            if (
+              results.every(
+                (result) => result === "Invoice created successfully"
+              )
+            ) {
+              res.send("All invoices created successfully");
+            } else {
+              res.send("Some invoices were not created successfully");
+            }
+          } catch (error) {
+            console.error(error);
+            res.status(500).send("An error occurred while creating invoices");
+          }
+        } else {
+          res.send("Insufficient stock");
+        }
+      } else {
+        res.send("Invoice already created");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred while creating invoices");
+    }
+  }
+);
 
 app.post(
-  "/users/employee/delivery_mgr/:delivery_mgr_id/invoice/confirm_delivery",
+  "/users/employee/delivery_mgr/:delivery_mgr_id/retailer/invoice/confirm_delivery",
   async (req, res) => {
-    const result = await confirmDelivery(req.body.order_id);
+    const result = await confirmDeliveryRetailer(req.body.order_id);
     if (result === "Order delivery confirmed successfully") {
       res.send(result);
     } else {

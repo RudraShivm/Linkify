@@ -20,7 +20,8 @@ function Raw_Stock() {
     <div className='heading'>
       Raw Materials Stock
     </div>
-    <p className='info2'>Production Mgr ID :: {mgr_id}</p>
+    <span className='info2'><b>Production Mgr ID ::</b> {mgr_id}</span>
+    <span className='info2'><b>Factory ID ::</b> {materials[0]?.factory_id}</span>
     <div className='table-container'>
 
     <table className='table' id='orders-table'>
@@ -28,9 +29,9 @@ function Raw_Stock() {
             <tr>
                 <th className='table-th'>Raw Mat ID</th>
                 <th className='table-th'>Name</th>
+                <th className='table-th'>Unit Price</th>
                 <th className='table-th'>Type</th>
-                <th className='table-th'>Product Name</th>
-                <th className='table-th'>Model</th>
+                <th className='table-th'>Supplier</th>
                 <th className='table-th'>Available Qty</th>
             </tr>
             </thead>
@@ -40,11 +41,11 @@ function Raw_Stock() {
                         return (
                             <tr key={material.factory_stock_id} >
                                 <td className='table-td'>{material.raw_mat_id}</td>
-                                <td className='table-td'>{material.product_id}</td>
                                 <td className='table-td'>{material.name}</td>
-                                <td className='table-td'>{material.model}</td>
+                                <td className='table-td'>{material.unit_price}</td>
+                                <td className='table-td'>{material.type}</td>
+                                <td className='table-td'>{material.company}</td>
                                 <td className='table-td'>{material.available_qty}</td>
-                                <td className='table-td'>{material.city}</td>
                             </tr>
                         );
                     }

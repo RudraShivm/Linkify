@@ -1,0 +1,28 @@
+#report-table {
+  width: 50%;
+  border-collapse: collapse;
+}
+.fixed-btn {
+  position: fixed;
+  bottom: 2px;
+  z-index: 100;
+}
+.input-number {
+  width: 100px;
+  border-radius: 10px;
+  /* height: 40px; */
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 1.1em;
+}
+.input-number:focus {
+  /* outline: none; */
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.extra-box2 {
+  height: 100px;
+}

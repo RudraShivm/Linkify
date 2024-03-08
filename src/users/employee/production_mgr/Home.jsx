@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link, Outlet, useParams,useNavigate } from 'react-router-dom';
-import NotificationComponent from './../warehouse_mgr/Notification';
+import { Link, Outlet, useParams,useNavigate, Routes, Route } from 'react-router-dom';
+import NotificationComponent from './Notification';
 import Stock from './Stock';
+import InvoiceForm from './InvoiceForm';
 {/* <a href="https://www.flaticon.com/free-icons/logout" title="logout icons">Logout icons created by Uniconlabs - Flaticon</a> */}
 const Home = () => {
     const { mgr_id } = useParams();
@@ -35,6 +36,7 @@ const Home = () => {
   const url3=`/user/employee/production_mgr/home/${mgr_id}/report_production`
   const url4=`/user/employee/production_mgr/home/${mgr_id}/warehouse_requests`
     const url5=`/user/employee/production_mgr/home/${mgr_id}/factory_requests`
+    const url6=`/user/employee/production_mgr/home/${mgr_id}/submit_factory_requests`
     const toggleNotification = () => { 
       setShowNotification(!showNotification);
     };
@@ -48,7 +50,8 @@ const Home = () => {
             <Link to="#" onClick={()=>{resetNotification();toggleVisibility()}} className='navlink'>Stock</Link>
             <Link to={url3} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Report Production</Link>
             <Link to={url4} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Warehouse Requests</Link>
-            <Link to={url5} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Factory Requests</Link>
+            <Link to={url5} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Factory Requests</Link> 
+            <Link to={url6} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Submit Request</Link> 
             <Link to="#" onClick={()=>{toggleNotification();setVisible(false)}} className='navlink noti-icon'>
               🔔
             </Link>

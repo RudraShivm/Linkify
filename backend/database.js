@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import process from "process";
 import pg from "pg";
+import { raw } from "mysql2";
 dotenv.config();
 
 // const pool = pg
@@ -17,7 +18,7 @@ const { Pool } = pg;
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
-  database: "Linkify",
+  database: "Linkify2",
   password: "123",
   port: 5432,
 });
@@ -46,7 +47,7 @@ export async function getOrders(warehouse_mgr_id) {
 }
 export async function getOrdersByID(warehouse_mgr_id, order_id) {
   const res = await pool.query(
-    `SELECT Orders.*,P.name,P.model,P.picture1,C.store_name,C.owner_name,C.city,WS.available_qty,WS.id AS warehouse_stock_id
+    `SELECT Orders.*,W.name as mgr_name,P.name,P.model,P.picture1,C.store_name,C.owner_name,C.city,WS.available_qty,WS.id AS warehouse_stock_id
     FROM Orders 
     JOIN Product P ON Orders.product_id = P.id
     JOIN Customer C ON Orders.customer_id = C.id
@@ -105,8 +106,7 @@ export async function getPendingDemand(warehouse_mgr_id) {
     FROM Orders O JOIN warehouse_mgr Wm ON O.warehouse_mgr_id=Wm.id 
     RIGHT OUTER JOIN warehouse_stock W ON O.product_id=W.product_id AND W.warehouse_id=Wm.warehouse_id
     WHERE O.warehouse_mgr_id= $1 AND O.status='pending'
-    GROUP BY W.id
-    ORDER BY W.id::INTEGER ASC;`,
+    GROUP BY W.id`,
     [warehouse_mgr_id]
   );
   return res.rows;
@@ -117,8 +117,7 @@ export async function getProcessingDemand(warehouse_mgr_id) {
     FROM Orders O JOIN warehouse_mgr Wm ON O.warehouse_mgr_id=Wm.id 
     RIGHT OUTER JOIN warehouse_stock W ON O.product_id=W.product_id AND W.warehouse_id=Wm.warehouse_id
     WHERE O.warehouse_mgr_id= $1 AND O.status='processing'
-    GROUP BY W.id
-    ORDER BY W.id::INTEGER ASC;`,
+    GROUP BY W.id`,
     [warehouse_mgr_id]
   );
   return res.rows;
@@ -205,6 +204,36 @@ export async function getDeliveryMgrPass(delivery_mgr_id) {
   console.log(res.rows);
   return res.rows;
 }
+
+export async function getAllWareMgrInfo() {
+  const res = await pool.query(
+    `SELECT * FROM Warehouse_mgr`,
+    []
+  );
+  return res.rows;
+}
+export async function getAllProductionMgrInfo() {
+  const res = await pool.query(
+    `SELECT * FROM Production_mgr`,
+    []
+  );
+  return res.rows;
+}
+export async function getAllDeliveryMgrInfo() {
+  const res = await pool.query(
+    `SELECT * FROM Delivery_mgr`,
+    []
+  );
+  return res.rows;
+}
+export async function getAllSupplyMgrInfo() {
+  const res = await pool.query(
+    `SELECT * FROM Supply_mgr`,
+    []
+  );
+  return res.rows;
+}
+
 export async function getWareMgrInfo(warehouse_mgr_id) {
   const res = await pool.query(
     `SELECT * FROM Warehouse_mgr
@@ -231,7 +260,8 @@ export async function getWarehouseStock(warehouse_mgr_id) {
       FROM Warehouse_stock W 
       JOIN Warehouse_mgr M USING(warehouse_id)
       JOIN Product P ON W.product_id = P.id
-      WHERE M.id = $1`,
+      WHERE M.id = $1
+      ORDER BY W.id ASC`,
     [warehouse_mgr_id]
   );
   return res.rows;
@@ -254,31 +284,312 @@ export async function getPendingWareReqNumber(warehouse_mgr_id) {
   ]);
   return res.rows;
 }
-export async function getWareStocks(warehouse_mgr_id) {
+// export async function getWareStocks(warehouse_mgr_id) {
+//   const res = await pool.query(
+//     `SELECT P.*, W.*
+//     FROM warehouse_stock W JOIN warehouse_mgr M ON W.warehouse_id=M.warehouse_id
+//     JOIN Product P ON W.product_id=P.id
+//     WHERE M.id = $1`,
+//     [warehouse_mgr_id]
+//   );
+//   return res.rows;
+// }
+export async function makeWareReq(
+  warehouse_id,
+  ware_stock_id,
+  factory_id,
+  qty
+) {
+  const production_mgr_id = await pool.query(
+    `SELECT PR.id, SUM(CASE WHEN WR.id IS NULL THEN 0 ELSE 1 END) as count
+    FROM production_mgr PR 
+    LEFT OUTER JOIN Ware_request WR ON PR.id = WR.production_mgr_id
+    WHERE factory_id = $1
+    GROUP BY PR.id
+    ORDER BY count ASC;`,
+    [factory_id]
+  );
+  await pool.query(
+    `INSERT INTO Ware_request(warehouse_id,production_mgr_id,ware_stock_id,request_date,qty) VALUES ($1,$2,$3,now(),$4)`,
+    [warehouse_id, production_mgr_id.rows[0]?.id, ware_stock_id, qty]
+  );
+}
+// export async function getPic(warehouse_mgr_id) {
+//   const res = await pool.query(
+//     `SELECT profile_picture FROM Warehouse_mgr
+//       WHERE id = $1`,
+//     [warehouse_mgr_id]
+//   );
+//   return res.rows;
+// }
+export async function createEmployee(
+  employee_type,
+  name,
+  profile_picture,
+  nid,
+  mobile_no,
+  password,
+  joining_date,
+  salary,
+  department_id,
+  delivery_type
+) {
+  const pattern = /^\d{3}-\d{3}-\d{4}$/;
+  if (!pattern.test(nid)) {
+    return "NID is not valid";
+  }
+  if (
+    mobile_no.toString().substring(0, 2) != "01" ||
+    mobile_no.toString().length !== 11
+  ) {
+    return "Mobile number is not valid";
+  }
+  if(password.length < 8 || password.length > 20 ){
+    return "Password length should be between 8 to 20";
+  }
+  if (employee_type === "warehouse_manager") {
+    return pool
+      .query(`SELECT * FROM Warehouse WHERE id = $1`, [department_id])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          return pool.query(
+            `INSERT INTO Warehouse_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary,warehouse_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+            [
+              name,
+              profile_picture,
+              nid,
+              mobile_no,
+              password,
+              joining_date,
+              salary,
+              department_id,
+            ]
+          );
+        } else {
+          console.log("Warehouse not found");
+          return "Warehouse not found";
+        }
+      })
+      .then((res) => {
+        if (res === "Warehouse not found") {
+          return "Warehouse not found";
+        } else {
+          return "Employee created successfully";
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (employee_type === "production_manager") {
+    return pool
+      .query(`SELECT * FROM Factory WHERE id = $1`, [department_id])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          return pool.query(
+            `INSERT INTO Production_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary,factory_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+            [
+              name,
+              profile_picture,
+              nid,
+              mobile_no,
+              password,
+              joining_date,
+              salary,
+              department_id,
+            ]
+          );
+        } else {
+          return "Factory not found";
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (employee_type === "supply_manager") {
+    return pool
+      .query(`SELECT * FROM Factory WHERE id = $1`, [department_id])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          return pool.query(
+            `INSERT INTO Supply_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary,factory_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+            [
+              name,
+              profile_picture,
+              nid,
+              mobile_no,
+              password,
+              joining_date,
+              salary,
+              department_id,
+            ]
+          );
+        } else {
+          return "Factory not found";
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (employee_type === "delivery_manager") {
+    if (delivery_type[0] === "warehouse") {
+      return pool
+        .query(`SELECT * FROM Warehouse WHERE id = $1`, [department_id])
+        .then((res) => {
+          if (res.rows.length > 0) {
+            console.log("warehousdddddddde");
+            return pool
+              .query(
+                `INSERT INTO Delivery_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+                [
+                  name,
+                  profile_picture,
+                  nid,
+                  mobile_no,
+                  password,
+                  joining_date,
+                  salary,
+                ]
+              )
+              .then((res) => {
+                return pool.query(
+                  `INSERT INTO Warehouse_delivery(warehouse_id,delivery_mgr_id) VALUES ($1,$2)`,
+                  [department_id, res.rows[0].id]
+                );
+              })
+              .then(() => {
+                return "Employee created successfully";
+              });
+          } else {
+            return "Warehouse not found";
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          return "Error in creating employee";
+        });
+    } else if (delivery_type[0] === "factory") {
+      return pool
+        .query(`SELECT * FROM Factory WHERE id = $1`, [department_id])
+        .then((res) => {
+          if (res.rows.length > 0) {
+            return pool
+              .query(
+                `INSERT INTO Delivery_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+                [
+                  name,
+                  profile_picture,
+                  nid,
+                  mobile_no,
+                  password,
+                  joining_date,
+                  salary,
+                ]
+              )
+              .then((res) => {
+                return pool.query(
+                  `INSERT INTO Factory_delivery(factory_id,delivery_mgr_id) VALUES ($1,$2)`,
+                  [department_id, res.rows[0].id]
+                );
+              })
+              .then(() => {
+                return "Employee created successfully";
+              });
+          } else {
+            return "Factory not found";
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          return "Error in creating employee";
+        });
+    }
+  }
+}
+export async function processReqProductionMgr(req_id) {
+  await pool.query(
+    `UPDATE Ware_request SET status = 'processing' WHERE id = $1`,
+    [req_id]
+  );
+}
+export async function processReqSupplyMgr(req_id) {
+  await pool.query(
+    `UPDATE Factory_request SET status = 'processing' WHERE id = $1`,
+    [req_id]
+  );
+}
+export async function submitInvoiceSupplyMgr(file, request_id) {
+  const { buffer } = file;
+  console.log("ds");
+  return pool
+    .query(
+      "INSERT INTO Factory_invoice (factory_req_id,invoice_file) VALUES ($2,$1)",
+      [buffer, request_id]
+    )
+    .then(() => {
+      return pool.query(
+        "UPDATE Factory_request SET status = 'completed' WHERE id = $1",
+        [request_id]
+      );
+    })
+    .then(() => {
+      return "Invoice submitted successfully";
+    })
+    .catch((error) => {
+      console.error(error);
+      return "Error in submitting invoice";
+    });
+}
+export async function getWareRequestsFactory(production_mgr_id) {
   const res = await pool.query(
-    `SELECT P.*, W.*
-    FROM warehouse_stock W JOIN warehouse_mgr M ON W.warehouse_id=M.warehouse_id
-    JOIN Product P ON W.product_id=P.id
-    WHERE M.id = $1`,
-    [warehouse_mgr_id]
+    `SELECT WR.*,R.available_qty,R.product_id,R.model,P.factory_id,P.name as mgr_name,R.name,F.factory_stock_id,R.city,F.available_qty as factory_available_qty
+    FROM Ware_request WR 
+    JOIN Production_mgr P ON P.id=WR.production_mgr_id
+    JOIN Factory F ON P.factory_id=F.id
+    JOIN (
+      SELECT W.id,W.available_qty,PR.id as product_id,PR.name,PR.model,WH.city as city 
+      FROM Warehouse_stock W
+      JOIN Product PR on W.product_id = PR.id
+      JOIN Warehouse WH ON W.warehouse_id = WH.id
+    ) R ON WR.ware_stock_id = R.id
+    WHERE P.id = $1
+    ORDER BY WR.request_date DESC`,
+    [production_mgr_id]
   );
   return res.rows;
 }
-export async function makeWareReq(
-  warehouse_id,
-  production_mgr_id,
-  ware_stock_id,
-  qty
-) {
-  await pool.query(
-    `INSERT INTO Ware_request(warehouse_id,production_mgr_id,ware_stock_id,request_date,qty) VALUES ($1,$2,$3,now(),$4)`,
-    [warehouse_id, production_mgr_id, ware_stock_id, qty]
+export async function getWareInvoiceDelivery(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT WR.*,R.available_qty,R.product_id,R.model,P.factory_id,P.name as mgr_name,R.name,F.factory_stock_id,R.city,F.available_qty as factory_available_qty,D.name as delivery_mgr_name,WI.issue_date,WI.issue_qty
+    FROM Ware_request WR 
+    JOIN Ware_invoice WI ON WR.id=WI.ware_req_id
+    JOIN Delivery_mgr D ON WI.delivery_mgr_id=D.id
+    JOIN Production_mgr P ON P.id=WR.production_mgr_id
+    JOIN Factory F ON P.factory_id=F.id
+    JOIN (
+      SELECT W.id,W.available_qty,PR.id as product_id,PR.name,PR.model,WH.city as city 
+      FROM Warehouse_stock W
+      JOIN Product PR on W.product_id = PR.id
+      JOIN Warehouse WH ON W.warehouse_id = WH.id
+    ) R ON WR.ware_stock_id = R.id
+    WHERE WI.delivery_mgr_id = $1
+    ORDER BY 
+    CASE 
+      WHEN WR.status = 'delivery-pending' THEN 1
+      WHEN WR.status = 'delivered' THEN 2
+      ELSE 3
+    END, 
+    WR.warehouse_id ASC,
+    WR.request_date DESC`,
+    [delivery_mgr_id]
   );
+  return res.rows;
 }
-
 export async function getWareRequests(warehouse_mgr_id) {
   const res = await pool.query(
-    `SELECT W.* ,R.*,P.factory_id,P.city
+    `SELECT W.* ,R.id as ware_stock_id,R.product_id,R.model,P.factory_id,P.city
     FROM Ware_request W 
     JOIN 
     Warehouse_mgr M USING(warehouse_id)
@@ -430,6 +741,24 @@ export async function getProductMgrPass(production_mgr_id) {
   console.log(res.rows);
   return res.rows;
 }
+export async function getSupplyMgrPass(supply_mgr_id) {
+  const res = await pool.query(
+    `SELECT passwords FROM Supply_mgr
+      WHERE id = $1`,
+    [supply_mgr_id]
+  );
+  console.log(res.rows);
+  return res.rows;
+}
+export async function getAdminPass(admin_id) {
+  const res = await pool.query(
+    `SELECT secret FROM Admin
+      WHERE id = $1`,
+    [admin_id]
+  );
+  console.log(res.rows);
+  return res.rows;
+}
 export async function getAllProductInfo() {
   const res = await pool.query(`SELECT * FROM Product`);
   return res.rows;
@@ -577,6 +906,14 @@ export async function getDeliveryMgrInfo(delivery_mgr_id) {
   );
   return res.rows;
 }
+export async function getSupplyMgrInfo(supply_mgr_id) {
+  const res = await pool.query(
+    `SELECT * FROM Supply_mgr
+      WHERE id = $1`,
+    [supply_mgr_id]
+  );
+  return res.rows;
+}
 
 export async function getProductbyID(product_id) {
   const res = await pool.query(
@@ -608,6 +945,28 @@ export async function getAllInvoice() {
   );
   return res.rows == undefined ? [] : res.rows;
 }
+export async function getInvoiceDeliveryMgr(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT C.*,D.name as delivery_mgr_name,W.name as warehouse_mgr_name,CC.id as customer_id,CC.store_name,CC.owner_name,CC.city,O.order_place_date,P.name,P.model,O.exp_delivery_date,O.status
+    FROM Customer_invoice C 
+    JOIN Orders O ON C.order_id = O.id AND C.order_sub_id = O.sub_id
+    JOIN Product P ON C.product_id = P.id
+    JOIN Customer CC ON O.customer_id = CC.id
+    JOIN Delivery_mgr D ON C.delivery_mgr_id = D.id
+    JOIN Warehouse_mgr W ON C.warehouse_mgr_id = W.id
+    WHERE C.delivery_mgr_id = $1
+    ORDER BY 
+    CASE 
+      WHEN O.status = 'delivery-pending' THEN 1
+      WHEN O.status = 'completed' THEN 2
+      ELSE 4
+    END,
+    O.exp_delivery_date DESC,
+    C.order_sub_id ASC`,
+    [delivery_mgr_id]
+  );
+  return res.rows == undefined ? [] : res.rows;
+}
 export async function getInvoice(order_id) {
   const res = await pool.query(
     `SELECT C.*,D.name as delivery_mgr_name,W.name as warehouse_mgr_name,CC.store_name,CC.owner_name,CC.city,O.order_place_date,P.name,P.model,O.exp_delivery_date
@@ -635,17 +994,13 @@ export async function createInvoice(
     `SELECT M.id as M_id, COUNT(CI.order_id) as countOrder
     FROM Delivery_mgr M
     JOIN 
-    (
-    SELECT C.city
-    FROM Orders O JOIN Customer C ON O.customer_id=C.id
-    WHERE O.id = $1
-    GROUP BY C.city
-    ) R
-    ON M.branch_city= R.city
+    Warehouse_delivery WD ON M.id = WD.delivery_mgr_id
+    JOIN Warehouse_mgr W ON W.warehouse_id = WD.warehouse_id
     LEFT OUTER JOIN Customer_invoice CI ON CI.delivery_mgr_id=M.id
+    WHERE W.id = $1
     GROUP BY M.id
     ORDER BY countOrder ASC;`,
-    [order_id]
+    [warehouse_mgr_id]
   );
   await pool.query(
     `INSERT INTO Customer_invoice (order_id,order_sub_id,qty,ware_stock_id,warehouse_mgr_id,delivery_mgr_id,product_id,paid_amount) VALUES
@@ -673,12 +1028,82 @@ export async function createInvoice(
   return "Invoice created successfully";
 }
 
-export async function confirmDelivery(order_id) {
+export async function getInvoiceWarehouse(ware_req_id) {
+  const res = await pool.query(
+    `SELECT W.*
+    FROM Ware_invoice W
+    WHERE W.ware_req_id = $1`,
+    [ware_req_id]
+  );
+  return res.rows;
+}
+
+export async function createInvoiceFactory(
+  production_mgr_id,
+  ware_req_id,
+  factory_id,
+  ware_stock_id,
+  issue_qty,
+  factory_stock_id
+) {
+  const compatible_delivery_mgr_ID = await pool.query(
+    `SELECT M.id as M_id, COUNT(WI.ware_req_id) as countOrder
+    FROM Delivery_mgr M
+    JOIN 
+    Factory_delivery WD ON M.id = WD.delivery_mgr_id
+    JOIN Production_mgr P ON P.factory_id = WD.factory_id
+    LEFT OUTER JOIN Ware_invoice WI ON WI.delivery_mgr_id=M.id
+    WHERE P.id = $1
+    GROUP BY M.id
+    ORDER BY countOrder ASC;`,
+    [production_mgr_id]
+  );
+  return pool
+    .query(
+      `INSERT INTO Ware_invoice(ware_req_id,factory_id,ware_stock_id,issue_date,issue_qty,delivery_mgr_id) values ($1,$2,$3,$4,$5,$6)`,
+      [
+        ware_req_id,
+        factory_id,
+        ware_stock_id,
+        mysqlDate(),
+        issue_qty,
+        compatible_delivery_mgr_ID.rows[0]?.m_id,
+      ]
+    )
+    .then(() => {
+      return pool.query(
+        `UPDATE Factory SET available_qty = available_qty - $1 WHERE factory_stock_id = $2`,
+        [issue_qty, factory_stock_id]
+      );
+    })
+    .then(() => {
+      return pool.query(
+        `UPDATE Ware_request SET status = 'delivery-pending' WHERE id = $1`,
+        [ware_req_id]
+      );
+    })
+    .then(() => {
+      return "Invoice created successfully";
+    })
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
+}
+
+export async function confirmDeliveryRetailer(order_id) {
   try {
-    await pool.query(`UPDATE Orders SET status = 'delivered' WHERE id = $1`, [
-      order_id,
-    ]);
-    return "Order delivery confirmed successfully";
+    return await pool
+      .query(`UPDATE Orders SET status = 'delivered' WHERE id = $1`, [order_id])
+      .then(() => {
+        return pool.query(
+          `UPDATE Customer_invoice SET delivery_date=CURRENT_DATE WHERE order_id=$1`,
+          [order_id]
+        );
+      })
+      .then(() => {
+        return "Order delivery confirmed successfully";
+      });
   } catch (error) {
     console.error(error);
     throw error;
@@ -700,18 +1125,195 @@ export async function getFactoryStock() {
   const res = await pool.query(
     `SELECT F.*,P.name,P.model
     FROM Factory F
-    JOIN Product P ON F.product_id = P.id`
+    JOIN Product P ON F.product_id = P.id
+    ORDER BY P.id ASC`
   );
   console.log(res.rows);
   return res.rows;
 }
-export async function getRawStock() {
+export async function getRawStock(production_mgr_id) {
   const res = await pool.query(
-    `SELECT F.raw_mat_id,R.id AS raw_mat_id,R.name AS raw_mat_name,R.type
+    `SELECT F.*,R.id as raw_id,R.name,R.company,R.type,S.manager_name,S.email_address
     FROM Factory_raw_stock F
+    JOIN Production_mgr M ON F.factory_id = M.factory_id
     JOIN Raw_material R ON R.id = F.raw_mat_id
-    GROUP BY F.raw_mat_id`
+    JOIN Supplier S ON R.company = S.company
+    WHERE M.id = $1`,
+    [production_mgr_id]
   );
   console.log(res.rows);
+  return res.rows;
+}
+export async function getProductionLog(production_mgr_id) {
+  const res = await pool.query(
+    `SELECT P.*,PM.factory_id
+    FROM Factory_production_log P
+    JOIN Production_mgr PM ON PM.factory_id = P.factory_id
+    WHERE PM.id = $1`,
+    [production_mgr_id]
+  );
+  return res.rows;
+}
+export async function makeProductionLog(production_mgr_id, date, qty) {
+  const factoryID = await pool.query(
+    `SELECT factory_id FROM Production_mgr WHERE id = $1`,
+    [production_mgr_id]
+  );
+  const log = await pool.query(
+    `SELECT * FROM Factory_production_log WHERE factory_id = $1 AND date = TO_DATE($2,'YYYY-MM-DD')`,
+    [factoryID.rows[0]?.factory_id, date]
+  );
+  const raw_stock = await pool.query(
+    `SELECT FR.*,PR.qty 
+    FROM Factory_raw_stock FR 
+    JOIN Factory F ON FR.factory_id = F.id
+    JOIN Product_raw_rel PR ON PR.product_id=F.product_id AND PR.raw_material_id=FR.raw_mat_id 
+    WHERE factory_id = $1`,
+    [factoryID.rows[0]?.factory_id]
+  );
+  try {
+    if (log.rows.length == 0) {
+      if (
+        raw_stock.rows.every((item) => item.available_qty >= item.qty * qty)
+      ) {
+        await pool.query(
+          `INSERT INTO Factory_production_log(factory_id,date,qty) VALUES ($1,TO_DATE($2,'YYYY-MM-DD'),$3)`,
+          [factoryID.rows[0]?.factory_id, date, qty]
+        );
+        await pool.query(
+          `UPDATE Factory SET available_qty = available_qty + $1 WHERE id = $2`,
+          [qty, factoryID.rows[0]?.factory_id]
+        );
+        for (const item of raw_stock.rows) {
+          console.log(JSON.stringify(item));
+          await pool.query(
+            `UPDATE Factory_raw_stock SET available_qty = available_qty - ($2::integer * $1::integer) WHERE factory_id = $3 AND raw_mat_id = $4`,
+            [qty, item.qty, factoryID.rows[0]?.factory_id, item.raw_mat_id]
+          );
+        }
+        return "Production log created successfully";
+      } else {
+        return "Insufficient raw material";
+      }
+    } else {
+      return "Production log already exists";
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+export async function getMissingLogs(production_mgr_id) {
+  const factoryID = await pool.query(
+    `SELECT factory_id FROM Production_mgr WHERE id = $1`,
+    [production_mgr_id]
+  );
+  const res = await pool.query(
+    `WITH date_range AS (
+      SELECT generate_series(
+        TO_DATE('2024-03-01','YYYY-MM-DD'),
+        CURRENT_DATE,
+        '1 day'::interval
+      ) AS date
+    )
+    SELECT date_range.date
+    FROM date_range
+    LEFT JOIN factory_production_log ON factory_production_log.date = date_range.date AND factory_production_log.factory_id = $1
+    WHERE factory_production_log.date IS NULL;`,
+    [factoryID.rows[0]?.factory_id]
+  );
+  return res.rows;
+}
+export async function getFactoryReqProductionMgr(production_mgr_id) {
+  const res = await pool.query(
+    `SELECT F.*,R.name as raw_name,R.type,R.company,FR.*
+    FROM Factory_request FR
+    JOIN Factory_raw_stock F ON FR.factory_raw_stock_id = F.id
+    JOIN Raw_material R ON F.raw_mat_id = R.id
+    WHERE FR.production_mgr_id = $1`,
+    [production_mgr_id]
+  );
+  return res.rows;
+}
+export async function getFactoryReqSupplyMgr(supply_mgr_id) {
+  const res = await pool.query(
+    `SELECT F.*,R.name as raw_name,R.type,R.company,FR.*
+    FROM Factory_request FR
+    JOIN Factory_raw_stock F ON FR.factory_raw_stock_id = F.id
+    JOIN Supply_mgr S ON F.factory_id = S.factory_id
+    JOIN Raw_material R ON F.raw_mat_id = R.id
+    WHERE S.id = $1`,
+    [supply_mgr_id]
+  );
+  return res.rows;
+}
+
+export async function createFactoryReq(production_mgr_id, qty, stock_id) {
+  return pool
+    .query(
+      `INSERT INTO Factory_request(req_date,production_mgr_id,status,factory_raw_stock_id,qty) VALUES (CURRENT_DATE,$1,'pending',$2,$3)`,
+      [production_mgr_id, stock_id, qty]
+    )
+    .then(() => {
+      return "Factory request created successfully";
+    })
+    .catch((error) => {
+      console.error(error);
+      return "Error occured while creating factory request";
+    });
+}
+export async function getWarehouseDeliveryMgr(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT D.delivery_mgr_id
+    FROM Warehouse_delivery D
+    WHERE D.delivery_mgr_id = $1`,
+    [delivery_mgr_id]
+  );
+  return res.rows;
+}
+export async function getFactoryDeliveryMgr(delivery_mgr_id) {
+  const res = await pool.query(
+    `SELECT D.delivery_mgr_id
+    FROM Factory_delivery D
+    WHERE D.delivery_mgr_id = $1`,
+    [delivery_mgr_id]
+  );
+  return res.rows;
+}
+
+export async function makeWarehouseDelivery(ware_req_id, warehouse_id) {
+  try {
+    return await pool
+      .query(`UPDATE Ware_request SET status = 'delivered' WHERE id = $1`, [
+        ware_req_id,
+      ])
+      .then(() => {
+        return pool.query(
+          `UPDATE Ware_invoice SET delivery_date = CURRENT_DATE WHERE ware_req_id = $1`,
+          [ware_req_id]
+        );
+      })
+      .then(() => {
+        return pool.query(
+          `UPDATE Warehouse_stock SET available_qty = available_qty + (SELECT qty FROM Ware_request WHERE id = $1) WHERE warehouse_id = $2`,
+          [ware_req_id, warehouse_id]
+        );
+      })
+      .then(() => {
+        return "Warehouse delivery confirmed successfully";
+      });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getWareInvoiceStatusDelivery(ware_req_id) {
+  const res = await pool.query(
+    `SELECT status
+    FROM Ware_request
+    WHERE id = $1`,
+    [ware_req_id]
+  );
   return res.rows;
 }

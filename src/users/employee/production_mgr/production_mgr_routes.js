@@ -8,6 +8,9 @@ import Dashboard from "./Dashboard";
 import Factory_Requests from "./Factory_Requests";
 import Warehouse_Requests from "./Warehouse_Requests";
 import Stock from "./Stock";
+import Product from "../warehouse_mgr/Product";
+import InvoiceForm from "./InvoiceForm";
+import SubmitFactoryReq from "./SubmitFactoryReq";
 export const production_mgr_routes = [
   {
     path: "/user/employee/production_mgr/home/:mgr_id",
@@ -38,8 +41,20 @@ export const production_mgr_routes = [
         element: React.createElement(Warehouse_Requests),
       },
       {
+        path: "/user/employee/production_mgr/home/:mgr_id/warehouse_requests/make_invoice",
+        element: React.createElement(InvoiceForm),
+      },
+      {
         path: "/user/employee/production_mgr/home/:mgr_id/factory_requests",
         element: React.createElement(Factory_Requests),
+      },
+      {
+        path: "/user/employee/production_mgr/home/:mgr_id/submit_factory_requests",
+        element: React.createElement(SubmitFactoryReq),
+      },
+      {
+        path: "/user/employee/production_mgr/home/:mgr_id/products/:product_id",
+        element: React.createElement(Product),
       },
     ],
   },

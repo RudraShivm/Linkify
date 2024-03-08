@@ -16,7 +16,6 @@ function InvoiceForm() {
         axios.get(`http://localhost:3000/users/employee/warehouse_mgr/${mgr_id}/orders/${id}`)
         .then(res => {
             setOrder(res.data);
-            // console.log(res.data);
             setTotalAmount(res.data.reduce((sum, currentOrder) => sum + (currentOrder?.paid_amount || 0), 0));
         }).catch(err => {
             console.log(err);
@@ -95,6 +94,14 @@ function InvoiceForm() {
         <tr>
             <td><b>Paid Amount</b></td>
             <td>{numberWithCommas(totalAmount)} bdt</td>
+        </tr>
+        <tr>
+            <td><b>Issued By</b></td>
+            <td>{order[0]?.mgr_name}</td>
+        </tr>
+        <tr>
+            <td><b>Issue Date</b></td>
+            <td>{new Date().toJSON().slice(0, 10)}</td>
         </tr>
     </tbody>
     </table>

@@ -1,0 +1,38 @@
+.side-panel {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  height: 100vh;
+  /* justify-content: space-evenly; */
+  align-items: center;
+  width: 18vw;
+  background-color: #524e52;
+  padding: 0px 0px 0px 30px;
+}
+.pseudo-side-panel {
+  width: 20vw;
+  height: 100vh;
+}
+.side-panel li {
+  padding-top: 22px;
+  font: var(--pr-font-family);
+  font-weight: var(--pr-font-weight);
+  font-style: var(--pr-font-style);
+  font-size: 1.4rem;
+}
+.side-panel li a {
+  text-decoration: none;
+  color: antiquewhite;
+  padding: 8px;
+  border-radius: 10px;
+}
+.side-panel li a:hover {
+  background-color: #373637;
+  transition: background-color 0.5s ease;
+}
+.admin-container {
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  background-color: #222222;
+}

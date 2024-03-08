@@ -56,6 +56,7 @@ const Ware_req = () => {
         <table id='Ware_req_table'>
             <thead>
             <tr>
+                <th className='table-th'>Ware Req ID</th>
                 <th className='table-th'>Warehouse Stock ID</th>
                 <th className='table-th'>Product ID</th>
                 <th className='table-th'>Model</th>
@@ -64,6 +65,7 @@ const Ware_req = () => {
                 <th className='table-th'>Production Manager ID</th>
                 <th className='table-th'>Factory ID</th>
                 <th className='table-th'>Factory Location</th>
+                <th className='table-th'>Status</th>
             </tr>
             </thead>
             <tbody>   
@@ -71,6 +73,7 @@ const Ware_req = () => {
                 reqdata.map((req) => {
                     return (
                         <tr key={req.id}>
+                            <td className='table-td'>{req.id}</td>
                             <td className='table-td'>{req.ware_stock_id}</td>
                             <td className='table-td'>
                                 <Link to={`/user/employee/warehouse_mgr/home/${mgr_id}/products/${req.product_id}`}>
@@ -79,10 +82,15 @@ const Ware_req = () => {
                             </td>
                             <td className='table-td'>{req.model}</td>
                             <td className='table-td'>{req.qty}</td>
-                            <td className='table-td'>{req.request_date}</td>
+                            <td className='table-td'>{req.request_date.split('T')[0]}</td>
                             <td className='table-td'>{req.production_mgr_id}</td>
                             <td className='table-td'>{req.factory_id}</td>
                             <td className='table-td'>{req.city}</td>
+                            <td className='order-item-status wmgr-order-item-status table-td' >
+                                <div className={` ${req.status}`} >
+                                    {req.status}
+                                </div>     
+                          </td>
                         </tr>
                     );
                 }

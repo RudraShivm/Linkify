@@ -1,0 +1,9 @@
+.purple {
+  background-color: rgba(243, 179, 243, 0.788);
+  border-radius: 7px;
+  width: 80%;
+  padding: 0px 0px 0px 10px;
+}
+.red {
+  background-color: rgba(255, 0, 0, 0.788);
+}

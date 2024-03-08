@@ -63,3 +63,13 @@ input[type="checkbox"] {
   bottom: -10vh;
   right: -6vw;
 }
+.admin-page-container {
+  background-color: #0093e9;
+  background-image: radial-gradient(
+    circle at 50% 100%,
+    #a00ee9 10%,
+    #210222 90%
+  );
+  height: 100vh;
+  display: flex;
+}

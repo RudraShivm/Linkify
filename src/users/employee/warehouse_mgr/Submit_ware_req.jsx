@@ -28,14 +28,15 @@ function Submit_ware_req() {
             setWarehouse_stock(res.data);
             setSelected(res.data.map(item => ({
                 ware_stock_id: item.id,
-                factory_id: 0,
+                factory_id: factory_info.find(factory => factory.product_id === item.product_id)?.id,
                 qty: 0
             })));
+
         })
         .catch(err => {
             console.log(err);
         })
-    }, [url2]);
+    }, [url2, factory_info]);
 
     function handleFactoryChange(index, value) {
         const newSelected = [...selected];
@@ -51,11 +52,12 @@ function Submit_ware_req() {
 
     function handleSubmit(event) {
         event.preventDefault();
+        console.log(selected);
         selected.forEach(item => {
             if (item.qty > 0) {
                 const postobj = {
                     warehouse_id: warehouse_stock[0]?.warehouse_id,
-                    production_mgr_id: 1250000002,
+                    factory_id: item.factory_id,
                     ware_stock_id: item.ware_stock_id,
                     qty: item.qty,    
                 }

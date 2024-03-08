@@ -5,6 +5,25 @@ import { Link, Outlet, useParams } from 'react-router-dom';
 const Home = () => {
     const { mgr_id } = useParams();
     const [isScrolled, setIsScrolled] = useState(false);
+    const [warehouse_delivery_mgr, setWarehouse_delivery_mgr] = useState([]);
+    const [factory_delivery_mgr, setFactory_delivery_mgr] = useState([]);
+
+    useEffect(() => {
+      axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/factory`)
+      .then(response => {
+        setFactory_delivery_mgr(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      axios.get(`http://localhost:3000/users/employee/delivery_mgr/${mgr_id}/warehouse`)
+      .then(response => {
+        setWarehouse_delivery_mgr(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }, [mgr_id]);
   useEffect(() => {
     const onScroll = () => {
       const scrollPos = window.scrollY || window.scrollTo || document.getElementsByTagName("html")[0].scrollTop;
@@ -25,7 +44,8 @@ const Home = () => {
         <div className='employee-body'>
         <div className={`link-Container ${isScrolled ? 'scrolled' : ''}`}>
             <Link to={url} className='navlink'>Dashboard</Link>
-            <Link to={url2} className='navlink'>Orders</Link>
+            {warehouse_delivery_mgr.length>0 && <Link to={`/user/employee/delivery_mgr/home/${mgr_id}/orders`} className='navlink'>Orders</Link>}
+            {factory_delivery_mgr.length>0 && <Link to={`/user/employee/delivery_mgr/home/${mgr_id}/warehouse_requests`} className='navlink'>Warehouse Requests</Link>}
             <Link to={url1} className='navlink'>Profile</Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>

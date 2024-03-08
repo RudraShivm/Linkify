@@ -9,13 +9,13 @@ function Product() {
     const {mgr_id}=useParams();
     const[data,setData]=useState([]);
 
-    const url=`http://localhost:3000/users/retailer/home/${mgr_id}/products/${product_id}`;
+    const url=`http://localhost:3000/users/employee/products/${product_id}`;
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");};
     useEffect(() => {
         window.scrollTo(0, 0);
         axios.get(url)
-        .then(res => {
+        .then(res => { 
             setData(res.data);
         })
         .catch(err => {

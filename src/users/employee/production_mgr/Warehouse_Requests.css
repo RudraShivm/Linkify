@@ -1,0 +1,23 @@
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+#tab-container2 {
+  margin: 10px auto;
+  justify-content: left;
+  width: 95vw;
+}
+tr.red > td {
+  background-color: rgb(250, 188, 188);
+}
+.select-img {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+  transform: scale(1.7);
+}
+.select-btn {
+  animation: transitionPOP 0.2s ease-in-out;
+}

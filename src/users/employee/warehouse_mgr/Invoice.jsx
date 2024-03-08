@@ -16,9 +16,7 @@ function Invoice() {
         })
     }, [mgr_id]);
     const handleClick = (id, status) => {
-        // console.log("sdasa");
         navigate(`/user/employee/warehouse_mgr/home/${mgr_id}/Invoice/${id}/form`);
-        console.log(id);
     }
   return (
     <div>
