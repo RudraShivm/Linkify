@@ -21,6 +21,8 @@ function Products() {
             axios.get(url)
               .then(res => {
                 setProducts(res.data);
+              }).catch(err => {
+                console.log(err);
               })
                 const promises = products.map((product) => {
                   return axios.get(`${baseurl}/users/pic3/${product.id}`, { responseType: 'arraybuffer' })
@@ -30,17 +32,11 @@ function Products() {
                         const imageUrl = URL.createObjectURL(blob);
                         setImages(prev => { return [...prev, imageUrl] });
                       }
-                    })
-                });
-          
-                return Promise.all(promises);
-              })
-              .then(() => {
-                setIsLoading(false);
-              })
-              .catch(err => {
+                    }).catch(err => {
                 console.log(err);
               })
+                });
+          
           }, [url, products]);
     
     // <a href='https://pngtree.com/freepng/clock-icon-design_4273164.html'>png image from pngtree.com/</a>
