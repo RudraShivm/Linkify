@@ -82,8 +82,8 @@ import {
 } from "./src/backend/database.js";
 const app = express();
 app.use(cors());
-// app.use(cors({ origin: "https://vermillion-marzipan-f7ee38.netlify.app" }));
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "https://vermillion-marzipan-f7ee38.netlify.app" }));
+// app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -711,7 +711,7 @@ function sendImage(result, res, str) {
   }
 }
 app.get("/profile/pic/:designation/:id", async (req, res) => {
-  const result = await getProfilePic(req.params.designation,req.params.id);
+  const result = await getProfilePic(req.params.designation, req.params.id);
   if (result.length > 0) {
     const imageData = result[0].profile_picture;
     res.writeHead(200, {
@@ -722,7 +722,7 @@ app.get("/profile/pic/:designation/:id", async (req, res) => {
   } else {
     res.send("No image found");
   }
-  });
+});
 app.get("/users/retailer/home/:retailer_id/products", async (req, res) => {
   const result = await getAllProductInfo();
   res.send(result);
@@ -889,10 +889,13 @@ app.post(
     });
   }
 );
-app.get("/users/employee/warehouse_mgr/:warehouse_mgr_id/ware_req/:req_id/invoice", async (req, res) => {
-  const result = await getInvoiceWarehouse(req.params.req_id);
-  res.send(result);
-});
+app.get(
+  "/users/employee/warehouse_mgr/:warehouse_mgr_id/ware_req/:req_id/invoice",
+  async (req, res) => {
+    const result = await getInvoiceWarehouse(req.params.req_id);
+    res.send(result);
+  }
+);
 app.post(
   "/users/employee/production_mgr/:production_mgr_id/createInvoice",
   async (req, res) => {
