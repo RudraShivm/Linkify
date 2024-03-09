@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import "./EditEmployee.css";
 import { baseurl } from '../../baseurl';
+import UpdateEmployeeForm from './UpdateEmployeeForm';
 function EditEmployee() {
   const [tableType, setTableType] = useState('Warehouse');
   const [bannerVisible, setBannerVisible] = useState(false);
@@ -12,7 +13,8 @@ function EditEmployee() {
   const [production_mgr, setProduction_mgr] = useState([]);
   const [delivery_mgr, setDelivery_mgr] = useState([]);
   const [supply_mgr, setSupply_mgr] = useState([]);
-  const [editData, setEditData] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [employeeFormVisible, setEmployeeFormVisible] = useState(false);
 
   useEffect(() => {
     axios.get(`${baseurl}/users/admin/ware_mgr`)
@@ -26,7 +28,7 @@ function EditEmployee() {
     .then(res => {
         setProduction_mgr(res.data);
     })
-    .catch(err => {
+    .catch(err => { 
         console.log(err);
     })
     axios.get(`${baseurl}/users/admin/delivery_mgr`)
@@ -45,15 +47,10 @@ function EditEmployee() {
     })
 },[]);
 const handleEdit = (item) => {
-  setEditData(item);
-};
+  setEmployeeFormVisible(prev=>!prev);
+  setSelected(item);
+}
 
-const handleInputChange = (event) => {
-  setEditData({
-    ...editData,
-    [event.target.name]: event.target.value
-  });
-};
 const renderTable = (data) => (
   <table id='admin_table'>
     <thead>
@@ -65,6 +62,7 @@ const renderTable = (data) => (
         <th className='table-th'>Password</th>
         <th className='table-th'>Joining Date</th>
         <th className='table-th'>Salary</th>
+        <th className='table-th'></th>
       </tr>
     </thead>
     <tbody>
@@ -78,53 +76,71 @@ const renderTable = (data) => (
           <td className='table-td'>{item.joining_date.split('T')[0]}</td>
           <td className='table-td'>{item.salary}</td>
           <td className='table-td'>
-              <button onClick={() => handleEdit(item)}>Edit</button>
+              <button onClick={()=>handleEdit(item)} className='admin-btn'>Edit</button>
             </td>
         </tr>
       ))}
     </tbody>
   </table>
 );
-
+const switchWarehouse = () => {
+  setTableType('Warehouse');
+}
+const switchProduction = () => {
+  setTableType('Production');
+}
+const switchDelivery = () => {
+  setTableType('Delivery');
+}
+const switchSupply = () => {
+  setTableType('Supply');
+}
+const renderTab=()=>{
+  return(
+    <div className='tab-container'>
+        <button onClick={switchWarehouse} id={`${tableType==="Pending" ? "Pending":""}`}>Warehouse</button>
+        <button onClick={switchProduction} id={`${tableType==="Processing" ? "Processing":""}`}>Production</button>
+        <button onClick={switchDelivery} id={`${tableType==="Delivery-Pending" ? "Delivery-Pending":""}`}>Delivery</button>
+        <button onClick={switchSupply} id={`${tableType==="Delivered" ? "Delivered":""}`}>Supply</button>
+      </div>
+  )
+}
 return (
   <div className='right-panel'>
   <div className='table-container2'>
+  
     {tableType === 'Warehouse' && (
       <>
         <h2 className='heading'>Warehouse Managers</h2>
+        {renderTab()}
         {renderTable(ware_mgr)}
       </>
     )}
     {tableType === 'Production' && (
       <>
         <h2 className='heading'>Production Managers</h2>
+      {renderTab()}
         {renderTable(production_mgr)}
       </>
     )}
     {tableType === 'Delivery' && (
       <>
         <h2 className='heading'>Delivery Managers</h2>
+      {renderTab()}
         {renderTable(delivery_mgr)}
       </>
     )}
     {tableType === 'Supply' && (
       <>
         <h2 className='heading'>Supply Managers</h2>
+      {renderTab()}
         {renderTable(supply_mgr)}
       </>
     )}
 <div className='extra-box2'></div>
   </div>
-  {editData && (
-        <form>
-          <label>
-            Name:
-            <input type="text" name="name" value={editData.name} onChange={handleInputChange} />
-          </label>
-          {/* Add more input fields for other properties... */}
-          <button type="submit">Save Changes</button>
-        </form>
-      )}
+  {employeeFormVisible &&
+  <UpdateEmployeeForm selected={selected} setEmployeeFormVisible={setEmployeeFormVisible}/>}
     </div>
 );
 }

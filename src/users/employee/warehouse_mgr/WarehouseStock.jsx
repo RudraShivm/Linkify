@@ -68,7 +68,7 @@ function WarehouseStock() {
             }
             </tbody>
         </table>
-      
+      <div className='extra-box2'></div>
     </div>
     </>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, Outlet, Routes,Route } from "react-router-dom";
+import { Link, Outlet, Routes,Route,useNavigate } from "react-router-dom";
 import "./App.css";
 import Emp_login from "./Emp_login";
 import RetailerLogin from "./RetailerLogin";
@@ -8,6 +8,7 @@ import animationData from "./../../public/laptop.json";
 import AdminLogin from "./AdminLogin";
 function Main_login() {
   const [clickState, setClickState] = React.useState(0);
+  const navigate = useNavigate();
   useEffect(() => {
     // Reset the animation when the back button is clicked
     window.onpopstate = () => {
@@ -46,6 +47,7 @@ function Main_login() {
         <div className={`login-col1 ${clickStatefn(clickState)}`} >
         <Link to='user/retailer' onClick={()=>setClickState(1)}> Login as Retailer</Link>
         <Link to='user/employee' onClick={()=>setClickState(2)}> Login as Employee</Link>
+        <Link to='/admin' onClick={()=>setClickState(2)}> Login as Admin</Link>
         </div>
         <Routes>
           <Route path="user/employee/*" element={<Emp_login callbackfn={setClickState}/>}></Route>

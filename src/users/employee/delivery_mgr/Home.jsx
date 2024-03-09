@@ -44,10 +44,11 @@ const Home = () => {
     return (
         <div className='employee-body'>
         <div className={`link-Container ${isScrolled ? 'scrolled' : ''}`}>
-            <Link to={url} className='navlink'>Dashboard</Link>
             {warehouse_delivery_mgr.length>0 && <Link to={`/user/employee/delivery_mgr/home/${mgr_id}/orders`} className='navlink'>Orders</Link>}
             {factory_delivery_mgr.length>0 && <Link to={`/user/employee/delivery_mgr/home/${mgr_id}/warehouse_requests`} className='navlink'>Warehouse Requests</Link>}
-            <Link to={url1} className='navlink'>Profile</Link>
+            <Link to={url1} className='navlink'>
+                <img src='/profile.png' className='hero-bar-profile-icon'/>
+            </Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>
             </Link>

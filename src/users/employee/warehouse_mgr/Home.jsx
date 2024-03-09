@@ -37,7 +37,6 @@ const Home = () => {
         <div className='employee-body'>
         <div className={`link-Container ${isScrolled ? 'scrolled' : ''}`}>
             <Link to={url} onClick={resetNotification} className='navlink'>Dashboard</Link>
-            <Link to={url1} onClick={resetNotification} className='navlink'>Profile</Link>
             <Link to={url2} onClick={resetNotification} className='navlink'>Orders</Link>
             <Link to={url3} onClick={resetNotification} className='navlink'>Warehouse Stock</Link>
             <Link to={url4} onClick={resetNotification} className='navlink'>Make Invoice</Link>
@@ -45,6 +44,9 @@ const Home = () => {
             <Link to={url6} onClick={resetNotification} className='navlink'>Submit Ware Request</Link>
             <Link to="#" onClick={toggleNotification} className='navlink noti-icon'>
               🔔
+            </Link>
+            <Link to={url1} onClick={resetNotification} className='navlink'>
+              <img src='/public/profile.png' className='hero-bar-profile-icon'/>
             </Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>

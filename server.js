@@ -35,12 +35,14 @@ import {
   getPendingOrderNumber,
   getPendingOrders,
   getPendingWareReqNumber,
+  getPic,
   getProcessingDemand,
   getProcessingOrderNumber,
   getProcessingOrders,
   getProductInfoByID,
   getProductMgrPass,
   getProductionLog,
+  getProductionMgrInfo,
   getRawStock,
   getRetailerOrdersID,
   getRetailerOrdersbyID,
@@ -72,12 +74,16 @@ import {
   setCart,
   submitInvoiceSupplyMgr,
   updateCart,
+  updateEmployee,
+  updateProduct,
 } from "./src/backend/database.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const upload2 = multer({ dest: "uploads/" });
+
 const stripeInstance = stripe(
   "sk_test_51OiJl9Lgd2pARuX3fCxFbkgZuJGLzlTJi4dzbjJss22wyOlj9UeD64HTy0XlTYrtdH2Y3PUPoG8QiT9TEQKOsV3I00r6vLRxn0"
 );
@@ -342,15 +348,12 @@ app.post(
 //     return "No image found";
 //   }
 // });
-
 app.post(
   "/users/admin/create_employee",
-  multer().single("profile_picture"),
+  multer({
+    limits: { fieldSize: 2 * 1024 * 1024 },
+  }).single("profile_picture"),
   async (req, res) => {
-    console.log(req.body);
-    console.log(req.file); // This will log the uploaded file
-
-    // You can access the uploaded file from req.file
     const profile_picture = req.file.buffer;
 
     await createEmployee(
@@ -365,7 +368,56 @@ app.post(
       req.body.department_id,
       req.body.delivery_type
     ).then((result) => {
-      console.log("result" + result);
+      res.send(result);
+    });
+  }
+);
+app.post(
+  "/users/admin/update_employee",
+  multer({
+    limits: { fieldSize: 2 * 1024 * 1024 },
+  }).single("profile_picture"),
+  async (req, res) => {
+    const profile_picture = req.file.buffer;
+    await updateEmployee(
+      req.body.id,
+      req.body.name,
+      profile_picture,
+      req.body.nid,
+      req.body.mobile_no,
+      req.body.password,
+      req.body.joining_date,
+      req.body.salary
+    ).then((result) => {
+      res.send(result);
+    });
+  }
+);
+app.post(
+  "/users/admin/update_product",
+  multer({
+    limits: { fieldSize: 5 * 1024 * 1024 },
+  }).fields([
+    { name: "picture_1", maxCount: 1 },
+    { name: "picture_2", maxCount: 1 },
+    { name: "picture_3", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const picture_1 = req.files.picture_1[0]?.buffer;
+    const picture_2 = req.files.picture_2[0]?.buffer;
+    const picture_3 = req.files.picture_3[0]?.buffer;
+    await updateProduct(
+      req.body.id,
+      req.body.name,
+      req.body.model,
+      req.body.series,
+      req.body.description,
+      req.body.unit_price,
+      req.body.minimum_delivery_time,
+      picture_1,
+      picture_2,
+      picture_3
+    ).then((result) => {
       res.send(result);
     });
   }
@@ -384,6 +436,10 @@ app.get("/users/admin/delivery_mgr", async (req, res) => {
 });
 app.get("/users/admin/supply_mgr", async (req, res) => {
   const result = await getAllSupplyMgrInfo();
+  res.send(result);
+});
+app.get("/users/admin/products", async (req, res) => {
+  const result = await getAllProductInfo();
   res.send(result);
 });
 app.get(
@@ -549,6 +605,13 @@ app.get(
   }
 );
 app.get(
+  "/users/employee/production_mgr/:production_mgr_id/profile",
+  async (req, res) => {
+    const result = await getProductionMgrInfo(req.params.production_mgr_id);
+    res.send(result);
+  }
+);
+app.get(
   "/users/employee/delivery_mgr/:delivery_mgr_id/profile",
   async (req, res) => {
     const result = await getDeliveryMgrInfo(req.params.delivery_mgr_id);
@@ -583,6 +646,33 @@ app.get(
     res.send(result);
   }
 );
+app.get("/pic1/:id", async (req, res) => {
+  const result = await getPic(req.params.id, "picture_1");
+  sendImage(result, res, "picture_1");
+});
+
+app.get("/pic2/:id", async (req, res) => {
+  const result = await getPic(req.params.id, "picture_2");
+  sendImage(result, res, "picture_2");
+});
+
+app.get("/pic3/:id", async (req, res) => {
+  const result = await getPic(req.params.id, "picture_3");
+  sendImage(result, res, "picture_3");
+});
+
+function sendImage(result, res, str) {
+  if (result.length > 0) {
+    const imageData = result[0][str];
+    res.writeHead(200, {
+      "Content-Type": "image/png",
+      "Content-Length": imageData.length,
+    });
+    res.end(imageData);
+  } else {
+    res.status(404).send("No image found");
+  }
+}
 app.get("/users/retailer/home/:retailer_id/products", async (req, res) => {
   const result = await getAllProductInfo();
   res.send(result);

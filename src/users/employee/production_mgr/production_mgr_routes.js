@@ -11,6 +11,7 @@ import Stock from "./Stock";
 import Product from "../warehouse_mgr/Product";
 import InvoiceForm from "./InvoiceForm";
 import SubmitFactoryReq from "./SubmitFactoryReq";
+import Profile from "./Profile";
 export const production_mgr_routes = [
   {
     path: "/user/employee/production_mgr/home/:mgr_id",
@@ -19,6 +20,10 @@ export const production_mgr_routes = [
       {
         path: "/user/employee/production_mgr/home/:mgr_id/stock",
         element: React.createElement(Stock),
+      },
+      {
+        path: "/user/employee/production_mgr/home/:mgr_id/profile",
+        element: React.createElement(Profile),
       },
       {
         path: "/user/employee/production_mgr/home/:mgr_id/product_stock",

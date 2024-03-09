@@ -84,6 +84,7 @@ function Submit_ware_req() {
                     <thead>
                         <tr>
                             <th className='etable-th'>Warehouse Stock ID</th>
+                            <th className='etable-th'>Name</th>
                             <th className='etable-th'>Model</th>
                             <th className='etable-th'>Quantity</th>
                             <th className='etable-th'>Factory</th>
@@ -94,6 +95,7 @@ function Submit_ware_req() {
                             <tr key={`${item.id}-${item.sub_id}`}>
                                 <td className='etable-td'>{item.id}</td>
                                 <td className='etable-td'>{item.name}</td>
+                                <td className='etable-td'>{item.model}</td>
                                 <td className='etable-td'>
                                     <input className='sub_ware_req_input' type="number" value={selected[index].qty} onChange={(e) => handleQtyChange(index, e.target.value)} min="0" />
                                 </td>

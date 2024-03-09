@@ -40,7 +40,7 @@ const handleSubmit = (e) => {
     data.append('profile_picture', image);
     data.append('employeeType', employeeType);
     data.append('delivery_type', delivery_type);
-    axios.post(`${baseurl}/users/admin/create_employee`, data)
+    axios.post(`${baseurl}/users/admin/create_employee`, data, {headers: {'Content-Type': 'multipart/form-data'}})
     .then((res) => {
         if(res.data==="Employee created successfully"){
             if (timeoutRef.current) {

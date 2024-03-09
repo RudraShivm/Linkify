@@ -35,7 +35,7 @@ function Login() {
       });
       if(flag === 1){
         navigate(`/user/employee/delivery_mgr/home/${mgr_id}`);
-        navigate(`/user/employee/delivery_mgr/home/${mgr_id}/dashboard`);
+        navigate(`/user/employee/delivery_mgr/home/${mgr_id}/orders`);
       }else{
         alert("Wrong Password");
       }

@@ -29,12 +29,13 @@ function Login() {
       const data = res.data;
       let flag = 0;
       data.forEach((item) => {
-        if (item.passwords === mgr_pass) {
+        if (item.passwords === mgr_pass) { 
           flag = 1;
         }
       });
       if(flag === 1){
         navigate(`/user/employee/production_mgr/home/${mgr_id}`);
+        navigate(`/user/employee/production_mgr/home/${mgr_id}/warehouse_requests`);
       }else{
         alert("Wrong Password");
       }

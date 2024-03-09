@@ -8,6 +8,8 @@
   ); */
   height: 100vh;
   display: flex;
+  position: relative;
+  overflow: hidden;
 }
 .Main-login {
   width: 100%;

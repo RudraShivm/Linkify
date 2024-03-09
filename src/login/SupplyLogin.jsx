@@ -35,6 +35,7 @@ function Login() {
       });
       if(flag === 1){
         navigate(`/user/employee/supply_mgr/home/${mgr_id}`);
+        navigate(`/user/employee/supply_mgr/home/${mgr_id}/factory_requests`);
       }else{
         alert("Wrong Password");
       }

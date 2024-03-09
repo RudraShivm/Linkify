@@ -19,6 +19,18 @@
   background-color: #c6eeed;
   transition: background-color 0.3s ease-in-out;
 }
+
+.hero-bar-profile-icon {
+  width: 20px;
+  height: 20px;
+  margin-top: 9px;
+  border-radius: 50%;
+  margin-right: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+  transform: scale(1.4);
+  transition: background-color 0.3s ease-in-out;
+}
 @keyframes transitionPOP {
   0% {
     opacity: 0;

@@ -14,19 +14,19 @@ dotenv.config();
 //   .promise();
 const { Pool } = pg;
 
-// const pool = new Pool({
-//   user: "postgres",
-//   host: "localhost",
-//   database: "Linkify2",
-//   password: "123",
-//   port: 5432,
-// });
 const pool = new Pool({
-  connectionString: process.env.POSTGRESS_URL,
-})
+  user: "postgres",
+  host: "localhost",
+  database: "Linkify2",
+  password: "123",
+  port: 5432,
+});
+// const pool = new Pool({
+//   connectionString: process.env.POSTGRESS_URL,
+// })
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(
-    `SELECT Orders.*,P.model,P.picture1 
+    `SELECT Orders.*,P.model,P.picture_1 
     FROM Orders JOIN Product P ON Orders.product_id = P.id
     WHERE warehouse_mgr_id = $1
     Order BY 
@@ -46,7 +46,7 @@ export async function getOrders(warehouse_mgr_id) {
 }
 export async function getOrdersByID(warehouse_mgr_id, order_id) {
   const res = await pool.query(
-    `SELECT Orders.*,W.name as mgr_name,P.name,P.model,P.picture1,C.store_name,C.owner_name,C.city,WS.available_qty,WS.id AS warehouse_stock_id
+    `SELECT Orders.*,W.name as mgr_name,P.name,P.model,P.picture_1,C.store_name,C.owner_name,C.city,WS.available_qty,WS.id AS warehouse_stock_id
     FROM Orders 
     JOIN Product P ON Orders.product_id = P.id
     JOIN Customer C ON Orders.customer_id = C.id
@@ -81,7 +81,7 @@ export async function getGroupedOrders(warehouse_mgr_id) {
 }
 export async function getPendingOrders(warehouse_mgr_id) {
   const res = await pool.query(
-    `SELECT Orders.*,P.model,P.picture1 
+    `SELECT Orders.*,P.model,P.picture_1 
     FROM Orders JOIN Product P ON Orders.product_id = P.id
     WHERE warehouse_mgr_id = $1 AND status = 'pending'
     Order BY  
@@ -123,7 +123,7 @@ export async function getProcessingDemand(warehouse_mgr_id) {
 }
 export async function getProcessingOrders(warehouse_mgr_id) {
   const res = await pool.query(
-    `SELECT Orders.*,P.model,P.picture1 
+    `SELECT Orders.*,P.model,P.picture_1 
     FROM Orders JOIN Product P ON Orders.product_id = P.id
     WHERE warehouse_mgr_id = $1 AND status = 'processing'
     Order BY 
@@ -205,31 +205,19 @@ export async function getDeliveryMgrPass(delivery_mgr_id) {
 }
 
 export async function getAllWareMgrInfo() {
-  const res = await pool.query(
-    `SELECT * FROM Warehouse_mgr`,
-    []
-  );
+  const res = await pool.query(`SELECT * FROM Warehouse_mgr`, []);
   return res.rows;
 }
 export async function getAllProductionMgrInfo() {
-  const res = await pool.query(
-    `SELECT * FROM Production_mgr`,
-    []
-  );
+  const res = await pool.query(`SELECT * FROM Production_mgr`, []);
   return res.rows;
 }
 export async function getAllDeliveryMgrInfo() {
-  const res = await pool.query(
-    `SELECT * FROM Delivery_mgr`,
-    []
-  );
+  const res = await pool.query(`SELECT * FROM Delivery_mgr`, []);
   return res.rows;
 }
 export async function getAllSupplyMgrInfo() {
-  const res = await pool.query(
-    `SELECT * FROM Supply_mgr`,
-    []
-  );
+  const res = await pool.query(`SELECT * FROM Supply_mgr`, []);
   return res.rows;
 }
 
@@ -238,6 +226,14 @@ export async function getWareMgrInfo(warehouse_mgr_id) {
     `SELECT * FROM Warehouse_mgr
       WHERE id = $1`,
     [warehouse_mgr_id]
+  );
+  return res.rows;
+}
+export async function getProductionMgrInfo(production_mgr_id) {
+  const res = await pool.query(
+    `SELECT * FROM Production_mgr
+      WHERE id = $1`,
+    [production_mgr_id]
   );
   return res.rows;
 }
@@ -255,7 +251,7 @@ export async function getFactoryinfo() {
 }
 export async function getWarehouseStock(warehouse_mgr_id) {
   const res = await pool.query(
-    `SELECT W.*,P.id as product_id,P.name
+    `SELECT W.*,P.id as product_id,P.name,P.model,P.minimum_delivery_time
       FROM Warehouse_stock W 
       JOIN Warehouse_mgr M USING(warehouse_id)
       JOIN Product P ON W.product_id = P.id
@@ -343,7 +339,7 @@ export async function createEmployee(
   ) {
     return "Mobile number is not valid";
   }
-  if(password.length < 8 || password.length > 20 ){
+  if (password.length < 8 || password.length > 20) {
     return "Password length should be between 8 to 20";
   }
   if (employee_type === "warehouse_manager") {
@@ -507,6 +503,168 @@ export async function createEmployee(
     }
   }
 }
+export async function updateEmployee(
+  id,
+  name,
+  profile_picture,
+  nid,
+  mobile_no,
+  password,
+  joining_date,
+  salary
+) {
+  const pattern = /^\d{3}-\d{3}-\d{4}$/;
+  if (!pattern.test(nid)) {
+    return "NID is not valid";
+  }
+  if (
+    mobile_no.toString().substring(0, 2) != "01" ||
+    mobile_no.toString().length !== 11
+  ) {
+    return "Mobile number is not valid";
+  }
+  if (password.length < 8 || password.length > 20) {
+    return "Password length should be between 8 to 20";
+  }
+  if (id.toString().substring(0, 3) === "123") {
+    return pool
+      .query(
+        `UPDATE Warehouse_mgr 
+              SET name=$1, profile_picture=$2, nid=$3, mobile_no=$4, passwords=$5, joining_date=$6, salary=$7 
+              WHERE id = $8`,
+        [
+          name,
+          profile_picture,
+          nid,
+          mobile_no,
+          password,
+          joining_date,
+          salary,
+          id,
+        ]
+      )
+      .then(() => {
+        return "Employee updated successfully";
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (id.toString().substring(0, 3) === "125") {
+    return pool
+      .query(
+        `UPDATE Production_mgr 
+          SET name=$1, profile_picture=$2, nid=$3, mobile_no=$4, passwords=$5, joining_date=$6, salary=$7 
+          WHERE id = $8`,
+        [
+          name,
+          profile_picture,
+          nid,
+          mobile_no,
+          password,
+          joining_date,
+          salary,
+          id,
+        ]
+      )
+      .then(() => {
+        return "Employee updated successfully";
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (id.toString().substring(0, 3) === "143") {
+    return pool
+      .query(
+        `UPDATE Supply_mgr 
+        SET name=$1, profile_picture=$2, nid=$3, mobile_no=$4, passwords=$5, joining_date=$6, salary=$7 
+        WHERE id = $8`,
+        [
+          name,
+          profile_picture,
+          nid,
+          mobile_no,
+          password,
+          joining_date,
+          salary,
+          id,
+        ]
+      )
+      .then(() => {
+        return "Employee updated successfully";
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  } else if (id.toString().substring(0, 3) === "126") {
+    return pool
+      .query(
+        `UPDATE Delivery_mgr 
+        SET name=$1, profile_picture=$2, nid=$3, mobile_no=$4, passwords=$5, joining_date=$6, salary=$7 
+        WHERE id = $8`,
+        [
+          name,
+          profile_picture,
+          nid,
+          mobile_no,
+          password,
+          joining_date,
+          salary,
+          id,
+        ]
+      )
+      .then(() => {
+        return "Employee updated successfully";
+      })
+      .catch((error) => {
+        console.log(error);
+        return "Error in creating employee";
+      });
+  }
+}
+export async function updateProduct(
+  id,
+  name,
+  model,
+  series,
+  description,
+  unit_price,
+  minimum_delivery_time,
+  picture_1,
+  picture_2,
+  picture_3
+) {
+  const picture1 = "\\x" + picture_1.toString("hex");
+  const picture2 = "\\x" + picture_2.toString("hex");
+  const picture3 = "\\x" + picture_3.toString("hex");
+  return pool
+    .query(
+      `UPDATE Product 
+    SET name=$1, model=$2, series=$3, description=$4, unit_price=$5, minimum_delivery_time=$6, picture_1=$7, picture_2=$8, picture_3=$9 
+    WHERE id = $10`,
+      [
+        name,
+        model,
+        series,
+        description,
+        unit_price,
+        minimum_delivery_time,
+        picture1,
+        picture2,
+        picture3,
+        id,
+      ]
+    )
+    .then(() => {
+      return "Product updated successfully";
+    })
+    .catch((error) => {
+      console.log(error);
+      return "Error in updating product";
+    });
+}
 export async function processReqProductionMgr(req_id) {
   await pool.query(
     `UPDATE Ware_request SET status = 'processing' WHERE id = $1`,
@@ -597,7 +755,7 @@ export async function getWareRequests(warehouse_mgr_id) {
     FROM Production_mgr JOIN Factory ON Production_mgr.factory_id = Factory.id)
     P ON W.production_mgr_id = P.id
     JOIN (
-      SELECT W.id,PR.id as product_id,PR.model,PR.picture1
+      SELECT W.id,PR.id as product_id,PR.model,PR.picture_1
       FROM Warehouse_stock W JOIN Product PR on W.product_id = PR.id
     ) R ON W.ware_stock_id = R.id
     WHERE M.id = $1
@@ -758,6 +916,15 @@ export async function getAdminPass(admin_id) {
   console.log(res.rows);
   return res.rows;
 }
+export async function getPic(id, pictureField) {
+  const res = await pool.query(
+    `SELECT ${pictureField} FROM Product WHERE id = $1`,
+    [id]
+  );
+  console.log(res.rows.length);
+  return res.rows;
+}
+
 export async function getAllProductInfo() {
   const res = await pool.query(`SELECT * FROM Product`);
   return res.rows;
@@ -790,7 +957,7 @@ export async function queryCart(retailer_id, product_id) {
 export async function getCart(retailer_id) {
   const res = await pool.query(
     `
-  SELECT C.*,P.name,P.unit_price,P.picture1
+  SELECT C.*,P.name,P.unit_price,P.picture_1 
   FROM Cart C JOIN Product P ON C.product_id = P.id
   WHERE C.customer_id=$1`,
     [retailer_id]

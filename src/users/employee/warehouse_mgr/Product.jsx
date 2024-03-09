@@ -9,7 +9,9 @@ function Product() {
     const {product_id}=useParams();
     const {mgr_id}=useParams();
     const[data,setData]=useState([]);
-
+  const [images, setImages] = useState([]);
+  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const url=`${baseurl}/users/employee/products/${product_id}`;
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");};
@@ -18,18 +20,59 @@ function Product() {
         axios.get(url)
         .then(res => { 
             setData(res.data);
+            return res.data;
         })
+        .then((data)=>{
+          axios.get(`${baseurl}/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
+          .then(res => {
+            const blob = new Blob([res.data], { type: 'image/png' });
+            const imageUrl = URL.createObjectURL(blob);
+            setImages(prev => { return [...prev, imageUrl] });
+          })
+          .then(() => {
+            axios.get(`${baseurl}/pic2/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
+          .then(() => {
+            axios.get(`${baseurl}/pic3/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
+      })
         .catch(err => {
             console.log(err);
         })
     }, [url, navigate, mgr_id, product_id]);
 
-
+    const nextImage = () => {
+      document.querySelector('.product-details-image').classList.add('hidden');
+      setTimeout(() => {
+        setCurrentImageIndex((currentImageIndex + 1) % 3);
+        document.querySelector('.product-details-image').classList.remove('hidden');
+      }, 500);
+    };
+    
+    const prevImage = () => {
+      document.querySelector('.product-details-image').classList.add('hidden');
+      setTimeout(() => {
+        setCurrentImageIndex((currentImageIndex + 2) % 3);
+        document.querySelector('.product-details-image').classList.remove('hidden');
+      }, 300);
+    };
     return (
       <>
     <div className='product-container'>
         <div className='product-image-container'>
-      <img src={`/public/products/${data[0]?.picture1}.png`} className='product-details-image'/>
+        <button onClick={prevImage} className="prev"><img className='left' src='/public/left-chevron.png'/></button>
+        <img src={images[currentImageIndex]} className={`product-details-image`} />
+        <button onClick={nextImage} className="next"><img className='right' src='/public/right-chevron.png'/></button>
         </div>
       <div className='product-details-container'>
         <p id='product-details-title'>{data[0]?.name}</p>
@@ -46,7 +89,7 @@ function Product() {
         </div>
     </div>
     <div className='photo-container'>
-    <img src={`/public/products/${data[0]?.picture2}.png`} className='product-details-image'/>
+    <img src={images[1]} className='product-details-image'/>
     </div>
       </>
   )

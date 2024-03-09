@@ -18,6 +18,7 @@ input[type="password"] {
   border-radius: 5px;
   width: 100%;
   max-width: 300px;
+  z-index: 2;
 }
 input[type="checkbox"] {
   width: 15px;
@@ -28,6 +29,7 @@ input[type="checkbox"] {
   padding: 10px 0px;
   display: flex;
   justify-content: flex-end;
+  z-index: 2;
 }
 
 .login-submit {

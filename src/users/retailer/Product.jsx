@@ -16,7 +16,7 @@ function Product() {
   const [bannerVisible, setBannerVisible] = useState(false);
   const [bannerinfo, setBannerinfo] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [images, setImages] = useState([]);
   const toggleAddToCart = () => {
     if (cartVisible === -1) setCartVisible(1);
     else if (cartVisible === 1) setCartVisible(0);
@@ -36,6 +36,31 @@ function Product() {
     axios.get(url)
       .then(res => {
         setData(res.data);
+        return res.data;
+      })
+      .then((data) => {
+        axios.get(`${baseurl}/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
+          .then(res => {
+            const blob = new Blob([res.data], { type: 'image/png' });
+            const imageUrl = URL.createObjectURL(blob);
+            setImages(prev => { return [...prev, imageUrl] });
+          })
+          .then(() => {
+            axios.get(`${baseurl}/pic2/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
+          .then(() => {
+            axios.get(`${baseurl}/pic3/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
       })
       .catch(err => {
         console.log(err);
@@ -80,7 +105,7 @@ function Product() {
       <div className='product-container'>
         <div className='product-image-container'>
         <button onClick={prevImage} className="prev"><img className='left' src='/public/left-chevron.png'/></button>
-        <img src={`/public/products/${data[0]?.[`picture${currentImageIndex + 1}`]}.png`} className={`product-details-image`} />
+        <img src={images[currentImageIndex]} className={`product-details-image`} />
         <button onClick={nextImage} className="next"><img className='right' src='/public/right-chevron.png'/></button>
         </div>
         <div className='product-details-container'>
@@ -99,7 +124,7 @@ function Product() {
       </div>
         </div>
         <div className='photo-container'>
-          <img src={`/public/products/${data[0]?.[`picture2`]}.png`}/>
+          <img src={images[1]}/>
         </div>
     </>
   )

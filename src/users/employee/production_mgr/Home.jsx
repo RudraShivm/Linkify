@@ -46,14 +46,16 @@ const Home = () => {
     return (
         <div className='employee-body'>
         <div className={`link-Container ${isScrolled ? 'scrolled' : ''}`}>
-            <Link to={url} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Dashboard</Link>
             <Link to="#" onClick={()=>{resetNotification();toggleVisibility()}} className='navlink'>Stock</Link>
             <Link to={url3} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Report Production</Link>
             <Link to={url4} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Warehouse Requests</Link>
             <Link to={url5} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Factory Requests</Link> 
-            <Link to={url6} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Submit Request</Link> 
+            <Link to={url6} onClick={()=>{resetNotification();setVisible(false)}} className='navlink'>Submit Request</Link>
             <Link to="#" onClick={()=>{toggleNotification();setVisible(false)}} className='navlink noti-icon'>
               🔔
+            </Link>
+            <Link to={`/user/employee/production_mgr/home/${mgr_id}/profile`} onClick={()=>{resetNotification();setVisible(false)}} className='navlink '>
+              <img src='/public/profile.png' className='hero-bar-profile-icon'/>
             </Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>
