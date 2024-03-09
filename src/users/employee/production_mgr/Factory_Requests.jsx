@@ -15,8 +15,19 @@ function Factory_Requests() {
       console.log(error);
     })
   });
-  const handleClick = (status) => {
-    console.log(status);
+  const handleClick = (id, status) => {
+    if (status === 'completed') {
+      axios.get(`${baseurl}/users/employee/production_mgr/${mgr_id}/factory_requests/${id}/invoice`, { responseType: 'blob' })
+        .then((response) => {
+          const file = new Blob([response.data], { type: 'application/pdf' });
+          const fileURL = URL.createObjectURL(file);
+          // Open the URL on a new window
+          window.open(fileURL);
+        })
+        .catch((error) => {
+          console.error("Error: ", error);
+        });
+    }
   }
   return (
     <>
@@ -48,7 +59,7 @@ function Factory_Requests() {
                             <td className='table-td'>{req.company}</td>
                             <td className='table-td'>{req.req_date.split('T')[0]}</td>
                             <td  className='order-item-status wmgr-order-item-status table-td'>
-                                <div className={` ${req.status}`} onClick={()=>{handleClick(req.status)}}>
+                                <div className={` ${req.status}`} onClick={()=>{handleClick(req.id,req.status)}}>
                                     {req.status}
                                 </div>    
                             </td>

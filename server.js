@@ -27,6 +27,7 @@ import {
   getGroupedOrders,
   getInvoice,
   getInvoiceDeliveryMgr,
+  getInvoiceProductionMgr,
   getInvoiceWarehouse,
   getMissingLogs,
   getOrders,
@@ -510,9 +511,26 @@ app.get(
   }
 );
 app.get(
+  "/users/employee/production_mgr/:production_mgr_id/factory_requests/:factory_req_id/invoice",
+  async (req, res) => {
+    const result = await getInvoiceProductionMgr(req.params.factory_req_id);
+    if (result.length > 0) {
+      const pdfData = result[0].invoice_file; // Assuming 'invoice' is the bytea column
+      const pdfBuffer = new Buffer.from(pdfData, "binary");
+      res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "inline; filename=invoice.pdf",
+        "Content-Length": pdfBuffer.length,
+      });
+      res.end(pdfBuffer);
+    } else {
+      res.status(404).send("No invoice found");
+    }
+  }
+);
+app.get(
   "/users/employee/supply_mgr/:supply_mgr_id/factory_requests",
   async (req, res) => {
-    console.log(req.params.supply_mgr_id);
     const result = await getFactoryReqSupplyMgr(req.params.supply_mgr_id);
     res.send(result);
   }
@@ -520,7 +538,6 @@ app.get(
 app.post(
   "/users/employee/production_mgr/:production_mgr_id/submit_factory_req",
   async (req, res) => {
-    console.log("aaaaaa" + JSON.stringify(req.body.data));
     const promises = req.body.data.map(async (data) => {
       return createFactoryReq(
         req.params.production_mgr_id,
@@ -530,7 +547,6 @@ app.post(
     });
     try {
       const results = await Promise.all(promises);
-      console.log(results);
       if (
         results.every(
           (result) => result === "Factory request created successfully"
@@ -563,7 +579,6 @@ app.post(
           (result) => result === "Production log created successfully"
         )
       ) {
-        console.log("s");
         res.send("All production logs created successfully");
       } else if (
         results.some((result) => result === "Production log already exists")

@@ -14,16 +14,16 @@ dotenv.config();
 //   .promise();
 const { Pool } = pg;
 
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "Linkify2",
-  password: "123",
-  port: 5432,
-});
 // const pool = new Pool({
-//   connectionString: process.env.POSTGRESS_URL,
-// })
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Linkify2",
+//   password: "123",
+//   port: 5432,
+// });
+const pool = new Pool({
+  connectionString: process.env.POSTGRESS_URL,
+})
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(
     `SELECT Orders.*,P.model,P.picture_1 
@@ -182,7 +182,6 @@ export async function getWareMgrPass(warehouse_mgr_id) {
       WHERE id = $1`,
     [warehouse_mgr_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getRetailerPass(retailer_id) {
@@ -191,7 +190,6 @@ export async function getRetailerPass(retailer_id) {
       WHERE id = $1`,
     [retailer_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getDeliveryMgrPass(delivery_mgr_id) {
@@ -200,7 +198,6 @@ export async function getDeliveryMgrPass(delivery_mgr_id) {
       WHERE id = $1`,
     [delivery_mgr_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 
@@ -434,7 +431,6 @@ export async function createEmployee(
         .query(`SELECT * FROM Warehouse WHERE id = $1`, [department_id])
         .then((res) => {
           if (res.rows.length > 0) {
-            console.log("warehousdddddddde");
             return pool
               .query(
                 `INSERT INTO Delivery_mgr(name,profile_picture,nid,mobile_no,passwords,joining_date,salary) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
@@ -679,7 +675,6 @@ export async function processReqSupplyMgr(req_id) {
 }
 export async function submitInvoiceSupplyMgr(file, request_id) {
   const { buffer } = file;
-  console.log("ds");
   return pool
     .query(
       "INSERT INTO Factory_invoice (factory_req_id,invoice_file) VALUES ($2,$1)",
@@ -895,7 +890,6 @@ export async function getProductMgrPass(production_mgr_id) {
     WHERE id = $1`,
     [production_mgr_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getSupplyMgrPass(supply_mgr_id) {
@@ -904,7 +898,6 @@ export async function getSupplyMgrPass(supply_mgr_id) {
       WHERE id = $1`,
     [supply_mgr_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getAdminPass(admin_id) {
@@ -913,7 +906,6 @@ export async function getAdminPass(admin_id) {
       WHERE id = $1`,
     [admin_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getPic(id, pictureField) {
@@ -921,7 +913,6 @@ export async function getPic(id, pictureField) {
     `SELECT ${pictureField} FROM Product WHERE id = $1`,
     [id]
   );
-  console.log(res.rows.length);
   return res.rows;
 }
 
@@ -1294,7 +1285,6 @@ export async function getFactoryStock() {
     JOIN Product P ON F.product_id = P.id
     ORDER BY P.id ASC`
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getRawStock(production_mgr_id) {
@@ -1307,7 +1297,6 @@ export async function getRawStock(production_mgr_id) {
     WHERE M.id = $1`,
     [production_mgr_id]
   );
-  console.log(res.rows);
   return res.rows;
 }
 export async function getProductionLog(production_mgr_id) {
@@ -1351,7 +1340,6 @@ export async function makeProductionLog(production_mgr_id, date, qty) {
           [qty, factoryID.rows[0]?.factory_id]
         );
         for (const item of raw_stock.rows) {
-          console.log(JSON.stringify(item));
           await pool.query(
             `UPDATE Factory_raw_stock SET available_qty = available_qty - ($2::integer * $1::integer) WHERE factory_id = $3 AND raw_mat_id = $4`,
             [qty, item.qty, factoryID.rows[0]?.factory_id, item.raw_mat_id]
@@ -1398,6 +1386,15 @@ export async function getFactoryReqProductionMgr(production_mgr_id) {
     JOIN Raw_material R ON F.raw_mat_id = R.id
     WHERE FR.production_mgr_id = $1`,
     [production_mgr_id]
+  );
+  return res.rows;
+}
+export async function getInvoiceProductionMgr(factory_req_id) {
+  const res = await pool.query(
+    `SELECT FR.invoice_file
+    FROM Factory_invoice FR
+    WHERE FR.factory_req_id = $1`,
+    [factory_req_id]
   );
   return res.rows;
 }
