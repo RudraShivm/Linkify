@@ -36,3 +36,9 @@
   display: flex;
   background-color: #222222;
 }
+#admin-logout-btn {
+  z-index: 2;
+  right: 20px;
+  position: absolute;
+  top: 20px;
+}

@@ -113,6 +113,7 @@ const handleImageChange = (e) => {
         {bannerVisible && ( <div style={{backgroundColor: bannerColor}} className='banner'>{bannerinfo}</div>)}
         
     <form className='admin-form' onSubmit={handleSubmit}>
+      <div className='heading' id='admin-create-employee-h'>Create Employee</div>
         <div>
 
       <label>

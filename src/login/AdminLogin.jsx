@@ -14,6 +14,8 @@ function AdminLogin() {
           alert('Invalid admin_id');
         }else{
             navigate(`/admin/${admin_id}/home`);
+            navigate(`/admin/${admin_id}/home/create_employee`);
+
         }
       })
     }

@@ -5,6 +5,9 @@ function Home() {
 
   return (
     <div className='admin-container'>
+      <Link to="/" className='navlink logout-container' id='admin-logout-btn'>
+          <img className='logout' src='/logout.png'/>
+      </Link>
       <div className='pseudo-side-panel'></div>
       <div className='side-panel'>
         <ul style={{ listStyleType: 'none', padding: 0 }}>
@@ -15,10 +18,7 @@ function Home() {
             <Link to={`edit_employee`}>Edit Employee</Link>
           </li>
           <li>
-            <Link to={`statistics`}>Statistics</Link>
-          </li>
-          <li>
-            <Link to={`create_product`}>Create Product</Link>
+            <Link to={`create_product`}>Update Product</Link>
           </li>
         </ul>
       </div>
