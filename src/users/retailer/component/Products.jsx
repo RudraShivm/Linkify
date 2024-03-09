@@ -13,7 +13,7 @@ function Products() {
     const [products, setProducts] = useState([]);
     const url=`${baseurl}/users/retailer/home/${retailer_id}/products`;
     const [images, setImages] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");};
 
