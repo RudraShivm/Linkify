@@ -21,9 +21,14 @@ const { Pool } = pg;
 //   password: "123",
 //   port: 5432,
 // });
+// console.log(process.env.PORT);
 const pool = new Pool({
-  connectionString: process.env.POSTGRESS_URL,
-})
+  connectionString:
+    "postgres://rudrashivm:a7pMY3sF5RZK4Ebk3lkQXixkMwIljYed@dpg-cnlln07109ks73b6p8r0-a.oregon-postgres.render.com/linkify_u7p1",
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 export async function getOrders(warehouse_mgr_id) {
   const res = await pool.query(
     `SELECT Orders.*,P.model,P.picture_1 
