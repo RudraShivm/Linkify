@@ -933,6 +933,14 @@ export async function getProductInfoByID(product_id) {
   );
   return res.rows;
 }
+export async function getProductInfoByID2(product_id) {
+  const res = await pool.query(
+    `SELECT name,model FROM Product
+    WHERE id = $1`,
+    [product_id]
+  );
+  return res.rows;
+}
 
 export async function addToCart(retailer_id, product_id, qty) {
   await pool.query(

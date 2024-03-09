@@ -41,6 +41,7 @@ import {
   getProcessingOrderNumber,
   getProcessingOrders,
   getProductInfoByID,
+  getProductInfoByID2,
   getProductMgrPass,
   getProductionLog,
   getProductionMgrInfo,
@@ -80,11 +81,11 @@ import {
 } from "./src/backend/database.js";
 const app = express();
 app.use(cors());
-// app.use(cors({ origin: 'https://vermillion-marzipan-f7ee38.netlify.app' }))
+app.use(cors({ origin: "https://vermillion-marzipan-f7ee38.netlify.app" }));
 app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const upload2 = multer({ dest: "uploads/" });
+// const upload2 = multer({ dest: "uploads/" });
 
 const stripeInstance = stripe(
   "sk_test_51OiJl9Lgd2pARuX3fCxFbkgZuJGLzlTJi4dzbjJss22wyOlj9UeD64HTy0XlTYrtdH2Y3PUPoG8QiT9TEQKOsV3I00r6vLRxn0"
@@ -696,7 +697,7 @@ app.get("/users/retailer/home/:retailer_id/products", async (req, res) => {
 app.get(
   "/users/retailer/home/:retailer_id/products/:product_id",
   async (req, res) => {
-    const result = await getProductInfoByID(req.params.product_id);
+    const result = await getProductInfoByID2(req.params.product_id);
     res.send(result);
   }
 );
