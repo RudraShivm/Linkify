@@ -10,7 +10,7 @@ function Submit_ware_req() {
     const [warehouse_stock,setWarehouse_stock]=useState([]);
     const [selected, setSelected] = useState([]);
 
-    const url1=`${baseurl}/factory_info`;
+    const url1=`${baseurl}/users/factory_info`;
     const url2=`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/warehouse_stock`;
 
     useEffect(() => {

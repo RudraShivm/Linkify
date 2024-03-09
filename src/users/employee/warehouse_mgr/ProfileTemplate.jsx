@@ -18,7 +18,7 @@ function ProfileTemplate({mgr_id,designation}) {
         .catch(err => {
             console.log(err);
         })
-        axios.get(`${baseurl}/profile/pic/${designation}/${mgr_id}`, { responseType: 'arraybuffer' })
+        axios.get(`${baseurl}/users/profile/pic/${designation}/${mgr_id}`, { responseType: 'arraybuffer' })
         .then(res => {
             if(res.data!== "No image found"){
             const blob = new Blob([res.data], { type: 'image/png' });

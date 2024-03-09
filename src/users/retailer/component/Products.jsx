@@ -25,7 +25,7 @@ function Products() {
               })
               .then((data) => {
                 const promises = data.map((product) => {
-                  return axios.get(`${baseurl}/pic3/${product.id}`, { responseType: 'arraybuffer' })
+                  return axios.get(`${baseurl}/users/pic3/${product.id}`, { responseType: 'arraybuffer' })
                     .then(res => {
                       if (res.data !== "No image found") {
                         const blob = new Blob([res.data], { type: 'image/png' });

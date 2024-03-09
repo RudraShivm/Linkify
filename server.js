@@ -316,7 +316,7 @@ app.post(
     res.send(result);
   }
 );
-app.get("/factory_info", async (req, res) => {
+app.get("/users/factory_info", async (req, res) => {
   const result = await getFactoryinfo();
   res.send(result);
 });
@@ -683,17 +683,17 @@ app.get(
     res.send(result);
   }
 );
-app.get("/pic1/:id", async (req, res) => {
+app.get("/users/pic1/:id", async (req, res) => {
   const result = await getPic(req.params.id, "picture_1");
   sendImage(result, res, "picture_1");
 });
 
-app.get("/pic2/:id", async (req, res) => {
+app.get("/users/pic2/:id", async (req, res) => {
   const result = await getPic(req.params.id, "picture_2");
   sendImage(result, res, "picture_2");
 });
 
-app.get("/pic3/:id", async (req, res) => {
+app.get("/users/pic3/:id", async (req, res) => {
   const result = await getPic(req.params.id, "picture_3");
   sendImage(result, res, "picture_3");
 });
@@ -710,7 +710,7 @@ function sendImage(result, res, str) {
     res.send("No image found");
   }
 }
-app.get("/profile/pic/:designation/:id", async (req, res) => {
+app.get("/users/profile/pic/:designation/:id", async (req, res) => {
   const result = await getProfilePic(req.params.designation, req.params.id);
   if (result.length > 0) {
     const imageData = result[0].profile_picture;
@@ -789,7 +789,7 @@ app.post(
               product_data: {
                 name: item.name,
                 images: [
-                  `http://localhost:3000/public/products/${item.picture3}.png`,
+                  `/${item.picture3}.png`,
                 ],
               },
               unit_amount: item.unit_price * 100,
@@ -797,8 +797,8 @@ app.post(
             quantity: item.qty,
           };
         }),
-        success_url: `http://localhost:3000/users/retailer/home/${req.params.retailer_id}/success`,
-        cancel_url: `http://localhost:3000/users/retailer/home/${req.params.retailer_id}/cancel`,
+        success_url: `/user/retailer/home/${req.params.retailer_id}/success`,
+        cancel_url: `/user/retailer/home/${req.params.retailer_id}/cancel`,
       });
       res.send({ url: session.url });
     } catch (err) {
