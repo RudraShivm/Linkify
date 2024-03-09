@@ -55,7 +55,7 @@ const Home = () => {
               🔔
             </Link>
             <Link to={`/user/employee/production_mgr/home/${mgr_id}/profile`} onClick={()=>{resetNotification();setVisible(false)}} className='navlink '>
-              <img src='/public/profile.png' className='hero-bar-profile-icon'/>
+              <img src='/profile.png' className='hero-bar-profile-icon'/>
             </Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>

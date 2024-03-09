@@ -45,6 +45,7 @@ import {
   getProductMgrPass,
   getProductionLog,
   getProductionMgrInfo,
+  getProfilePic,
   getRawStock,
   getRetailerOrdersID,
   getRetailerOrdersbyID,
@@ -81,7 +82,8 @@ import {
 } from "./src/backend/database.js";
 const app = express();
 app.use(cors());
-app.use(cors({ origin: "https://vermillion-marzipan-f7ee38.netlify.app" }));
+// app.use(cors({ origin: "https://vermillion-marzipan-f7ee38.netlify.app" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -530,6 +532,24 @@ app.get(
   }
 );
 app.get(
+  "/users/employee/supply_mgr/:supply_mgr_id/factory_requests/:factory_req_id/invoice",
+  async (req, res) => {
+    const result = await getInvoiceProductionMgr(req.params.factory_req_id);
+    if (result.length > 0) {
+      const pdfData = result[0].invoice_file; // Assuming 'invoice' is the bytea column
+      const pdfBuffer = new Buffer.from(pdfData, "binary");
+      res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "inline; filename=invoice.pdf",
+        "Content-Length": pdfBuffer.length,
+      });
+      res.end(pdfBuffer);
+    } else {
+      res.status(404).send("No invoice found");
+    }
+  }
+);
+app.get(
   "/users/employee/supply_mgr/:supply_mgr_id/factory_requests",
   async (req, res) => {
     const result = await getFactoryReqSupplyMgr(req.params.supply_mgr_id);
@@ -687,9 +707,22 @@ function sendImage(result, res, str) {
     });
     res.end(imageData);
   } else {
-    res.status(404).send("No image found");
+    res.send("No image found");
   }
 }
+app.get("/profile/pic/:designation/:id", async (req, res) => {
+  const result = await getProfilePic(req.params.designation,req.params.id);
+  if (result.length > 0) {
+    const imageData = result[0].profile_picture;
+    res.writeHead(200, {
+      "Content-Type": "image/png",
+      "Content-Length": imageData.length,
+    });
+    res.end(imageData);
+  } else {
+    res.send("No image found");
+  }
+  });
 app.get("/users/retailer/home/:retailer_id/products", async (req, res) => {
   const result = await getAllProductInfo();
   res.send(result);
@@ -856,6 +889,10 @@ app.post(
     });
   }
 );
+app.get("/users/employee/warehouse_mgr/:warehouse_mgr_id/ware_req/:req_id/invoice", async (req, res) => {
+  const result = await getInvoiceWarehouse(req.params.req_id);
+  res.send(result);
+});
 app.post(
   "/users/employee/production_mgr/:production_mgr_id/createInvoice",
   async (req, res) => {

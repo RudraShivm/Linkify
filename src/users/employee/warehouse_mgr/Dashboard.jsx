@@ -78,11 +78,11 @@ function Dashboard() {
             <div className='card'>
                 Orders
                 <div className='warning'>
-                    <img src='/public/warning.png' id='warning'/>
+                    <img src='/warning.png' id='warning'/>
                     {`${nearingOrders.length} nearing orders`}
                 </div>
                 <div className='warning2'>
-                    <img src='/public/warning.png' id='warning'/>
+                    <img src='/warning.png' id='warning'/>
                     {`${expiredOrders.length} expired orders`}
                 </div>
                 <div className='details'>

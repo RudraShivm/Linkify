@@ -44,21 +44,21 @@ const NotificationComponent= ()=> {
                         if(item.available_qty==0){
                             return(
                                 <div key={index}>
-                                <img src='/public/alert.png' id='warning'/>
+                                <img src='/alert.png' id='warning'/>
                                 Stock : {item.id} ({item.name} : {item.model}) ran out of stock !
                             </div>    
                             )
                         }else if(item.available_qty<20){
                             return(
                                 <div key={index}>
-                                <img src='/public/warning.png' id='warning'/>
+                                <img src='/warning.png' id='warning'/>
                                 Stock : {item.id} ({item.name} : {item.model}) is running low on stock ! ( less than 20 )
                             </div>    
                             )
                         }else if(pendingDemand.find(product=>product.warehouse_stock_id===item.id)?.demand_qty>item.available_qty){
                             return(
                                 <div key={index}>
-                                <img src='/public/alert.png' id='warning'/>
+                                <img src='/alert.png' id='warning'/>
                                 Stock : {item.id} ({item.name} : {item.model}) has pending demands more than available stocks!
                             </div>    
                             )

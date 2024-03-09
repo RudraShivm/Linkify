@@ -4,6 +4,11 @@ import { Link, Route, Routes, useParams } from 'react-router-dom';
 import Filter from './Filter';
 import './Orders.css';
 import { baseurl } from '../../../baseurl';
+import { render } from 'react-dom';
+import InvoiceForm from '../production_mgr/InvoiceForm';
+import { renderToString } from 'react-dom/server';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Ware_req = () => {
     const { mgr_id } = useParams();
@@ -12,6 +17,7 @@ const Ware_req = () => {
     const [request_date, setRequest_date] = useState('1700-01-01');
     const [factory_id, setFactory_id] = useState(0);
     const [filterVisible, setFilterVisible] = useState(-1);
+    const [invoice, setInvoice] = useState([]);
     const toggleFilter = () => {
         if(filterVisible === -1) setFilterVisible(1);
         else if(filterVisible === 1) setFilterVisible(0);
@@ -41,6 +47,45 @@ const Ware_req = () => {
     });
 
     const url5=`/user/employee/warehouse_mgr/home/${mgr_id}/ware_req/filter`;
+    const handleClick = (id,status) => {
+        if(status === "delivered"){
+            axios.get(`${baseurl}/users/employee/warehouse_mgr/${mgr_id}/ware_req/${id}/invoice`)
+            .then(res => {
+                setInvoice(res.data[0]);
+                exportToPDF(res.data[0]);
+        })
+    }
+    }
+
+    const exportToPDF = (invoice) => {
+      const doc = new jsPDF();
+    
+      let yOffset = 10;  // Start at the top of the page
+    
+      doc.setFontSize(18);
+      doc.text('Invoice', 10, yOffset);
+    
+      yOffset += 10;
+    
+      doc.setFontSize(12);
+      doc.text(`Ware Req ID: ${invoice.ware_req_id}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Ware Stock ID: ${invoice.ware_stock_id}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Request Date: ${invoice.request_date}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Request Qty: ${invoice.qty}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Issued Qty: ${invoice.issue_qty}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Issue Date: ${invoice.issue_date}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Issued By: ${invoice.production_mgr_name}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Delivered By: ${invoice.delivery_mgr_name}`, 10, yOffset);
+    
+      doc.save('invoice.pdf');
+    };
     return (
         <>
         <h1 className='heading'>Warehouse Requests List</h1>
@@ -88,7 +133,7 @@ const Ware_req = () => {
                             <td className='table-td'>{req.factory_id}</td>
                             <td className='table-td'>{req.city}</td>
                             <td className='order-item-status wmgr-order-item-status table-td' >
-                                <div className={` ${req.status}`} >
+                                <div className={` ${req.status}`} onClick={()=>handleClick(req.id,req.status)}>
                                     {req.status}
                                 </div>     
                           </td>

@@ -114,7 +114,7 @@ function Orders() {
               <div className='order-item-exp-delivery-date'>
                 {orderInfo[index] &&
                 <>
-                <img src='/public/save-time.png' className=''/>
+                <img src='/save-time.png' className=''/>
                 {(`${orderInfo[index][0]?.exp_delivery_date}`).split('T')[0]}
                 </>
                 } 

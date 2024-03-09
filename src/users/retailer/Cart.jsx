@@ -112,7 +112,7 @@ function Cart() {
 ) : (
   cartInfo.map((cart) => (
     <div key={cart.product_id} className='cart-row-container'>
-      <div className='cart-image-container'><img src={`/public/products/${cart.picture1}.png`}/></div>
+      <div className='cart-image-container'><img src={`/products/${cart.picture1}.png`}/></div>
       <div className='cart-name'>{cart.name}</div>
       <div className='cart-total-price'>
         <span><b>Total price: </b></span>
@@ -122,7 +122,7 @@ function Cart() {
         <input type="number" value={cart.qty} onChange={(e) => handleQtyChange(e, cart.product_id)} />
       </div>
       <button onClick={() => handleRemove(cart.product_id)} className='cart-btn'>
-        <img src='/public/delete.png' className='cart-del-icon'/>
+        <img src='/delete.png' className='cart-del-icon'/>
       </button>
     </div>
   ))

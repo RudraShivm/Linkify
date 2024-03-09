@@ -8,7 +8,7 @@ import { baseurl } from '../../../baseurl';
 function ProfileTemplate({mgr_id,designation}) {
     const [data,setData]=useState([]);
     const url=`${baseurl}/users/employee/${designation}/${mgr_id}/profile`;
-    
+    const [image,setImage]=useState([]);
     useEffect(() => {
         axios.get(url)
         .then(res => {
@@ -18,12 +18,23 @@ function ProfileTemplate({mgr_id,designation}) {
         .catch(err => {
             console.log(err);
         })
-    }, [url]);
+        axios.get(`${baseurl}/profile/pic/${designation}/${mgr_id}`, { responseType: 'arraybuffer' })
+        .then(res => {
+            if(res.data!== "No image found"){
+            const blob = new Blob([res.data], { type: 'image/png' });
+            const imageUrl = URL.createObjectURL(blob);
+            setImage(prev=>{return [...prev,imageUrl]});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }, [url,designation,mgr_id]);
   return (
     <>
     <div className='profile-picture-container'>
     <div className='profile-picture'>
-        <img className='pp' src="/public/profile.png"/>
+        <img className='pp' src={image[0]}/>
     </div>
     </div>
     <div className='info-card'>

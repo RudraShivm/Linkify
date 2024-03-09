@@ -126,6 +126,16 @@ function FactoryRequests() {
     }else if(status=="processing"){
         setInvoiceFormVisible(true);
         setReqID(id);
+    }else if(status=="completed"){
+      axios.get(`${baseurl}/users/employee/supply_mgr/${mgr_id}/factory_requests/${id}/invoice`, { responseType: 'blob' })
+        .then((response) => {
+          const file = new Blob([response.data], { type: 'application/pdf' });
+          const fileURL = URL.createObjectURL(file);
+          window.open(fileURL);
+        })
+        .catch((error) => {
+          console.error("Error: ", error);
+        });
     }
   }
 
@@ -173,8 +183,8 @@ const selectAll = () => {
         <h3 className='info'><b>Supply mgr ID ::</b> {mgr_id}</h3>
       <div className='tab-container ' id='tab-container2'>
       <button onClick={handleSelectClick}>Select Several</button>
-      {showCheckboxes && <button onClick={selectAll} className='select-btn'><img src='/public/select.png' className='select-img'/></button>}
-      {showCheckboxes && <button onClick={deselectAll} className='select-btn'><img src='/public/cross.png' className='select-img'/></button>}
+      {showCheckboxes && <button onClick={selectAll} className='select-btn'><img src='/select.png' className='select-img'/></button>}
+      {showCheckboxes && <button onClick={deselectAll} className='select-btn'><img src='/cross.png' className='select-img'/></button>}
       </div>
         <div className='table-container'>
 

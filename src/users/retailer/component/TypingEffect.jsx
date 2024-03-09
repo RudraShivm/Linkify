@@ -4,19 +4,19 @@ function TypingEffect() {
   const [text, setText] = useState('');
   const fullText = 'A  supply chain management project...';
 
+  let i = -1;
   useEffect(() => {
-    let i = 0;
     const typing = setInterval(() => {
-      if (i < fullText.length-1) {
-        setText((prevText) => prevText + fullText[i]);
-        i++;
+      if (i++ < fullText.length-1) {
+        setText((prevText) => prevText + fullText[i])
+          
       } else {
         clearInterval(typing);
       }
     }, 140);
 
     return () => clearInterval(typing);
-  }, []);
+  }, [i]);
 
   return <div className='txt'>{text}</div>;
 }

@@ -88,7 +88,7 @@ function UpdateEmployeeForm({selected,setEmployeeFormVisible}) {
     <div className='form-container2 form-container3' id='update-employee-form'>
         {bannerVisible && <div className='banner' style={{backgroundColor:bannerColor}}>{bannerinfo}</div>}
       <form className='admin-form' onSubmit={handleSubmit} encType='multipart/form-data'>
-        <img src='/public/close.png' className='invoice-form-back-img' onClick={()=>setEmployeeFormVisible(prev=>!prev)} />
+        <img src='/close.png' className='invoice-form-back-img' onClick={()=>setEmployeeFormVisible(prev=>!prev)} />
         
         <div>
 

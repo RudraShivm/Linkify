@@ -46,7 +46,7 @@ const Home = () => {
               🔔
             </Link>
             <Link to={url1} onClick={resetNotification} className='navlink'>
-              <img src='/public/profile.png' className='hero-bar-profile-icon'/>
+              <img src='/profile.png' className='hero-bar-profile-icon'/>
             </Link>
             <Link to="/" className='navlink logout-container'>
                 <img className='logout' src='/logout.png'/>

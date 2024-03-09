@@ -5,6 +5,7 @@ import TypingEffect from './TypingEffect';
 import Lottie from 'lottie-react';
 import animationData from './../../../../public/Animation - 1709300997815.json';
 import './Products.css';
+import { InfinitySpin } from 'react-loader-spinner';
 import { baseurl } from '../../../baseurl';
 {/* <a href="https://www.flaticon.com/free-icons/truck" title="truck icons">Truck icons created by Pixel perfect - Flaticon</a> */}
 function Products() {
@@ -12,38 +13,51 @@ function Products() {
     const [products, setProducts] = useState([]);
     const url=`${baseurl}/users/retailer/home/${retailer_id}/products`;
     const [images, setImages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");};
 
-    useEffect(() => {
-        axios.get(url)
-        .then(res => {
-            setProducts(res.data);
-            return res.data;
-        })
-        .then((data)=>{
-            data.forEach((product)=>{
-                axios.get(`${baseurl}/pic3/${product.id}`, { responseType: 'arraybuffer' })
-                .then(res => {
-                    console.log("data"+res.data)
-                    const blob = new Blob([res.data], { type: 'image/png' });
-                    const imageUrl = URL.createObjectURL(blob);
-                    setImages(prev=>{return [...prev,imageUrl]});
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-            })
-        })    
-        .catch(err => {
-            console.log(err);
-        })
-    }, [url,products]);
+        useEffect(() => {
+            axios.get(url)
+              .then(res => {
+                setProducts(res.data);
+                return res.data;
+              })
+              .then((data) => {
+                const promises = data.map((product) => {
+                  return axios.get(`${baseurl}/pic3/${product.id}`, { responseType: 'arraybuffer' })
+                    .then(res => {
+                      if (res.data !== "No image found") {
+                        const blob = new Blob([res.data], { type: 'image/png' });
+                        const imageUrl = URL.createObjectURL(blob);
+                        setImages(prev => { return [...prev, imageUrl] });
+                      }
+                    })
+                });
+          
+                return Promise.all(promises);
+              })
+              .then(() => {
+                setIsLoading(false);
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          }, [url, products]);
     
     // <a href='https://pngtree.com/freepng/clock-icon-design_4273164.html'>png image from pngtree.com/</a>
     // https://guillaumekurkdjian.com/
     return (
     <>
+        {isLoading ? (<div className='loading'>
+        <InfinitySpin
+  visible={true}
+  width="200"
+  color="#4fa94d"
+  ariaLabel="infinity-spin-loading"
+  />
+        </div>):(
+            <>
     <div className='welcome-section'>
         <div>
             {/* <div className='box'></div> */}
@@ -65,7 +79,7 @@ function Products() {
                 <img src={images[index]} className='products-thumbnail'/>
                 <div className='products-thumbnail-name'>{product.name}</div>
                 <div className='products-thumbnail-add-container'>
-                <img src='/public/delivery-truck.png' className='delivery-icon'/>
+                <img src='/delivery-truck.png' className='delivery-icon'/>
                 <p className='products-thumbnail-unit_price'>{numberWithCommas(Number(product.unit_price))} BDT</p>
                 <p className='products-thumbnail-min_del_time'>{product.minimum_delivery_time} days</p>
                 </div>
@@ -75,6 +89,7 @@ function Products() {
     }
     )}
     </div>
+    </>)}
     </>
   )
 }

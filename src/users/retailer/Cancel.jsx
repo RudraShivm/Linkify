@@ -6,7 +6,7 @@ function Cancel() {
     const { retailer_id } = useParams();    
     return (
       <div className='success-container'>
-        <img src='/public/payment.png' className='success-icon'/>
+        <img src='/payment.png' className='success-icon'/>
         <div className='success-msg'>Payment Failed 😥!!</div>
         <div className='success-redirect-btn-container'>
           <Link to={`/user/retailer/home/${retailer_id}/cart/`}>

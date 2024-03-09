@@ -920,6 +920,13 @@ export async function getPic(id, pictureField) {
   );
   return res.rows;
 }
+export async function getProfilePic(designation,id) {
+  const res = await pool.query(
+    `SELECT profile_picture FROM ${designation} WHERE id = $1`,
+    [id]
+  );
+  return res.rows;
+}
 
 export async function getAllProductInfo() {
   const res = await pool.query(`SELECT * FROM Product`);
@@ -1200,8 +1207,11 @@ export async function createInvoice(
 
 export async function getInvoiceWarehouse(ware_req_id) {
   const res = await pool.query(
-    `SELECT W.*
+    `SELECT W.*,WR.request_date,WR.qty,WR.ware_stock_id,P.name as production_mgr_name,D.name as delivery_mgr_name
     FROM Ware_invoice W
+    JOIN Ware_request WR ON W.ware_req_id = WR.id
+    JOIN Production_mgr P ON WR.production_mgr_id = P.id
+    JOIN Delivery_mgr D ON W.delivery_mgr_id = D.id
     WHERE W.ware_req_id = $1`,
     [ware_req_id]
   );

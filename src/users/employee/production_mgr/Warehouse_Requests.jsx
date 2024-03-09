@@ -127,8 +127,8 @@ function Warehouse_Requests() {
       <span className='info2'><b>Available Stock ::</b> {reqdata[0]?.factory_available_qty}</span>
       <div className='tab-container' id='tab-container2'>
       <button onClick={handleSelectClick}>Select Several</button>
-      {showCheckboxes && <button onClick={selectAll} className='select-btn'><img src='/public/select.png' className='select-img'/></button>}
-      {showCheckboxes && <button onClick={deselectAll} className='select-btn'><img src='/public/cross.png' className='select-img'/></button>}
+      {showCheckboxes && <button onClick={selectAll} className='select-btn'><img src='/select.png' className='select-img'/></button>}
+      {showCheckboxes && <button onClick={deselectAll} className='select-btn'><img src='/cross.png' className='select-img'/></button>}
       </div>
       <div className={`table-container`}>
       <table id='Ware_req_table'>

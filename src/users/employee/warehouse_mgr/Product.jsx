@@ -70,9 +70,9 @@ function Product() {
       <>
     <div className='product-container'>
         <div className='product-image-container'>
-        <button onClick={prevImage} className="prev"><img className='left' src='/public/left-chevron.png'/></button>
+        <button onClick={prevImage} className="prev"><img className='left' src='/left-chevron.png'/></button>
         <img src={images[currentImageIndex]} className={`product-details-image`} />
-        <button onClick={nextImage} className="next"><img className='right' src='/public/right-chevron.png'/></button>
+        <button onClick={nextImage} className="next"><img className='right' src='/right-chevron.png'/></button>
         </div>
       <div className='product-details-container'>
         <p id='product-details-title'>{data[0]?.name}</p>

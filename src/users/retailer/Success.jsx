@@ -7,7 +7,7 @@ function Success() {
     const { retailer_id } = useParams();    
   return (
     <div className='success-container'>
-      <img src='/public/success.png' className='success-icon'/>
+      <img src='/success.png' className='success-icon'/>
       <div className='success-msg'>Payment Successful !!</div>
       <div className='success-redirect-btn-container'>
         <Link to={`/user/retailer/home/${retailer_id}/products/`}> 

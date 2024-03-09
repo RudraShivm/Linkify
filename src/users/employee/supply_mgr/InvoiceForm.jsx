@@ -7,7 +7,7 @@ function InvoiceForm({handleFileChange, handleUpload,selected,setInvoiceFormVisi
   return (
     <div className='form-container'>
       <div className='nested-box1'>
-        <img src='/public/close.png' className='invoice-form-back-img' onClick={()=>setInvoiceFormVisible(prev=>!prev)}/>
+        <img src='/close.png' className='invoice-form-back-img' onClick={()=>setInvoiceFormVisible(prev=>!prev)}/>
       <table style={{ border: 'none', backgroundColor: 'transparent' }} className='invoice-form-table'>
     <tbody>
         <tr>
