@@ -21,10 +21,8 @@ function Products() {
             axios.get(url)
               .then(res => {
                 setProducts(res.data);
-                return res.data;
               })
-              .then((data) => {
-                const promises = data.map((product) => {
+                const promises = products.map((product) => {
                   return axios.get(`${baseurl}/users/pic3/${product.id}`, { responseType: 'arraybuffer' })
                     .then(res => {
                       if (res.data !== "No image found") {
