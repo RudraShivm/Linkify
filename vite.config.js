@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   server: {
     proxy: {
-      '/users': 'https://linkify-3pk6.onrender.com',
+      '/users': 'https://vermillion-marzipan-f7ee38.netlify.app',
       // "/users": "http://localhost:3000",
     },
   },
