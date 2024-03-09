@@ -78,8 +78,8 @@ import {
   updateProduct,
 } from "./src/backend/database.js";
 const app = express();
-// app.use(cors());
-app.use(cors({ origin: 'https://vermillion-marzipan-f7ee38.netlify.app' }))
+app.use(cors());
+// app.use(cors({ origin: 'https://vermillion-marzipan-f7ee38.netlify.app' }))
 app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
