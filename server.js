@@ -87,10 +87,9 @@ app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 // const upload2 = multer({ dest: "uploads/" });
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://vermillion-marzipan-f7ee38.netlify.app');
-  next();
-});
+app.use(cors({
+  origin: "https://vermillion-marzipan-f7ee38.netlify.app",
+}));
 const stripeInstance = stripe(
   "sk_test_51OiJl9Lgd2pARuX3fCxFbkgZuJGLzlTJi4dzbjJss22wyOlj9UeD64HTy0XlTYrtdH2Y3PUPoG8QiT9TEQKOsV3I00r6vLRxn0"
 );
