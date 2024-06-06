@@ -39,28 +39,28 @@ function Product() {
         return res.data;
       })
       .then((data) => {
-        // axios.get(`${baseurl}/users/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
-        //   .then(res => {
-        //     const blob = new Blob([res.data], { type: 'image/png' });
-        //     const imageUrl = URL.createObjectURL(blob);
-        //     setImages(prev => { return [...prev, imageUrl] });
-        //   })
-        //   .then(() => {
-        //     axios.get(`${baseurl}/users/pic2/${data[0].id}`, { responseType: 'arraybuffer' })
-        //       .then(res => {
-        //         const blob = new Blob([res.data], { type: 'image/png' });
-        //         const imageUrl = URL.createObjectURL(blob);
-        //         setImages(prev => { return [...prev, imageUrl] });
-        //       })
-        //   })
-        //   .then(() => {
-        //     axios.get(`${baseurl}/users/pic3/${data[0].id}`, { responseType: 'arraybuffer' })
-        //       .then(res => {
-        //         const blob = new Blob([res.data], { type: 'image/png' });
-        //         const imageUrl = URL.createObjectURL(blob);
-        //         setImages(prev => { return [...prev, imageUrl] });
-        //       })
-        //   })
+        axios.get(`${baseurl}/users/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
+          .then(res => {
+            const blob = new Blob([res.data], { type: 'image/png' });
+            const imageUrl = URL.createObjectURL(blob);
+            setImages(prev => { return [...prev, imageUrl] });
+          })
+          .then(() => {
+            axios.get(`${baseurl}/users/pic2/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
+          .then(() => {
+            axios.get(`${baseurl}/users/pic3/${data[0].id}`, { responseType: 'arraybuffer' })
+              .then(res => {
+                const blob = new Blob([res.data], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                setImages(prev => { return [...prev, imageUrl] });
+              })
+          })
       })
       .catch(err => {
         console.log(err);
