@@ -38,14 +38,14 @@ function Product() {
         setData(res.data);
         return res.data;
       })
-        axios.get(`${baseurl}/users/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
+        axios.get(`${baseurl}/users/pic1/${product_id}}`, { responseType: 'arraybuffer' })
           .then(res => {
             const blob = new Blob([res.data], { type: 'image/png' });
             const imageUrl = URL.createObjectURL(blob);
             setImages(prev => { return [...prev, imageUrl] });
           })
           .then(() => {
-            axios.get(`${baseurl}/users/pic2/${data[0].id}`, { responseType: 'arraybuffer' })
+            axios.get(`${baseurl}/users/pic2/${product_id}}`, { responseType: 'arraybuffer' })
               .then(res => {
                 const blob = new Blob([res.data], { type: 'image/png' });
                 const imageUrl = URL.createObjectURL(blob);
@@ -53,7 +53,7 @@ function Product() {
               })
           })
           .then(() => {
-            axios.get(`${baseurl}/users/pic3/${data[0].id}`, { responseType: 'arraybuffer' })
+            axios.get(`${baseurl}/users/pic3/${product_id}}`, { responseType: 'arraybuffer' })
               .then(res => {
                 const blob = new Blob([res.data], { type: 'image/png' });
                 const imageUrl = URL.createObjectURL(blob);
