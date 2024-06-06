@@ -942,7 +942,7 @@ export async function getProductInfoByID(product_id) {
 }
 export async function getProductInfoByID2(product_id) {
   const res = await pool.query(
-    `SELECT name,model FROM Product
+    `SELECT name,model,series,unit_price,minimum_delivery_time FROM Product
     WHERE id = $1`,
     [product_id]
   );
