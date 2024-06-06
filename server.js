@@ -88,7 +88,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 // const upload2 = multer({ dest: "uploads/" });
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'https://vermillion-marzipan-f7ee38.netlify.app');
   next();
 });
 const stripeInstance = stripe(
