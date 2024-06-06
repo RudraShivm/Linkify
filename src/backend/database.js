@@ -24,7 +24,7 @@ const { Pool } = pg;
 // console.log(process.env.PORT);
 const pool = new Pool({
   connectionString:
-    "postgres://rudrashivm:a7pMY3sF5RZK4Ebk3lkQXixkMwIljYed@dpg-cnlln07109ks73b6p8r0-a.oregon-postgres.render.com/linkify_u7p1",
+    "postgres://rudrashivm:SU8vGJIHTbSHtnUv2AgqUJxvcm6RkkRv@dpg-cph1dau3e1ms73ap9qgg-a.oregon-postgres.render.com/linkify_2",
   ssl: {
     rejectUnauthorized: false,
   },
