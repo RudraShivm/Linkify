@@ -1,20 +1,7 @@
-[build]
-  publish = "dist"  # Ensure this points to your build directory
-
-[[plugins]]
-  package = "@netlify/plugin-lighthouse"
 
 [build.processing]
   skip_processing = true  # Disables post-processing, including asset optimization
   
-[build.processing.js]
-  bundle = false
-  minify = false
-
-[build.processing.css]
-  bundle = false
-  minify = false
-
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
   for = "/*"
