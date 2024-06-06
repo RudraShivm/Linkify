@@ -38,7 +38,6 @@ function Product() {
         setData(res.data);
         return res.data;
       })
-      .then((data) => {
         axios.get(`${baseurl}/users/pic1/${data[0].id}`, { responseType: 'arraybuffer' })
           .then(res => {
             const blob = new Blob([res.data], { type: 'image/png' });
@@ -61,7 +60,6 @@ function Product() {
                 setImages(prev => { return [...prev, imageUrl] });
               })
           })
-      })
       .catch(err => {
         console.log(err);
       })
