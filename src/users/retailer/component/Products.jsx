@@ -21,6 +21,7 @@ function Products() {
             axios.get(url)
               .then(res => {
                 setProducts(res.data);
+                console.log(res.data);
               }).catch(err => {
                 console.log(err);
               })
