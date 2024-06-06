@@ -929,7 +929,7 @@ export async function getProfilePic(designation,id) {
 }
 
 export async function getAllProductInfo() {
-  const res = await pool.query(`SELECT * FROM Product`);
+  const res = await pool.query(`SELECT id,name,model,series,description,display,unit_price,minimum_delivery_time FROM Product`);
   return res.rows;
 }
 export async function getProductInfoByID(product_id) {
